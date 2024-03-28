@@ -172,7 +172,7 @@ in {
     fwupd = {
       enable = true;
 
-/*
+      /*
       # v1.9.7 is required to downgrade the fingerprint sensor firmware
       # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
       # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
@@ -180,7 +180,7 @@ in {
         url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
         sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
       }) { inherit (pkgs) system; }).fwupd;
-*/
+      */
     };
 
     # Power management
@@ -303,6 +303,7 @@ in {
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        memtest86.enable = true;
       };
     };
   };

@@ -136,6 +136,7 @@
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        memtest86.enable = true;
       };
     };
   };

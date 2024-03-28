@@ -1,5 +1,5 @@
 { config, host, lib, modulesPath, pkgs, vars, ... }:
-with lib;
+
 {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
@@ -33,7 +33,7 @@ with lib;
   };
 
   services.xserver.displayManager.autoLogin = {
-    enable = mkForce true;
+    enable = lib.mkForce true;
     user = "${vars.user}";
   };
 
@@ -136,6 +136,8 @@ with lib;
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
+        # Console resolution
+        consoleMode = "auto";
         memtest86.enable = true;
       };
     };
