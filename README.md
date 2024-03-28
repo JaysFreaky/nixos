@@ -1,0 +1,67 @@
+# NixOS Flake
+This is my flake for an immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and you have the option to use either TmpFS or BTRFS snapshots for this setup. It utilizes environment.etc & systemd.tmpfiles.rules to persist /etc (configurations, ssh, etc) and /var (lib, log). I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like that is the best, most complete way of fully utilizing the system. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
+
+## Installation
+---
+While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
+
+* Scans and selects disk devices to prepare for installation
+* Select either TmpFS or Snapshots (if impermanance isn't desired, snapshots can be selected and not include the rollback commands in your configuration.)
+* Create either a swap partition or swap file, based on system RAM, or no swap
+* Prompts what user name is used in the flake, which is used for the password file name
+* Prompts to set the user password and then generates a hashed password file
+* Prompts to set GRUB2 password and then generates hashed password file (Systemd is used by default, but sets this for possible future use.)
+* Creates, encrypts, and formats: boot, key, swap (if selected), and root partitions
+* Prompts for cryptkey and cryptroot passwords (cryptkey is used at every boot; cryptroot is a backup in the case cryptkey gets corrupted.)
+* Backs up LUKS headers for cryptkey/root
+* Creates persist directories
+* Clones this repo into the persistant config directory
+* Select a system hostname based off what is already established in the flake
+* Install NixOS
+
+Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
+
+```nix
+nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup
+```
+
+## Breakdown
+---
+The main flake.nix has your typical inputs/outputs declaration, as well as the setup package that is used for formatting/preparing/installing the system.
+
+Instead of your typical nixosConfiguration(s) being declared here, the /hosts directory is directly imported, which is where the declarations live.
+
+### Hosts
+Inside /hosts:
+
+* default.nix is where all the typical systems/hostnames are declared. There are also some custom variables that are established, like: username, user's name, and which terminal/editor will be used.
+* common.nix is the base system configuration that is deployed with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
+* Each system will then have its own directory with their configuration file(s) inside of it.
+
+### Modules
+This is where all modules imported via directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
+
+Inside /modules:
+
+* /desktops contain the individual desktop environments and their requirements (GNOME/Hyprland)
+* /hardware contains the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader)
+* /persist contains all the configs that deal with persistance
+* /programs contain apps that can be enabled/disabled or the contents didn't seem like a good fit and/or are too long to go inside /hosts/common.nix
+
+I'm not very experienced with neovim yet, so I haven't bothered to translate (and not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files/directories via Home Manager's xdg.configFile.<name>.source feature.
+
+### Packages
+This is where the setup script lives. If there were any future scripts/packages I would want to call individually, they would go into their own respective directory.
+
+Inside /packages/setup:
+
+* default.nix declares all the packages that will be used by the script and creates a shell application that reads from setup.sh
+* setup.sh is the actual script and is read by default.nix
+
+## Credits
+---
+The actual flake itself was based off of [Matthias Benaets' config](https://github.com/MatthiasBenaets/nixos-config). When I was first looking into converting my config into a flake, a lot of the flakes I came across would use a separate system and home file for the same module. I finally came across Matthia's config, and after looking through their repo, I decided to replicate their setup. I liked the idea of a base configuration.nix for all hosts, and most importantly, modules declared in a single file, instead of spread throughout the repo.
+
+The installation script was based off of [Hoverbear-Consulting's unsafe-bootstrap](https://github.com/Hoverbear-Consulting/flake/tree/root/packages/unsafe-bootstrap). My original script was your typical bash script that simply partitioned, encrypted, and formatted the drive. Then I came across their method, and I really liked the idea of being able to call the script as a flake package, as well as the use of Gum to make the script look better and be more interactive. I converted all my typical echos and reads into Gum's way of doing things. Over time, I modified and added to it from being a simple formatting script into a full-blown install script.
+
+I'm sure there are plenty more repos I took inspiration from, but they allude me at this time.

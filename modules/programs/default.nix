@@ -1,0 +1,14 @@
+[
+  ./1password.nix
+  ./alacritty
+  ./bash.nix
+  ./firefox
+  ./flatpak.nix
+  ./gaming.nix
+  ./git.nix
+  ./kitty.nix
+  #./lf
+  ./nvim
+  ./starship
+  ./syncthing.nix
+]
