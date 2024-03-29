@@ -8,6 +8,7 @@ PURPLE="#8000FF"
 RED="#FF0000"
 YELLOW="#FFFF00"
 WHITE="#FFFFFF"
+export GUM_CHOOSE_CURSOR_FOREGROUND="$BLUE"
 export GUM_CONFIRM_PROMPT_FOREGROUND="$RED"
 export GUM_INPUT_PROMPT_FOREGROUND="$BLUE"
 export GUM_SPIN_SPINNER="points"
@@ -24,13 +25,21 @@ RAM_SIZE=$(grep 'MemTotal' /proc/meminfo | cut -d':' -f2 | sed 's/ //g' | sed 's
 # Round up to nearest integer
 RAM_SIZE=$(printf %0.f "$RAM_SIZE")
 
-# Get system disks
+# Show disks and their sizes
+gum style --foreground="$GREEN" "Eligible disks and their stats:"
+DISK_HEADER="$(lsblk -do name,size,mountpoints | grep 'NAME')"
+gum style --foreground="$WHITE" "$DISK_HEADER"
+lsblk -do name,size,mountpoints | grep 'nvme[0-9]n[0-9]\|sd[a-z]\|vd[a-z]\|hd[a-z]')
+printf '\n'
+
+# Put system disks into array
 mapfile -t DISKS < <(find "/dev/" -regex '/dev/nvme[0-9]n[0-9]\|/dev/sd[a-z]\|/dev/vd[a-z]\|/dev/hd[a-z]')
 if (( ${#DISKS[@]} == 0 )); then
   gum style --foreground="$YELLOW" "No disk devices were found! Quitting..." >&2
   exit 1
 fi
 
+# Prompt for disk from array
 gum style --foreground="$PINK" "Select a disk to be formatted for installation:"
 while true; do
   DISK=$(gum choose "${DISKS[@]}")
@@ -69,6 +78,7 @@ while true; do
 done
 printf '\n'
 
+# Prompt for username
 while true; do
   NIX_USER=$(gum input --placeholder="username" --prompt="What username is defined in NixOS? ")
   if [ -z "$NIX_USER" ]; then
@@ -78,6 +88,7 @@ while true; do
   fi;
 done
 
+# Prompt for user password
 while true; do
   NIX_PASS=$(gum input --password --placeholder="password" --prompt="What password would you like to assign to $NIX_USER? ")
   NIX_PASS2=$(gum input --password --placeholder="password" --prompt="Re-enter user password for verification: ")
@@ -90,6 +101,7 @@ while true; do
   fi;
 done
 
+# Prompt for GRUB password
 gum style --background="$PINK" --foreground="$YELLOW" "The GRUB bootloader password will now be setup."
 gum style --foreground="$WHITE" "If any action other than booting is performed, a password will be required before allowing access."
 gum style --foreground="$WHITE" "Systemd is the default bootloader, but if GRUB is later enabled, it's ready to go with this."
@@ -106,8 +118,9 @@ while true; do
   fi;
 done
 
-gum style --background="$PINK" --foreground="$YELLOW" "The two partition encryption passwords will now be setup."
-gum style --foreground="$WHITE" "The first, cryptkey, will be used at every boot to unlock the system partitions."
+# Prompt for cryptkey password
+gum style --background="$PINK" --foreground="$YELLOW" "The first of two partition encryption passwords will now be setup."
+gum style --foreground="$WHITE" "First, cryptkey, will be used at every boot to unlock the system partitions."
 printf '\n'
 while true; do
   CRYPTKEY_PASS=$(gum input --password --placeholder="cryptkey" --prompt="What will your cryptkey password be? ")
@@ -121,8 +134,19 @@ while true; do
   fi;
 done
 
-gum style --foreground="$WHITE" "The second, cryptroot, will be an emergency backup password in the scenario that something happens to the cryptkey partition. This should be different from the first."
-gum style --foreground="$WHITE" "Using a generator like https://diceware.dmuth.org is recommended for this."
+# Prompt for cryptroot password
+gum style --background="$PINK" --foreground="$YELLOW" "The second of two partition encryption passwords will now be setup."
+gum style --foreground="$WHITE" "Second, cryptroot, will be an emergency backup password. (cryptkey partition gets corrupted, chroot, etc)"
+gum style --foreground="$YELLOW" "This password should be different from the first. Be sure to document it somewhere safe!"
+gum style --foreground="$WHITE" "Here are some generated diceware passwords using 6, 5, and 4 rolls, respectively."
+echo "" > /tmp/dice.txt
+{
+  diceware | awk '{print "- " $0}'
+  diceware -n 5 | awk '{print "- " $0}'
+  diceware -n 4 | awk '{print "- " $0}'
+} >> /tmp/dice.txt
+gum format < /tmp/dice.txt
+echo "" > /tmp/dice.txt
 printf '\n'
 while true; do
   CRYPTROOT_PASS=$(gum input --password --placeholder="cryptroot" --prompt="What will your cryptroot password be? ")
@@ -136,6 +160,7 @@ while true; do
   fi;
 done
 
+# Prompt to start formatting
 gum confirm "Are you ready to proceed with formatting?" --default=false || (echo "Quitting..." && exit 1)
 printf '\n'
 

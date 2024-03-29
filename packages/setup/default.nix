@@ -1,4 +1,4 @@
-{ writeShellApplication, bash, btrfs-progs, coreutils, cryptsetup, dosfstools, git, grub2, gum, parted, ... }:
+{ writeShellApplication, bash, btrfs-progs, coreutils, cryptsetup, diceware, dosfstools, git, grub2, gum, parted, ... }:
 
 writeShellApplication {
   name = "setup";
@@ -9,6 +9,7 @@ writeShellApplication {
     btrfs-progs
     coreutils
     cryptsetup
+    diceware
     dosfstools
     git
     grub2
