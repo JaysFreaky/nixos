@@ -77,13 +77,10 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = { lib, ... }: {
     dconf.settings = {
-      "com/github/wwmm/easyeffects" = {
-        last-used-output-preset = "philonmetal";
-      };
       "org/gnome/shell" = {
         enabled-extensions = [
           #"Battery-Health-Charging@maniacx.github.com"
-          "easyeffects-preset-selector"
+            # Not sure if these two are needed with systray enabled
           #"proton-vpn@fthx"
           #"proton-bridge@fthx"
         ];
@@ -96,7 +93,6 @@ in {
 
     home.packages = with pkgs.gnomeExtensions; [
       #battery-health-charging
-      easyeffects-preset-selector
       #proton-bridge-button
       #proton-vpn-button
     ];
@@ -106,6 +102,8 @@ in {
       enable = true;
       preset = "philonmetal";
     };
+
+    xdg.configFile."easyeffects/output/philonmetal.json".source = ./philonmetal.json;
   };
 
 
@@ -156,18 +154,7 @@ in {
     powertop.enable = true;
   };
 
-  # Yubikey login/sudo
-/*security.pam.yubico = {
-    enable = true;
-    debug = false;
-    mode = "challenge-response";
-  };*/
-
-
   services = {
-    # Disable fprint reader - testing fp_reader.enable module
-    #fprintd.enable = lib.mkForce false;
-
     # Firmware updater
     fwupd = {
       enable = true;
@@ -327,6 +314,11 @@ in {
     };
 
     interfaces = {
+      # Ethernet adapter left-rear USB port
+      enp195s0f4u1c2.useDHCP = lib.mkDefault true;
+      # Ethernet adapter right-rear USB port
+      enp195s0f3u1c2.useDHCP = lib.mkDefault true;
+      # Wireless
       wlp1s0.useDHCP = lib.mkDefault true;
     };
 
