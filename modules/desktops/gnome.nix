@@ -19,7 +19,7 @@ in {
     environment = {
       # System-Wide Packages
       systemPackages = with pkgs; [
-        #gnome.dconf-editor           # GUI dconf editor
+        gnome.dconf-editor           # GUI dconf editor
         gnome.gnome-tweaks            # Gnome tweaks
         gnome.nautilus-python         # Allow custom nautilus scripts/open-any-terminal
         gnome-extension-manager       # Gnome extensions
@@ -115,6 +115,9 @@ in {
  
     home-manager.users.${vars.user} = { config, lib, ... }: {
       dconf.settings = {
+        "ca/desrt/dconf-editor" = {
+          show-warning = false;
+        };
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {
           new-tab = true;
           terminal = "${vars.terminal}";
@@ -209,7 +212,7 @@ in {
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
-          command = "kitty";
+          command = "${vars.terminal}";
           name = "Launch Terminal";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
@@ -249,7 +252,7 @@ in {
             "discord.desktop"
             "steam.desktop"
             "plexmediaplayer.desktop"
-            "org.gnome.Settings.desktop"
+            #"org.gnome.Settings.desktop"
           ];
         };
         "org/gnome/shell/extensions/appindicator" = {
