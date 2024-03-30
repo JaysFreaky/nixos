@@ -79,20 +79,28 @@ in {
     dconf.settings = {
       "org/gnome/shell" = {
         enabled-extensions = [
-          #"Battery-Health-Charging@maniacx.github.com"
+          "Battery-Health-Charging@maniacx.github.com"
             # Not sure if these two are needed with systray enabled
           #"proton-vpn@fthx"
           #"proton-bridge@fthx"
         ];
       };
-      #"org/gnome/shell/extensions/Battery-Health-Charging" = {
-      #  amend-power-indicator = true;
-      #  icon-style-type = 1;
-      #};
+      "org/gnome/shell/extensions/Battery-Health-Charging" = {
+        amend-power-indicator = true;
+        charging-mode = "bal";
+        #charging-mode2 = "bal";
+        #ctl-path = "/usr/local/bin/batteryhealthchargingctl-jays";
+        icon-style-type = 2;
+        indicator-position = 4;
+        indicator-position-max = 16;
+        #polkit-status = "installed";
+        #show-battery-panel2 = true;
+        show-system-indicator = false;
+      };
     };
 
     home.packages = with pkgs.gnomeExtensions; [
-      #battery-health-charging
+      battery-health-charging
       #proton-bridge-button
       #proton-vpn-button
     ];
