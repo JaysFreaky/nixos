@@ -1,5 +1,5 @@
 { config, lib, pkgs, vars, ... }:
-with lib;
+
 {
   environment = {
     etc = {
@@ -15,11 +15,12 @@ with lib;
 
       # Directories
       "nixos".source = "/persist/etc/nixos/";
-      "NetworkManager/system-connections".source = "/persist/etc/NetworkManager/system-connections/";
+      "NetworkManager".source = "/persist/etc/NetworkManager/";
     };
   };
 
   systemd.tmpfiles.rules = [
+    "L /usr/local/bin - - - - /persist/usr/local/bin"
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/flatpak - - - - /persist/var/lib/flatpak"
     "L /var/lib/NetworkManager - - - - /persist/var/lib/NetworkManager"
