@@ -1,4 +1,4 @@
-{ lib, inputs, outputs, hardware, home-manager, nix-flatpak, nixpkgs, nixpkgs-stable, nur, ... }:
+{ lib, inputs, outputs, hardware, home-manager, impermanence, nix-flatpak, nixpkgs, nixpkgs-stable, nur, ... }:
 let
   lib = nixpkgs.lib;
   system = "x86_64-linux";
@@ -38,6 +38,7 @@ in {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
+      impermanence.nixosModules.impermanence
       nix-flatpak.nixosModules.nix-flatpak
       nur.nixosModules.nur
     ];
@@ -60,6 +61,7 @@ in {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
+      impermanence.nixosModules.impermanence
       nix-flatpak.nixosModules.nix-flatpak
       nur.nixosModules.nur
     ];
@@ -81,7 +83,7 @@ in {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
-      #nixvim.nixosModules.nixvim
+      impermanence.nixosModules.impermanence
       nix-flatpak.nixosModules.nix-flatpak
       nur.nixosModules.nur
     ];

@@ -8,13 +8,10 @@
       url = "github:nix-community/home-manager";
     };
     #hyprland.url = "github:hyprwm/Hyprland";
+    impermanence.url = "github:nix-community/impermanence";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.11";
-    /*nixvim = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:nix-community/nixvim";
-    };*/
     nur.url = "github:nix-community/NUR";
   };
 
@@ -23,10 +20,10 @@
     hardware,
     home-manager,
     #hyprland,
+    impermanence,
     nix-flatpak,
     nixpkgs,
     nixpkgs-stable,
-    #nixvim,
     nur,
     ...
   } @ inputs:
@@ -43,7 +40,7 @@
     nixosConfigurations = (
       import ./hosts {
         inherit (nixpkgs) lib;
-        inherit inputs outputs hardware home-manager nix-flatpak nixpkgs nixpkgs-stable nur;
+        inherit inputs outputs hardware home-manager impermanence nix-flatpak nixpkgs nixpkgs-stable nur;
       }
     );
   };

@@ -265,7 +265,7 @@ gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,com
 
 
 # Create persistant folders for install files
-gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager,secrets,ssh,users,wireguard} /mnt/usr/local/bin /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
+gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users,wireguard} /mnt/usr/local/bin /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
 # Copy files to persist - be sure to remove these bind filesystems from potentially generated hardware-configuration.nix
 gum spin --show-output --title "Binding local directories to persistant directories..." -- mount -o bind /mnt/persist/etc/nixos /mnt/etc/nixos
 mount -o bind /mnt/persist/etc/nix /mnt/etc/nix
