@@ -27,9 +27,9 @@ RAM_SIZE=$(printf %0.f "$RAM_SIZE")
 
 # Show disks and their sizes
 gum style --foreground="$GREEN" "Eligible disks and their stats:"
-DISK_HEADER="$(lsblk -do name,size,mountpoints | grep 'NAME')"
+DISK_HEADER="$(lsblk -o name,size,mountpoints | grep 'NAME')"
 gum style --foreground="$WHITE" "$DISK_HEADER"
-lsblk -do name,size,mountpoints | grep 'nvme[0-9]n[0-9]\|sd[a-z]\|vd[a-z]\|hd[a-z]'
+lsblk -o name,size,mountpoints | grep 'nvme[0-9]n[0-9]\|sd[a-z]\|vd[a-z]\|hd[a-z]'
 printf '\n'
 
 # Put system disks into array
