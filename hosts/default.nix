@@ -33,7 +33,7 @@ in {
       ./common.nix
       ./FW13
 
-      hardware.nixosModules.framework-13-inch-7040-amd
+      hardware.nixosModules.framework-13-7040-amd
       home-manager.nixosModules.home-manager {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
