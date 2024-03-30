@@ -195,7 +195,6 @@ in {
 
     # Power profiles
     power-profiles-daemon.enable = true;
-    };
 
     # GPU performance - power_dpm_force_performance_level is auto by default
     udev.extraRules = ''
