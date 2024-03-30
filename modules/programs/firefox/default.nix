@@ -361,9 +361,9 @@ in {
             "browser.newtabpage.enabled" = false;
           # about:blank, about:home, custom URL
             # Set home to Nighttab extension
-            "browser.startup.homepage" = "moz-extension://6e52be8f-0de4-48fc-b276-8ee3e68d003c/index.html";
+            #"browser.startup.homepage" = "moz-extension://6e52be8f-0de4-48fc-b276-8ee3e68d003c/index.html";
           # 0=blank, 1=home, 2=last visited page, 3=resume previous session
-            "browser.startup.page" = 1;
+            #"browser.startup.page" = 1;
 
 
           ##########################################################
