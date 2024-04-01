@@ -51,12 +51,10 @@ while true; do
 done
 printf '\n'
 
-# SWAP - There currently appears to be a NixOS bug where btrfs mounting options
-# for compression are applied across all subvolumes, so swap cannot have compression
-# turned off & nodatacow/nodatasum turned on, which swap requires of a swapfile,
+# Prompt for swap location
 gum style --foreground="$PINK" "If enabled, swap will be setup to match the amount of system RAM (""$RAM_SIZE""GB)"
 while true; do
-  SWAP_TYPE=$(gum choose "Partition" "File" "None")
+  SWAP_TYPE=$(gum choose "File" "Partition" "None")
   if [ -z "$SWAP_TYPE" ]; then
     gum style --foreground="$RED" "A swap type must be selected!" && printf '\n'
   else
@@ -217,7 +215,7 @@ gum spin --show-output --title "Mounting root partition for subvolume creation..
 
 # Create subvolumes
 gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
-# Empty, read-only snapshot used to potentially restore / at boot
+# Empty, read-only snapshot used to potentially restore / at boot, if enabled
 gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
@@ -243,6 +241,19 @@ gum spin --show-output --title "Mounting /nix..." -- mount -o subvol=nix,compres
 gum spin --show-output --title "Mounting /persist..." -- mount -o subvol=persist,compress=zstd,noatime /dev/mapper/cryptroot /mnt/persist
 gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,compress=zstd,noatime /dev/mapper/cryptroot /mnt/var/log
 
+# Mount swap file/partition
+if [ "$SWAP_TYPE" == 'File' ]; then
+  mkdir -p /mnt/swap
+  gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
+  gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
+  # Swapfile hibernation variables to add to configuration
+  SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
+  SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
+elif [ "$SWAP_TYPE" == 'Partition' ]; then
+  gum spin --show-output --title "Setting swap partition as swap..." -- mkswap /dev/mapper/cryptswap
+  gum spin --show-output --title "Setting swap partition to on..." -- swapon /dev/mapper/cryptswap
+fi
+
 
 # Create persistant folders for install files
 gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users} /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
@@ -252,43 +263,12 @@ mount -o bind /mnt/persist/etc/nix /mnt/etc/nix
 mount -o bind /mnt/persist/etc/NetworkManager /mnt/etc/NetworkManager
 mount -o bind /mnt/persist/etc/ssh /mnt/etc/ssh
 
-
-# Activate swap partition/file
-# Set partition as swap - set partition on
-if [ "$SWAP_TYPE" == 'Partition' ]; then
-  gum spin --show-output --title "Setting swap partition as swap..." -- mkswap /dev/mapper/cryptswap
-  gum spin --show-output --title "Setting swap partition to on..." -- swapon /dev/mapper/cryptswap
-# Mount subvolume - set swapfile on
-elif [ "$SWAP_TYPE" == 'File' ]; then
-  mkdir -p /mnt/swap
-  gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
-  gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
-
-  # Swapfile hibernation fix variables to add to configuration
-  SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
-  SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
-  gum style --foreground="$YELLOW" "Be sure to add the following to your configuration or else swap won't function properly!"
-  gum style --foreground="$WHITE" 'boot.kernelParams = [ "resume=UUID='"$SWAP_UUID"'" "resume_offset='"$SWAP_OFFSET"'" ];'
-  gum style --foreground="$WHITE" 'boot.resumeDevice = "/dev/disk/by-uuid/'"$SWAP_UUID"'";'
-  gum style --foreground="$WHITE" 'swapDevices = [ { device = "/swap/swapfile"; size = "'"$RAM_SIZE"' * 1024"; } ];'
-
-  {
-    echo 'boot.kernelParams = [ "resume=UUID='"$SWAP_UUID"'" "resume_offset='"$SWAP_OFFSET"'" ];'
-    echo 'boot.resumeDevice = "/dev/disk/by-uuid/'"$SWAP_UUID"'";'
-    echo 'swapDevices = [ { device = "/swap/swapfile"; size = '"$RAM_SIZE"' * 1024; } ];'
-  } >> /mnt/persist/backups/swap_config.txt
-  gum style --foreground="$YELLOW" "These commands have also been exported to '/persist/backups/swap_config.txt'."
-  sleep 5
-fi
-
-
 # Export cryptkey/root LUKS header files for backup
 gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode --header-backup-file /mnt/persist/backups/cryptkey_header.img luksHeaderBackup /dev/disk/by-partlabel/cryptkey
 gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode --header-backup-file /mnt/persist/backups/cryptroot_header.img luksHeaderBackup /dev/disk/by-partlabel/cryptroot
 gum style --foreground="$YELLOW" "LUKS headers exported to '/persist/backups'!"
 find /mnt/persist/backups/ -name "*.img"
 sleep 3
-
 
 # Set user password
 gum spin --show-output --title "Creating password file for $NIX_USER..." -- echo -n "$NIX_PASS" | mkpasswd --method=SHA-512 --stdin > /mnt/persist/etc/users/"$NIX_USER"
@@ -309,16 +289,13 @@ printf '\n'
 gum style --foreground="$GREEN" "Formatting / pre-installation setup complete!"
 printf '\n'
 
-
-# Install NixOS
+# Prompt for system hostname from flake
 gum style --foreground="$WHITE" "Once this system's hostname has been chosen, installation will begin."
-
 mapfile -t HOSTS < <(grep "hostName" ./hosts/default.nix | cut -d '"' -f2)
 if (( ${#HOSTS[@]} == 0 )); then
   gum style --foreground="$YELLOW" "No hostnames were declared in the flake! Quitting..." >&2
   exit 1
 fi
-
 while true; do
   gum style --foreground="$PINK" "Select a host to deploy:"
   NIX_HOST=$(gum choose "${HOSTS[@]}")
@@ -330,6 +307,34 @@ while true; do
 done
 printf '\n'
 
+# Remove previous swap.nix repo file for a fresh slate
+if [ -f /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
+  rm /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+fi
+
+# Create swap.nix file in host's directory
+if [ "$SWAP_TYPE" == 'File' ]; then
+  {
+    echo '{ config, ... }:'
+    echo '{'
+    echo '  boot.kernelParams = [ "resume=UUID='"$SWAP_UUID"'" "resume_offset='"$SWAP_OFFSET"'" ];'
+    echo '  boot.resumeDevice = "/dev/disk/by-uuid/'"$SWAP_UUID"'";'
+    echo '  swapDevices = [ { device = "/swap/swapfile"; size = '"$RAM_SIZE"' * 1024; } ];'
+    echo '}'
+  } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+elif [ "$SWAP_TYPE" == 'Partition' ]; then
+  {
+    echo '{ config, ... }:'
+    echo '{'
+    echo '  boot.initrd.luks.devices."cryptswap" = { device = "/dev/disk/by-partlabel/cryptswap"; keyFile = "/dev/mapper/cryptkey"; keyFileSize = 8192; };'
+    echo '  boot.resumeDevice = "/dev/mapper/cryptswap";'
+    echo '  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];'
+    echo '}'
+  } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+fi
+
+
+# Install NixOS
 gum spin --show-output --title "Installing NixOS..." -- nixos-install --no-root-passwd --flake /mnt/persist/etc/nixos#"$NIX_HOST"
 printf '\n'
 

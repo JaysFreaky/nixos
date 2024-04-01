@@ -17,7 +17,8 @@ let
     echo $DRM_PERF_LEVEL > /sys/class/drm/card1/device/power_dpm_force_performance_level
   '';
 in {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
+    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -239,17 +240,13 @@ in {
     #kernelPackages = pkgs.linuxPackages_6_1;
     kernelPackages = pkgs.linuxPackages_latest;
 
-    # amd_iommu - fixes VP9/VAAPI video glitches
-    # amd_pstate - enables power profiles daemon
-    # amdgpu.sg_display - fixes white screen / glitches
-    # rtc_cmos.use_acpi_alarm - fixes waking after 5 minutes - remove at kernel 6.8?
     kernelParams = [
-      "amd_iommu=off"
-      "amd_pstate=active"
-      "amdgpu.sg_display=0"
-      "mem_sleep_default=deep"
+      "amd_iommu=off"  # fixes VP9/VAAPI video glitches
+      "amd_pstate=active"  # enables power profiles daemon
+      "amdgpu.sg_display=0"  # fixes white screen / glitches
+      "mem_sleep_default=deep"  # hibernation
       #"quiet"
-      "rtc_cmos.use_acpi_alarm=1"
+      "rtc_cmos.use_acpi_alarm=1"  # fixes waking after 5 minutes - remove at kernel 6.8?
     ];
    
     kernelPatches = [
@@ -259,7 +256,6 @@ in {
       }
     ];
 
-    resumeDevice = "/dev/mapper/cryptswap";
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
@@ -277,12 +273,6 @@ in {
 
       luks.devices = {
         "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
-
-        "cryptswap" = {
-          device = "/dev/disk/by-partlabel/cryptswap";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
 
         "cryptroot" = {
           # SSD trim
@@ -360,7 +350,7 @@ in {
       # Use static DNS from above instead of DHCP
       #dns = none;
 
-      # Faster wifi on AMD
+      # Faster wifi on AMD models
       wifi.backend = "iwd";
       wifi.powersave = false;
     };
@@ -368,7 +358,7 @@ in {
 
 
   ##########################################################
-  # Filesystems / Swap
+  # Filesystems
   ##########################################################
   fileSystems = {
     "/" = {
@@ -408,7 +398,5 @@ in {
       neededForBoot = true;
     };
   };
-
-  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];
 }
 

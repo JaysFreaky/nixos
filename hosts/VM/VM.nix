@@ -1,7 +1,8 @@
 { config, host, lib, modulesPath, pkgs, vars, ... }:
 
 {
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ] ++
+    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -85,23 +86,24 @@
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "quiet" ];
-    resumeDevice = "/dev/mapper/cryptswap";
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [ "xhci_pci" "ahci" "virtio_pci" "sr_mod" "virtio_blk" "aesni_intel" "cryptd" ];
+      availableKernelModules = [
+        "aesni_intel"
+        "ahci"
+        "cryptd"
+        "sr_mod"
+        "virtio_blk"
+        "virtio_pci"
+        "xhci_pci"
+      ];
       kernelModules = [ ];
       # Systemd support for booting
       systemd.enable = true;
 
       luks.devices = {
         "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
-
-        "cryptswap" = {
-          device = "/dev/disk/by-partlabel/cryptswap";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
 
         "cryptroot" = {
           # SSD trim
@@ -160,7 +162,7 @@
 
 
   ##########################################################
-  # Filesystems / Swap
+  # Filesystems
   ##########################################################
   fileSystems = {
     "/" = {
@@ -200,7 +202,5 @@
       neededForBoot = true;
     };
   };
-
-  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];
 }
 

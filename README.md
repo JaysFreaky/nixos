@@ -1,12 +1,12 @@
 # NixOS Flake
-This is my flake for an immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and you have the option to use either TmpFS or BTRFS snapshots for this setup. It utilizes environment.etc & systemd.tmpfiles.rules to persist /etc (configurations, ssh, etc) and /var (lib, log). I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like that is the best, most complete way of fully utilizing the system. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
+This is my flake for an immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and uses the BTRFS filesystem with optional boot rollbacks to a freshly-installed root snapshot. It utilizes environment.etc to persist /etc files & the [impermanence](https://github.com/nix-community/impermanence) addon for both /etc and /var/lib sub-directories. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the laptop. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
 
-## Installation
 ---
+## Installation
+
 While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
 
 * Scans and selects disk devices to prepare for installation
-* Select either TmpFS or Snapshots (if impermanance isn't desired, snapshots can be selected and not include the rollback commands in your configuration.)
 * Create either a swap partition or swap file, based on system RAM, or no swap
 * Prompts what user name is used in the flake, which is used for the password file name
 * Prompts to set the user password and then generates a hashed password file
@@ -25,8 +25,16 @@ Now for the fun part! To start the installation script from within the NixOS ins
 nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup
 ```
 
-## Breakdown
+**Swap file hibernation fix**
+
+When using a swap file instead of a partition, there's a bug where the offset doesn't get calculated correctly. Once you're logged into your system, run the following command. Then edit /hosts/<system>/swap.nix, replacing resume_offset's value with the one that was just generated. Save the file, run a rebuild command, and then hibernation will work.
+
+```bash
+sudo btrfs inspect-internal map-swapfile -r /swap/swapfile
+```
+
 ---
+## Breakdown
 The main flake.nix has your typical inputs/outputs declaration, as well as the setup package that is used for formatting/preparing/installing the system.
 
 Instead of your typical nixosConfiguration(s) being declared here, the /hosts directory is directly imported, which is where the declarations live.
@@ -36,7 +44,7 @@ Inside /hosts:
 
 * default.nix is where all the typical systems/hostnames are declared. There are also some custom variables that are established, like: username, user's name, and which terminal/editor will be used.
 * common.nix is the base system configuration that is deployed with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
-* Each system will then have its own directory with their configuration file(s) inside of it.
+* Each system will then have its own directory with their configuration file(s) inside of it. If swap was setup during install, there will also be a swap.nix file generated inside the deployed system's directory.
 
 ### Modules
 This is where all modules imported via directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
@@ -58,8 +66,8 @@ Inside /packages/setup:
 * default.nix declares all the packages that will be used by the script and creates a shell application that reads from setup.sh
 * setup.sh is the actual script and is read by default.nix
 
-## Credits
 ---
+## Credits
 The actual flake itself was based off of [Matthias Benaets' config](https://github.com/MatthiasBenaets/nixos-config). When I was first looking into converting my config into a flake, a lot of the flakes I came across would use a separate system and home file for the same module. I finally came across Matthia's config, and after looking through their repo, I decided to replicate their setup. I liked the idea of a base configuration.nix for all hosts, and most importantly, modules declared in a single file, instead of spread throughout the repo.
 
 The installation script was based off of [Hoverbear-Consulting's unsafe-bootstrap](https://github.com/Hoverbear-Consulting/flake/tree/root/packages/unsafe-bootstrap). My original script was your typical bash script that simply partitioned, encrypted, and formatted the drive. Then I came across their method, and I really liked the idea of being able to call the script as a flake package, as well as the use of Gum to make the script look better and be more interactive. I converted all my typical echos and reads into Gum's way of doing things. Over time, I modified and added to it from being a simple formatting script into a full-blown install script.

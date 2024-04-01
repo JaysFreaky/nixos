@@ -2,7 +2,8 @@
 let
   scale = 1.25;
 in {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
+    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
 
   ##########################################################
@@ -79,7 +80,7 @@ in {
 
 
   ##########################################################
-  # Filesystems / Swap
+  # Filesystems
   ##########################################################
   fileSystems = {
     "/" = {

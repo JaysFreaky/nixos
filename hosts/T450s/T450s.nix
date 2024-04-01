@@ -1,7 +1,8 @@
 { config, host, lib, modulesPath, pkgs, vars, ... }:
 
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
+    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -52,12 +53,12 @@
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
-        # Done in nixos-hardware t450s - not needed?
-        #intel-media-driver
-        #intel-vaapi-driver
-        #vaapiIntel
+        # Imported through nixos-hardware/lenovo/T450s from nixos-hardware/common/gpu/intel
       ];
-      extraPackages32 = [ pkgs.driversi686Linux.intel-media-driver ];
+      extraPackages32 = with pkgs; [
+        driversi686Linux.intel-media-driver
+        driversi686Linux.intel-vaapi-driver
+      ];
     };
   };
 
@@ -84,22 +85,27 @@
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "quiet" ];
-    resumeDevice = "/dev/mapper/cryptswap";
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "sd_mod" "rtsx_pci_sdmmc" "usb_storage" "aesni_intel" "cryptd" ];
-      kernelModules = [ "dm-snapshot" "nfs" ];
+      availableKernelModules = [
+        "aesni_intel"
+        "ahci"
+        "cryptd"
+        "ehci_pci"
+        "rtsx_pci_sdmmc"
+        "sd_mod"
+        "usb_storage"
+        "xhci_pci"
+      ];
+      kernelModules = [
+        "dm-snapshot"
+        "nfs"
+      ];
       systemd.enable = true;
 
       luks.devices = {
         "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
-
-        "cryptswap" = {
-          device = "/dev/disk/by-partlabel/cryptswap";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
 
         "cryptroot" = {
           # SSD trim
@@ -160,7 +166,7 @@
 
 
   ##########################################################
-  # Filesystems / Swap
+  # Filesystems
   ##########################################################
   fileSystems = {
     "/" = {
@@ -206,6 +212,4 @@
       options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
     };
   };
-
-  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];
 }
