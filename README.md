@@ -22,7 +22,7 @@ Now for the fun part! To start the installation script from within the NixOS ins
 
 `nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup`
 
-###Swap file hibernation fix
+### Swap file hibernation fix
 When using a swap file instead of a partition, there's a bug where the offset doesn't get initially calculated correctly. Once you've logged into your system for the first time, run the following command:
 
 `sudo btrfs inspect-internal map-swapfile -r /swap/swapfile`
