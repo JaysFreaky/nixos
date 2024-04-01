@@ -1,6 +1,9 @@
 { config, lib, pkgs, vars, ... }:
 with lib;
-{
+let
+  # https://github.com/alacritty/alacritty-theme
+  theme = ./tokyo-night-storm.toml;
+in {
   options.alacritty.enable = mkOption {
     default = false;
     type = types.bool;
@@ -14,10 +17,9 @@ with lib;
         settings = {
           # Import Pywal wallpaper color theming
           #import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
-          # https://github.com/alacritty/alacritty-theme
-          import = [ "/home/${vars.user}/.config/alacritty/tokyo-night-storm.toml" ];
+          import = [ "/home/${vars.user}/.config/alacritty/theme.toml" ];
 
-          mouse.hide_when_typing = true;
+          mouse.hide_when_typing = false;
           selection.save_to_clipboard = true;
 
           font = {
@@ -38,7 +40,7 @@ with lib;
       # Create alacritty pywal template
       xdg.configFile."wal/templates/colors-alacritty.toml".source = ./colors-alacritty.toml;
       # Create theme color toml
-      xdg.configFile."alacritty/tokyo-night-storm.toml".source = ./tokyo-night-storm.toml;
+      xdg.configFile."alacritty/theme.toml".source = theme;
     };
   };
 }
