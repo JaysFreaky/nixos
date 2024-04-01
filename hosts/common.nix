@@ -155,7 +155,7 @@ with lib;
     btrfs.autoScrub = {
       enable = true;
       interval = "weekly";
-      fileSystems = [ "/home" "/nix" "/persist" "/var/log" ];
+      fileSystems = [ "/" "/home" "/nix" "/persist" "/var/log" ];
     };
 
     # Enable SSD trim

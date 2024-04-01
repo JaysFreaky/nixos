@@ -16,10 +16,10 @@
   # Whichever terminal is defined in flake.nix is auto-enabled
   #flatpak.enable = true;
 
-  # Root persistance - tmpfs or snapshot & rollback
-  # Can enable snapshot without rollback for a standard BTRFS install
-  # (persistance is enabled regardless of these being enabled)
-  tmpfs.enable = true;
+  # Root persistance - rollback
+  # Restores "/" on each boot to root-blank btrfs snapshot
+  # (partial persistance is enabled regardless of this being enabled - persist.nix)
+  rollback.enable = false;
 
 
   ##########################################################
@@ -163,6 +163,12 @@
   # Filesystems / Swap
   ##########################################################
   fileSystems = {
+    "/" = {
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=root" "compress=zstd" "noatime" ];
+    };
+
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";

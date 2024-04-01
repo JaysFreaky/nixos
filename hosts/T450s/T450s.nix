@@ -14,10 +14,10 @@
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
 
-  # Root persistance - tmpfs or snapshot & rollback
-  # Can enable snapshot without rollback for a standard BTRFS install
-  # (persistance is enabled regardless of these being enabled)
-  tmpfs.enable = true;
+  # Root persistance - rollback
+  # Restores "/" on each boot to root-blank btrfs snapshot
+  # (partial persistance is enabled regardless of this being enabled - persist.nix)
+  rollback.enable = false;
 
 
   ##########################################################
@@ -163,6 +163,12 @@
   # Filesystems / Swap
   ##########################################################
   fileSystems = {
+    "/" = {
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [ "subvol=root" "compress=zstd" "noatime" ];
+    };
+
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
@@ -194,7 +200,7 @@
       neededForBoot = true;
     };
 
-    "/mnt/nas" = {
+    "/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
       options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];

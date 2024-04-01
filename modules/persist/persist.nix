@@ -20,7 +20,6 @@
       directories = [
         "/etc/NetworkManager"
         "/etc/nixos"
-        "/usr/local/bin"
         "/var/lib/bluetooth"
         "/var/lib/flatpak"
         "/var/lib/NetworkManager"

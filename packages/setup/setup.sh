@@ -51,19 +51,6 @@ while true; do
 done
 printf '\n'
 
-# BTRFS - TmpFS or Snapshot
-gum style "If you want a regular BTRFS install, choose 'Snapshot' and comment out the rollback commands via your configuration."
-gum style --foreground="$PINK" "Which BTRFS implementation is defined in NixOS?:"
-while true; do
-  ROOT_TYPE=$(gum choose "TmpFS" "Snapshot")
-  if [ -z "$ROOT_TYPE" ]; then
-    gum style --foreground="$RED" "An implementation type must be selected!" && printf '\n'
-  else
-    break
-  fi;
-done
-printf '\n'
-
 # SWAP - There currently appears to be a NixOS bug where btrfs mounting options
 # for compression are applied across all subvolumes, so swap cannot have compression
 # turned off & nodatacow/nodatasum turned on, which swap requires of a swapfile,
@@ -229,12 +216,9 @@ mkdir -p /mnt
 gum spin --show-output --title "Mounting root partition for subvolume creation..." -- mount -t btrfs /dev/mapper/cryptroot /mnt
 
 # Create subvolumes
-if [ "$ROOT_TYPE" == 'Snapshot' ]; then
-  # / is restored via snapshot at every boot
-  gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
-  # Empty, read-only snapshot used to restore / at boot
-  gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
-fi
+gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
+# Empty, read-only snapshot used to potentially restore / at boot
+gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
   /mnt/nix \
@@ -251,11 +235,7 @@ gum spin --show-output --title "Unmounting root partition..." -- umount /mnt
 printf '\n'
 
 # Mount subvolumes
-if [ "$ROOT_TYPE" == 'TmpFS' ]; then
-  gum spin --show-output --title "Mounting / as TmpFS..." -- mount -t tmpfs -o mode=755 none /mnt
-else
-  gum spin --show-output --title "Mounting / as root subvolume..." -- mount -o subvol=root,compress=zstd,noatime /dev/mapper/cryptroot /mnt
-fi
+gum spin --show-output --title "Mounting /..." -- mount -o subvol=root,compress=zstd,noatime /dev/mapper/cryptroot /mnt
 mkdir -p /mnt/{boot,home,nix,persist,var/log}
 gum spin --show-output --title "Mounting /boot to boot partition..." -- mount /dev/disk/by-partlabel/boot /mnt/boot
 gum spin --show-output --title "Mounting /home..." -- mount -o subvol=home,compress=zstd /dev/mapper/cryptroot /mnt/home
@@ -265,7 +245,7 @@ gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,com
 
 
 # Create persistant folders for install files
-gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users,wireguard} /mnt/usr/local/bin /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
+gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users} /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
 # Copy files to persist - be sure to remove these bind filesystems from potentially generated hardware-configuration.nix
 gum spin --show-output --title "Binding local directories to persistant directories..." -- mount -o bind /mnt/persist/etc/nixos /mnt/etc/nixos
 mount -o bind /mnt/persist/etc/nix /mnt/etc/nix
