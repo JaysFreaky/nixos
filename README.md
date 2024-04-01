@@ -3,7 +3,6 @@ This is my flake for an immutable NixOS installation. It was inspired by [Graham
 
 ---
 ## Installation
-
 While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
 
 * Scans and selects disk devices to prepare for installation
@@ -21,17 +20,14 @@ While you can clone this repo and build on your system, I created a guided insta
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
 
-```nix
-nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup
-```
+`nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup`
 
-**Swap file hibernation fix**
+###Swap file hibernation fix
+When using a swap file instead of a partition, there's a bug where the offset doesn't get initially calculated correctly. Once you've logged into your system for the first time, run the following command:
 
-When using a swap file instead of a partition, there's a bug where the offset doesn't get calculated correctly. Once you're logged into your system, run the following command. Then edit /hosts/<system>/swap.nix, replacing resume_offset's value with the one that was just generated. Save the file, run a rebuild command, and then hibernation will work.
+`sudo btrfs inspect-internal map-swapfile -r /swap/swapfile`
 
-```bash
-sudo btrfs inspect-internal map-swapfile -r /swap/swapfile
-```
+Then edit /hosts/hostName/swap.nix, replacing resume_offset's value with the newly-generated value. Save the file, run a rebuild command, and then hibernation should work.
 
 ---
 ## Breakdown
