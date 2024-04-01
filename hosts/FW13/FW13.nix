@@ -14,7 +14,7 @@ let
     fi
 
     # Set drm performance level
-    echo $DRM_PERF_LEVEL > /sys/class/drm/card0/device/power_dpm_force_performance_level
+    echo $DRM_PERF_LEVEL > /sys/class/drm/card1/device/power_dpm_force_performance_level
   '';
 in {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
@@ -51,6 +51,7 @@ in {
       #thunderbird        # Email client
       #protonmail-bridge  # Allows Thunderbird to connect to Proton
       #protonmail-bridge-gui
+      protonmail-desktop
 
     # Framework Hardware
       dmidecode           # Firmware | 'dmidecode -s bios-version'
@@ -67,7 +68,7 @@ in {
 
     variables = {
       # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card0";
+      MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
 
@@ -75,34 +76,25 @@ in {
   ##########################################################
   # Home Manager Options
   ##########################################################
-  home-manager.users.${vars.user} = { lib, ... }: {
+  home-manager.users.${vars.user} = { config, lib, ... }: {
     dconf.settings = {
       "org/gnome/shell" = {
         enabled-extensions = [
           "Battery-Health-Charging@maniacx.github.com"
-            # Not sure if these two are needed with systray enabled
-          #"proton-vpn@fthx"
-          #"proton-bridge@fthx"
         ];
       };
       "org/gnome/shell/extensions/Battery-Health-Charging" = {
         amend-power-indicator = true;
+        bal-end-threshold = 85;
         charging-mode = "bal";
-        #charging-mode2 = "bal";
-        #ctl-path = "/usr/local/bin/batteryhealthchargingctl-jays";
-        icon-style-type = 2;
+        current-bal-end-threshold = 85;
         indicator-position = 4;
-        indicator-position-max = 16;
-        #polkit-status = "installed";
-        #show-battery-panel2 = true;
         show-system-indicator = false;
       };
     };
 
     home.packages = with pkgs.gnomeExtensions; [
       battery-health-charging
-      #proton-bridge-button
-      #proton-vpn-button
     ];
 
     # https://github.com/ceiphr/ee-framework-presets
@@ -111,7 +103,11 @@ in {
       preset = "philonmetal";
     };
 
-    xdg.configFile."easyeffects/output/philonmetal.json".source = ./philonmetal.json;
+    xdg.configFile = {
+      # Minimize on-start not yet integrated
+      #"autostart/protonvpn-app.desktop".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/applications/protonvpn-app.desktop";
+      "easyeffects/output/philonmetal.json".source = ./philonmetal.json;
+    };
   };
 
 
@@ -181,7 +177,10 @@ in {
     # Power management
     upower.enable = true;
 
-    xserver.videoDrivers = [ "amdgpu" "modesetting" ];
+    xserver.videoDrivers = [
+      "amdgpu"
+      "modesetting"
+    ];
 
     # Suspend-then-hibernate everywhere
     logind = {
@@ -200,7 +199,6 @@ in {
     udev.extraRules = ''
       SUBSYSTEM=="power_supply" RUN+="${set_dpm}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
     '';
-      #SUBSYSTEM=="power_supply" RUN+="${writeShellScriptBin "set_dpm_perf_level" (builtins.readFile ./set_dpm_perf_level.sh) %E{POWER_SUPPLY_ONLINE}}"
   };
 
   # Sleep for 30m then hibernate
@@ -215,11 +213,11 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = true;
-      theme = "nixos-bgrt";
-      themePackages = [ pkgs.nixos-bgrt-plymouth ];
-    };
+    #plymouth = {
+    #  enable = true;
+    #  theme = "nixos-bgrt";
+    #  themePackages = [ pkgs.nixos-bgrt-plymouth ];
+    #};
 
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
@@ -232,7 +230,10 @@ in {
       "vm.swappiness" = lib.mkDefault 0;
     };
     kernelModules = [ "kvm-amd" ];
-    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    extraModulePackages = with config.boot.kernelPackages; [
+      framework-laptop-kmod
+      zenpower
+    ];
 
     # Previous stable kernel
     #kernelPackages = pkgs.linuxPackages_6_1;
@@ -242,13 +243,34 @@ in {
     # amd_pstate - enables power profiles daemon
     # amdgpu.sg_display - fixes white screen / glitches
     # rtc_cmos.use_acpi_alarm - fixes waking after 5 minutes - remove at kernel 6.8?
-    kernelParams = [ "amd_iommu=off" "amd_pstate=active" "amdgpu.sg_display=0" "mem_sleep_default=deep" "quiet" "rtc_cmos.use_acpi_alarm=1" ];
+    kernelParams = [
+      "amd_iommu=off"
+      "amd_pstate=active"
+      "amdgpu.sg_display=0"
+      "mem_sleep_default=deep"
+      #"quiet"
+      "rtc_cmos.use_acpi_alarm=1"
+    ];
+   
+    kernelPatches = [
+      {
+        name = "fw-amd-ec";
+        patch = ./fw-amd-ec.patch;
+      }
+    ];
 
     resumeDevice = "/dev/mapper/cryptswap";
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [ "cryptd" "nvme" "sd_mod" "thunderbolt" "usb_storage" "xhci_pci" ];
+      availableKernelModules = [
+        "cryptd"
+        "nvme"
+        "sd_mod"
+        "thunderbolt"
+        "usb_storage"
+        "xhci_pci"
+      ];
       kernelModules = [ "amdgpu" ];
       # Systemd support for booting
       systemd.enable = true;
@@ -322,11 +344,11 @@ in {
 
     interfaces = {
       # Ethernet adapter left-rear USB port
-      enp195s0f4u1c2.useDHCP = lib.mkDefault true;
+      #enp195s0f4u1c2.useDHCP = lib.mkDefault true;
       # Ethernet adapter right-rear USB port
-      enp195s0f3u1c2.useDHCP = lib.mkDefault true;
+      #enp195s0f3u1c2.useDHCP = lib.mkDefault true;
       # Wireless
-      wlp1s0.useDHCP = lib.mkDefault true;
+      #wlp1s0.useDHCP = lib.mkDefault true;
     };
 
     # Static DNS
