@@ -215,20 +215,16 @@ gum spin --show-output --title "Mounting root partition for subvolume creation..
 
 # Create subvolumes
 gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
-# Empty, read-only snapshot used to potentially restore / at boot, if enabled
-gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
   /mnt/nix \
   /mnt/persist \
   /mnt/log
 if [ "$SWAP_TYPE" == 'File' ]; then
-  # Swap file location
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
-  # No copy-on-write
-  gum spin --show-output --title "Disabling copy-on-write for swap subvolume..." -- chattr -R +C /mnt/swap
-  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"g --uuid clear /mnt/swap/swapfile
 fi
+# Empty, read-only snapshot used to potentially restore / at boot, if enabled
+gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
 gum spin --show-output --title "Unmounting root partition..." -- umount /mnt
 printf '\n'
 
@@ -244,11 +240,17 @@ gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,com
 # Mount swap file/partition
 if [ "$SWAP_TYPE" == 'File' ]; then
   mkdir -p /mnt/swap
+  # BTRFS subvolumes currently inherit options from "/", so these options do nothing
   gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
-  gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
+  # Bug where offset doesn't get calculated correctly on first file
+  btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
+  rm -rf /mnt/swap/swapfile
+  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
+  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
   # Swapfile hibernation variables to add to configuration
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
   SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
+  gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
 elif [ "$SWAP_TYPE" == 'Partition' ]; then
   gum spin --show-output --title "Setting swap partition as swap..." -- mkswap /dev/mapper/cryptswap
   gum spin --show-output --title "Setting swap partition to on..." -- swapon /dev/mapper/cryptswap
@@ -317,9 +319,10 @@ if [ "$SWAP_TYPE" == 'File' ]; then
   {
     echo '{ config, ... }:'
     echo '{'
-    echo '  boot.kernelParams = [ "resume=UUID='"$SWAP_UUID"'" "resume_offset='"$SWAP_OFFSET"'" ];'
+    echo '  boot.kernelParams = [ "resume_offset='"$SWAP_OFFSET"'" ];'
     echo '  boot.resumeDevice = "/dev/disk/by-uuid/'"$SWAP_UUID"'";'
-    echo '  swapDevices = [ { device = "/swap/swapfile"; size = '"$RAM_SIZE"' * 1024; } ];'
+    echo '  fileSystems."/swap" = { device = "/dev/mapper/cryptroot"; fsType = "btrfs"; options = [ "subvol=swap" "compress=no" "noatime" "nodatacow" "nodatasum" ]; };'
+    echo '  swapDevices = [ { device = "/swap/swapfile"; } ];'
     echo '}'
   } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 elif [ "$SWAP_TYPE" == 'Partition' ]; then

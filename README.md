@@ -20,14 +20,7 @@ While you can clone this repo and build on your system, I created a guided insta
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
 
-`nix --experimental-features 'nix-command flakes' run github:JaysFreaky/nixos#setup`
-
-### Swap file hibernation fix
-When using a swap file instead of a partition, there's a bug where the offset doesn't get initially calculated correctly. Once you've logged into your system for the first time, run the following command:
-
-`sudo btrfs inspect-internal map-swapfile -r /swap/swapfile`
-
-Then edit /hosts/hostName/swap.nix, replacing resume_offset's value with the newly-generated value. Save the file, run a rebuild command, and then hibernation should work.
+`nix run github:JaysFreaky/nixos#setup --experimental-features "nix-command flakes""`
 
 ---
 ## Breakdown
