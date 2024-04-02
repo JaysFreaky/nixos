@@ -346,7 +346,7 @@ in {
           workspace-active-tile-toggle = [ "<Shift><Super>w" ];
         };
         "org/gnome/shell/extensions/just-perfection" = {
-          notification-banner-position = 2;
+          notification-banner-position = 1;
           panel-button-padding-size = 0;
           panel-indicator-padding-size = 0;
           startup-status = 0;
