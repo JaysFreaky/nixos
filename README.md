@@ -20,7 +20,7 @@ While you can clone this repo and build on your system, I created a guided insta
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
 
-`nix run github:JaysFreaky/nixos#setup --experimental-features "nix-command flakes""`
+`nix run github:JaysFreaky/nixos#setup --experimental-features "nix-command flakes"`
 
 ---
 ## Breakdown
