@@ -5,7 +5,6 @@ in {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
     lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
-
   ##########################################################
   # Custom Options
   ##########################################################
@@ -34,7 +33,7 @@ in {
 
     variables = {
       # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card0";
+      MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
 
@@ -58,6 +57,8 @@ in {
   # Hardware
   ##########################################################
   hardware = {
+    cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
     openrazer = {
       enable = true;
       users = [ "${vars.user}" ];
@@ -72,11 +73,75 @@ in {
   ##########################################################
   # Boot / Encryption
   ##########################################################
+  boot = {
+    kernel.sysctl = {
+      # Disable IPv6
+      "net.ipv6.conf.all.disable_ipv6" = true;
+      # Prioritize swap for hibernation only
+      "vm.swappiness" = lib.mkDefault 0;
+    };
+    kernelModules = [ "kvm-amd" ];
+    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [ ];
+    supportedFilesystems = [ "btrfs" ];
+
+    initrd = {
+      availableKernelModules = [
+        "ahci"
+        "nvme"
+        "sd_mod"
+        "usb_storage"
+        "usbhid"
+        "xhci_pci"
+      ];
+      kernelModules = [ ];
+      # Systemd support for booting
+      systemd.enable = true;
+    };
+
+    loader = {
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
+
+      grub = {
+        enable = false;
+        configurationLimit = 5;
+        device = "nodev";
+        efiSupport = true;
+        enableCryptodisk = true;
+        useOSProber = true;
+        users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
+      };
+
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 5;
+        # Console resolution
+        consoleMode = "auto";
+        memtest86.enable = true;
+      };
+    };
+  };
 
 
   ##########################################################
   # Network
   ##########################################################
+  networking = with host; {
+    # Currently broken, so using boot.kernel.sysctl workaround
+    enableIPv6 = false;
+    hostName = hostName;
+    useDHCP = lib.mkDefault true;
+    networkmanager.enable = true;
+
+    interfaces = {
+      enp7s0.useDHCP = lib.mkDefault true;
+      wlp6s0.useDHCP = false;
+    };
+  };
 
 
   ##########################################################
@@ -100,6 +165,18 @@ in {
       options = [ "subvol=home" "compress=zstd" ];
     };
 
+    "/home/${vars.user}/Games/Steam" = {
+      device = "/dev/nvme1n1p1";
+      fsType = "ext4";
+      options = [ "noatime" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
+    };
+
+    "/nas" = {
+      device = "10.0.10.10:/mnt/user";
+      fsType = "nfs";
+      options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
+    };
+
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
@@ -118,12 +195,6 @@ in {
       fsType = "btrfs";
       options = [ "subvol=log" "compress=zstd" "noatime"];
       neededForBoot = true;
-    };
-
-    "/nas" = {
-      device = "10.0.10.10:/mnt/user";
-      fsType = "nfs";
-      options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
     };
   };
 }
