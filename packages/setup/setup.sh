@@ -165,6 +165,7 @@ gum spin --show-output --title "Creating LUKS key partition..." -- parted --alig
 
 # Create (optional) swap and/or root partition(s)
 # Add 1056 for the 1024MiB boot/32MiB LUKS partitions
+# Leave remaining 10% of disk space free for SSD health
 SWAP_SIZE=$((RAM_SIZE * 1024 + 1056))
 if [ "$SWAP_TYPE" == 'Partition' ]; then
   gum spin --show-output --title "Creating LUKS swap & root partitions..." -- parted --align=opt --script "$DISK" \
@@ -174,9 +175,6 @@ if [ "$SWAP_TYPE" == 'Partition' ]; then
 else
   gum spin --show-output --title "Creating LUKS root partition..." -- parted --align=opt --script "$DISK" mkpart "cryptroot" btrfs 1056MiB 90%
 fi
-
-# Create 10% reserved partition for SSD health - never mounted
-gum spin --show-output --title "Creating reserved partition..." -- parted --align=opt --script "$DISK" mkpart "reserved" 90% 100%
 
 ##########################################################
 # Encrypt key partition - 16MiB remaining; max keysize is 8192KiB (8MiB)
