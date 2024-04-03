@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -e
 BLUE="#00FFFF"
 GREEN="#00FF00"
@@ -149,7 +148,7 @@ done
 gum confirm "Are you ready to proceed with formatting?" --default=false || (echo "Quitting..." && exit 1)
 printf '\n'
 
-
+##########################################################
 # Wipe disk / create GPT table
 gum spin --show-output --title "Wiping disk..." -- wipefs --all --force "$DISK"
 gum spin --show-output --title "Updating partition layout..." -- partprobe "$DISK" || true
@@ -161,7 +160,7 @@ gum spin --show-output --title "Creating boot partition..." -- parted --align=op
   set 1 esp on
 gum spin --show-output --title "Formatting boot partition..." -- mkfs.vfat -F 32 /dev/disk/by-partlabel/boot
 
-# Create 32MiB key partition
+# Create 32MiB key partition; first 16MiB are LUKS header data
 gum spin --show-output --title "Creating LUKS key partition..." -- parted --align=opt --script "$DISK" mkpart "cryptkey" 1024MiB 1056MiB
 
 # Create (optional) swap and/or root partition(s)
@@ -179,41 +178,34 @@ fi
 # Create 10% reserved partition for SSD health - never mounted
 gum spin --show-output --title "Creating reserved partition..." -- parted --align=opt --script "$DISK" mkpart "reserved" 90% 100%
 
-
-# Encrypt key partition
+##########################################################
+# Encrypt key partition - 16MiB remaining; max keysize is 8192KiB (8MiB)
 gum spin --show-output --title "Encrypting key partition..." -- echo -n "$CRYPTKEY_PASS" | cryptsetup --batch-mode luksFormat /dev/disk/by-partlabel/cryptkey
 # Maps partition to /dev/mapper/cryptkey
 gum spin --show-output --title "Unlocking key partition..." -- echo -n "$CRYPTKEY_PASS" | cryptsetup --batch-mode luksOpen /dev/disk/by-partlabel/cryptkey cryptkey
-# Stop the flake shell from halting upon dd write error
-set +e
 # Create random key
-gum spin --title "Setting key partition as keyfile..." -- dd if=/dev/urandom of=/dev/mapper/cryptkey bs=1024 status=progress
-# Resume error halting
-set -e
+gum spin --show-output --title "Setting key partition as keyfile..." -- dd if=/dev/random of=/dev/mapper/cryptkey bs=1MiB count=8 iflag=fullblock status=progress
+gum spin --show-output --title "Setting 600 permissions on keyfile..." -- chmod 600 /dev/mapper/cryptkey
 
 # Encrypt (optional) swap partition
 if [ "$SWAP_TYPE" == 'Partition' ]; then
-  gum spin --show-output --title "Encrypting swap partition using key partition..." -- cryptsetup --batch-mode --key-file=/dev/mapper/cryptkey --keyfile-size=8192 luksFormat /dev/disk/by-partlabel/cryptswap
-  # Maps partition to /dev/mapper/cryptswap
-  gum spin --show-output --title "Unlocking swap partition..." -- cryptsetup --batch-mode --key-file=/dev/mapper/cryptkey --keyfile-size=8192 luksOpen /dev/disk/by-partlabel/cryptswap cryptswap
+  gum spin --show-output --title "Encrypting swap partition using key partition..." -- cryptsetup --batch-mode luksFormat /dev/disk/by-partlabel/cryptswap --key-file /dev/mapper/cryptkey --keyfile-size 8192
+  gum spin --show-output --title "Unlocking swap partition..." -- cryptsetup --batch-mode luksOpen /dev/disk/by-partlabel/cryptswap cryptswap --key-file /dev/mapper/cryptkey --keyfile-size 8192
 fi
 
 # Encrypt root partition
 gum spin --show-output --title "Encrypting root partition..." -- echo -n  "$CRYPTROOT_PASS" | cryptsetup --batch-mode luksFormat /dev/disk/by-partlabel/cryptroot
-gum spin --show-output --title "Adding key partition as keyfile to root partition..." -- echo -n  "$CRYPTROOT_PASS" | cryptsetup --batch-mode --new-keyfile-size=8192 luksAddKey /dev/disk/by-partlabel/cryptroot /dev/mapper/cryptkey
-# Maps partition to /dev/mapper/cryptroot
-gum spin --show-output --title "Unlocking root partition..." -- cryptsetup --batch-mode --allow-discards --key-file=/dev/mapper/cryptkey --keyfile-size=8192 luksOpen /dev/disk/by-partlabel/cryptroot cryptroot
+gum spin --show-output --title "Adding key partition as keyfile to root partition..." -- echo -n  "$CRYPTROOT_PASS" | cryptsetup --batch-mode luksAddKey /dev/disk/by-partlabel/cryptroot /dev/mapper/cryptkey --new-keyfile-size 8192
+gum spin --show-output --title "Unlocking root partition..." -- cryptsetup --batch-mode luksOpen /dev/disk/by-partlabel/cryptroot cryptroot --key-file /dev/mapper/cryptkey --keyfile-size 8192
 printf '\n'
 
-
 # Format root partition
-# 2nd formatting command has too much output, but doesn't display "Formatting..." because output is disabled, so display text prior to command running
-gum spin --title "Formatting root partition..." -- sleep 1
-gum spin --title "Formatting root partition..." -- mkfs.btrfs --label "nixos-fs" /dev/mapper/cryptroot
-mkdir -p /mnt
-gum spin --show-output --title "Mounting root partition for subvolume creation..." -- mount -t btrfs /dev/mapper/cryptroot /mnt
+gum spin --show-output --title "Formatting root partition..." -- sleep 1
+gum spin -- mkfs.btrfs --label "NixOS" /dev/mapper/cryptroot
 
 # Create subvolumes
+mkdir -p /mnt
+gum spin --show-output --title "Mounting root partition for subvolumes..." -- mount -t btrfs /dev/mapper/cryptroot /mnt
 gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
@@ -222,6 +214,11 @@ gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume creat
   /mnt/log
 if [ "$SWAP_TYPE" == 'File' ]; then
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
+  # Bug where offset doesn't get calculated correctly on first file
+  btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
+  rm -rf /mnt/swap/swapfile
+  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
+  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
 fi
 # Empty, read-only snapshot used to potentially restore / at boot, if enabled
 gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
@@ -242,12 +239,7 @@ if [ "$SWAP_TYPE" == 'File' ]; then
   mkdir -p /mnt/swap
   # BTRFS subvolumes currently inherit options from "/", so these options do nothing
   gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
-  # Bug where offset doesn't get calculated correctly on first file
-  btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
-  rm -rf /mnt/swap/swapfile
-  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
-  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
-  # Swapfile hibernation variables to add to configuration
+  # Swapfile hibernation variables to add to swap.nix
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
   SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
   gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
@@ -256,7 +248,7 @@ elif [ "$SWAP_TYPE" == 'Partition' ]; then
   gum spin --show-output --title "Setting swap partition to on..." -- swapon /dev/mapper/cryptswap
 fi
 
-
+##########################################################
 # Create persistant folders for install files
 gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users} /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
 # Copy files to persist - be sure to remove these bind filesystems from potentially generated hardware-configuration.nix
@@ -335,7 +327,6 @@ elif [ "$SWAP_TYPE" == 'Partition' ]; then
     echo '}'
   } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
-
 
 # Install NixOS
 gum spin --show-output --title "Installing NixOS..." -- nixos-install --no-root-passwd --flake /mnt/persist/etc/nixos#"$NIX_HOST"
