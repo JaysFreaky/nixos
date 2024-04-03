@@ -15,6 +15,8 @@ in {
 
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
+  gaming.enable = true;
+  syncthing.enable = true;
 
   # Root persistance - rollback
   # Restores "/" on each boot to root-blank btrfs snapshot
@@ -27,8 +29,9 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Category
-      #appName
+    # Monitoring
+      #radeontop          # GPU stats
+      zenmonitor          # CPU stats
     ];
 
     variables = {
@@ -59,6 +62,25 @@ in {
   hardware = {
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
+    opengl = {
+      enable = true;
+      driSupport = true;
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [
+        #amdvlk
+        #libvdpau-va-gl
+        #mesa
+        #rocmPackages.clr
+        #vaapiVdpau
+      ];
+      extraPackages32 = with pkgs; [
+        #driversi686Linux.amdvlk
+        #driversi686Linux.libvdpau-va-gl
+        #driversi686Linux.mesa
+        #driversi686Linux.vaapiVdpau
+      ];
+    };
+
     openrazer = {
       enable = true;
       users = [ "${vars.user}" ];
@@ -74,12 +96,12 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    kernel.sysctl = {
-      # Disable IPv6
-      "net.ipv6.conf.all.disable_ipv6" = true;
-      # Prioritize swap for hibernation only
-      "vm.swappiness" = lib.mkDefault 0;
+    plymouth = {
+      enable = false;
+      theme = "nixos-bgrt";
+      themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
+
     kernelModules = [ "kvm-amd" ];
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -89,15 +111,34 @@ in {
     initrd = {
       availableKernelModules = [
         "ahci"
+        "cryptd"
         "nvme"
         "sd_mod"
         "usb_storage"
         "usbhid"
         "xhci_pci"
       ];
-      kernelModules = [ ];
-      # Systemd support for booting
+      kernelModules = [
+        #"amdgpu"
+        "nfs"
+      ];
+
+      # Required for full Plymouth experience (password prompt)
       systemd.enable = true;
+
+      luks.devices = {
+        "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
+
+        "cryptroot" = {
+          # SSD trim
+          allowDiscards = true;
+          # Faster SSD performance
+          bypassWorkqueues = true;
+          device = "/dev/disk/by-partlabel/cryptroot";
+          keyFile = "/dev/mapper/cryptkey";
+          keyFileSize = 8192;
+        };
+      };
     };
 
     loader = {
@@ -131,15 +172,14 @@ in {
   # Network
   ##########################################################
   networking = with host; {
-    # Currently broken, so using boot.kernel.sysctl workaround
     enableIPv6 = false;
     hostName = hostName;
-    useDHCP = lib.mkDefault true;
     networkmanager.enable = true;
+    #useDHCP = lib.mkDefault true;
 
     interfaces = {
       enp7s0.useDHCP = lib.mkDefault true;
-      wlp6s0.useDHCP = false;
+      wlp6s0.useDHCP = lib.mkForce false;
     };
   };
 
@@ -151,7 +191,11 @@ in {
     "/" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=root" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=root"
+      ];
     };
 
     "/boot" = {
@@ -162,39 +206,66 @@ in {
     "/home" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=home" "compress=zstd" ];
+      options = [
+        "compress=zstd"
+        "subvol=home"
+      ];
     };
 
     "/home/${vars.user}/Games/Steam" = {
       device = "/dev/nvme1n1p1";
       fsType = "ext4";
-      options = [ "noatime" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
+      options = [
+        "noatime"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        #"x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
+      ];
     };
 
     "/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
-      options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
+      options = [
+        "noauto"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        "x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
+      ];
     };
 
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=nix" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
     };
 
     "/persist" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=persist" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=persist"
+      ];
     };
 
     "/var/log" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=log"
+      ];
     };
   };
 }

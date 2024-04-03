@@ -116,8 +116,9 @@ in {
   # Hardware
   ##########################################################
   hardware = {
-    enableAllFirmware = true;
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+    enableAllFirmware = true;
 
     # For kernels older than 6.7
     #framework.amd-7040.preventWakeOnAC = true;
@@ -135,14 +136,14 @@ in {
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl
-        mesa
+        #mesa
         rocmPackages.clr
         vaapiVdpau
       ];
       extraPackages32 = with pkgs; [
         driversi686Linux.amdvlk
         driversi686Linux.libvdpau-va-gl
-        driversi686Linux.mesa
+        #driversi686Linux.mesa
         driversi686Linux.vaapiVdpau
       ];
     };
@@ -214,22 +215,16 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    #plymouth = {
-    #  enable = true;
-    #  theme = "nixos-bgrt";
-    #  themePackages = [ pkgs.nixos-bgrt-plymouth ];
-    #};
+    plymouth = {
+      enable = false;
+      theme = "nixos-bgrt";
+      themePackages = [ pkgs.nixos-bgrt-plymouth ];
+    };
 
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
     '';
 
-    kernel.sysctl = {
-      # Disable IPv6
-      "net.ipv6.conf.all.disable_ipv6" = true;
-      # Prioritize swap for hibernation only
-      "vm.swappiness" = lib.mkDefault 0;
-    };
     kernelModules = [ "kvm-amd" ];
     extraModulePackages = with config.boot.kernelPackages; [
       framework-laptop-kmod
@@ -268,7 +263,8 @@ in {
         "xhci_pci"
       ];
       kernelModules = [ "amdgpu" ];
-      # Systemd support for booting
+
+      # Required for full Plymouth experience (password prompt)
       systemd.enable = true;
 
       luks.devices = {
@@ -280,10 +276,8 @@ in {
           # Faster SSD performance
           bypassWorkqueues = true;
           device = "/dev/disk/by-partlabel/cryptroot";
-          #fallbackToPassword = true;
           keyFile = "/dev/mapper/cryptkey";
           keyFileSize = 8192;
-          #keyFileTimeout = 5;
         };
       };
     };
@@ -321,15 +315,14 @@ in {
   # 6.7 introduced a wifi disconnection bug: https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   # on resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
   networking = with host; {
-    # Currently broken, so using boot.kernel.sysctl workaround
     enableIPv6 = false;
     hostName = hostName;
-    useDHCP = lib.mkDefault true;
+    #useDHCP = lib.mkDefault true;
 
     firewall = {
       enable = true;
-      #allowedTCPPorts = [ 80 443 ];
-      #allowedUDPPorts = [ 53 ];
+      #allowedTCPPorts = [ ];
+      #allowedUDPPorts = [ ];
     };
 
     interfaces = {
@@ -338,18 +331,11 @@ in {
       # Ethernet adapter right-rear USB port
       #enp195s0f3u1c2.useDHCP = lib.mkDefault true;
       # Wireless
-      #wlp1s0.useDHCP = lib.mkDefault true;
+      wlp1s0.useDHCP = lib.mkDefault true;
     };
-
-    # Static DNS
-    #nameservers = [ ];
 
     networkmanager = {
       enable = true;
-
-      # Use static DNS from above instead of DHCP
-      #dns = none;
-
       # Faster wifi on AMD models
       wifi.backend = "iwd";
       wifi.powersave = false;
@@ -364,7 +350,11 @@ in {
     "/" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=root" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=root"
+      ];
     };
 
     "/boot" = {
@@ -375,27 +365,42 @@ in {
     "/home" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=home" "compress=zstd" ];
+      options = [
+        "compress=zstd"
+        "subvol=home"
+      ];
     };
 
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=nix" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
     };
 
     "/persist" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=persist" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=persist"
+      ];
     };
 
     "/var/log" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=log"
+      ];
     };
   };
 }

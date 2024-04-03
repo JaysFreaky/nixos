@@ -10,6 +10,9 @@ with lib;
 
   ${vars.terminal}.enable = true;
 
+  # Prioritize swap for hibernation only
+  boot.kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
+
   console = {
     #font = "Lat2-Terminus16";
     keyMap = "us";

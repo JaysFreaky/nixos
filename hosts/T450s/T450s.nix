@@ -32,7 +32,7 @@
 
     variables = {
       # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card0";
+      MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
 
@@ -70,21 +70,17 @@
   ##########################################################
   boot = {
     plymouth = {
-      enable = true;
+      enable = false;
       theme = "nixos-bgrt";
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    kernel.sysctl = {
-      # Disable IPv6
-      "net.ipv6.conf.all.disable_ipv6" = true;
-      # Prioritize swap for hibernation only
-      "vm.swappiness" = lib.mkDefault 0;
-    };
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "quiet" ];
+    kernelParams = [
+      "quiet"
+    ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
@@ -98,10 +94,9 @@
         "usb_storage"
         "xhci_pci"
       ];
-      kernelModules = [
-        "dm-snapshot"
-        "nfs"
-      ];
+      kernelModules = [ "nfs" ];
+
+      # Required for full Plymouth experience (password prompt)
       systemd.enable = true;
 
       luks.devices = {
@@ -113,10 +108,8 @@
           # Faster SSD performance
           bypassWorkqueues = true;
           device = "/dev/disk/by-partlabel/cryptroot";
-          #fallbackToPassword = true;
           keyFile = "/dev/mapper/cryptkey";
           keyFileSize = 8192;
-          #keyFileTimeout = 5;
         };
       };
     };
@@ -152,11 +145,10 @@
   # Network
   ##########################################################
   networking = with host; {
-    # Currently broken, so using boot.kernel.sysctl workaround
     enableIPv6 = false;
     hostName = hostName;
-    useDHCP = lib.mkDefault true;
     networkmanager.enable = true;
+    #useDHCP = lib.mkDefault true;
 
     interfaces = {
       enp0s25.useDHCP = lib.mkDefault true;
@@ -172,7 +164,11 @@
     "/" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=root" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=root"
+      ];
     };
 
     "/boot" = {
@@ -183,33 +179,54 @@
     "/home" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=home" "compress=zstd" ];
-    };
-
-    "/nix" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [ "subvol=nix" "compress=zstd" "noatime" ];
-    };
-
-    "/persist" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [ "subvol=persist" "compress=zstd" "noatime"];
-      neededForBoot = true;
-    };
-
-    "/var/log" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime"];
-      neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "subvol=home"
+      ];
     };
 
     "/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
-      options = [ "noauto" "x-systemd.automount" "x-systemd.device-timeout=5s" "x-systemd.idle-timeout=600" "x-systemd.mount-timeout=5s" ];
+      options = [
+        "noauto"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        "x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
+      ];
+    };
+
+    "/nix" = {
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
+    };
+
+    "/persist" = {
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=persist"
+      ];
+    };
+
+    "/var/log" = {
+      device = "/dev/mapper/cryptroot";
+      fsType = "btrfs";
+      neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=log"
+      ];
     };
   };
 }

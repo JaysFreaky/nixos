@@ -71,21 +71,17 @@
   ##########################################################
   boot = {
     plymouth = {
-      enable = true;
+      enable = false;
       theme = "nixos-bgrt";
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    kernel.sysctl = {
-      # Disable IPv6
-      "net.ipv6.conf.all.disable_ipv6" = true;
-      # Prioritize swap for hibernation only
-      "vm.swappiness" = lib.mkDefault 0;
-    };
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "quiet" ];
+    kernelParams = [
+      "quiet"
+    ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
@@ -99,7 +95,8 @@
         "xhci_pci"
       ];
       kernelModules = [ ];
-      # Systemd support for booting
+
+      # Required for full Plymouth experience (password prompt)
       systemd.enable = true;
 
       luks.devices = {
@@ -111,10 +108,8 @@
           # Faster SSD performance
           bypassWorkqueues = true;
           device = "/dev/disk/by-partlabel/cryptroot";
-          #fallbackToPassword = true;
           keyFile = "/dev/mapper/cryptkey";
           keyFileSize = 8192;
-          #keyFileTimeout = 5;
         };
       };
     };
@@ -153,7 +148,7 @@
     enableIPv6 = false;
     hostName = hostName;
     networkmanager.enable = true;
-    useDHCP = lib.mkDefault true;
+    #useDHCP = lib.mkDefault true;
 
     interfaces = {
       enp2s0.useDHCP = lib.mkDefault true;
@@ -168,7 +163,11 @@
     "/" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=root" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=root"
+      ];
     };
 
     "/boot" = {
@@ -179,27 +178,42 @@
     "/home" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=home" "compress=zstd" ];
+      options = [
+        "compress=zstd"
+        "subvol=home"
+      ];
     };
 
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=nix" "compress=zstd" "noatime" ];
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
     };
 
     "/persist" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=persist" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=persist"
+      ];
     };
 
     "/var/log" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime"];
       neededForBoot = true;
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=log"
+      ];
     };
   };
 }
