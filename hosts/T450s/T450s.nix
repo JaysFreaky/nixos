@@ -151,6 +151,9 @@
     #useDHCP = lib.mkDefault true;
 
     interfaces = {
+      # Ethernet adapter left-rear USB port
+      enp0s20u3.useDHCP = lib.mkDefault true;
+
       enp0s25.useDHCP = lib.mkDefault true;
       wlp3s0.useDHCP = lib.mkDefault true;
     };

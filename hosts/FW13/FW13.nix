@@ -330,6 +330,7 @@ in {
       #enp195s0f4u1c2.useDHCP = lib.mkDefault true;
       # Ethernet adapter right-rear USB port
       #enp195s0f3u1c2.useDHCP = lib.mkDefault true;
+
       # Wireless
       wlp1s0.useDHCP = lib.mkDefault true;
     };
