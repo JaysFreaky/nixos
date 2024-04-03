@@ -258,8 +258,8 @@ mount -o bind /mnt/persist/etc/NetworkManager /mnt/etc/NetworkManager
 mount -o bind /mnt/persist/etc/ssh /mnt/etc/ssh
 
 # Export cryptkey/root LUKS header files for backup
-gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode --header-backup-file /mnt/persist/backups/cryptkey_header.img luksHeaderBackup /dev/disk/by-partlabel/cryptkey
-gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode --header-backup-file /mnt/persist/backups/cryptroot_header.img luksHeaderBackup /dev/disk/by-partlabel/cryptroot
+gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/cryptkey --header-backup-file /mnt/persist/backups/cryptkey_header.img
+gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/cryptroot --header-backup-file /mnt/persist/backups/cryptroot_header.img
 gum style --foreground="$YELLOW" "LUKS headers exported to '/persist/backups'!"
 find /mnt/persist/backups/ -name "*.img"
 sleep 3
