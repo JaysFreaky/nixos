@@ -79,7 +79,7 @@
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      "quiet"
+      #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];
 
