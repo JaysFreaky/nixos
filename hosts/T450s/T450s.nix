@@ -145,18 +145,12 @@
   # Network
   ##########################################################
   networking = with host; {
-    enableIPv6 = false;
     hostName = hostName;
     networkmanager.enable = true;
-    #useDHCP = lib.mkDefault true;
 
-    interfaces = {
-      # Ethernet adapter left-rear USB port
-      enp0s20u3.useDHCP = lib.mkDefault true;
-
-      enp0s25.useDHCP = lib.mkDefault true;
-      wlp3s0.useDHCP = lib.mkDefault true;
-    };
+    # Interfaces not needed with NetworkManager enabled
+    #interfaces.enp0s25.useDHCP = lib.mkDefault true;
+    #interfaces.wlp3s0.useDHCP = lib.mkDefault true;
   };
 
 

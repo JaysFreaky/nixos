@@ -145,14 +145,11 @@
   # Network
   ##########################################################
   networking = with host; {
-    enableIPv6 = false;
     hostName = hostName;
     networkmanager.enable = true;
-    #useDHCP = lib.mkDefault true;
 
-    interfaces = {
-      enp2s0.useDHCP = lib.mkDefault true;
-    };
+    # Interfaces not needed with NetworkManager enabled
+    #interfaces.enp2s0.useDHCP = lib.mkDefault true;
   };
 
 

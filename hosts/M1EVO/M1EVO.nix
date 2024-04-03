@@ -105,7 +105,9 @@ in {
     kernelModules = [ "kvm-amd" ];
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ ];
+    kernelParams = [
+      #"quiet"
+    ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
@@ -172,15 +174,13 @@ in {
   # Network
   ##########################################################
   networking = with host; {
-    enableIPv6 = false;
     hostName = hostName;
     networkmanager.enable = true;
-    #useDHCP = lib.mkDefault true;
+    networkmanager.unmanaged = [ "wlp6s0" ];
 
-    interfaces = {
-      enp7s0.useDHCP = lib.mkDefault true;
-      wlp6s0.useDHCP = lib.mkForce false;
-    };
+    # Interfaces not needed with NetworkManager enabled
+    #interfaces.enp7s0.useDHCP = lib.mkDefault true;
+    #interfaces.wlp6s0.useDHCP = lib.mkForce false;
   };
 
 

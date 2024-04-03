@@ -239,6 +239,7 @@ in {
       "amd_iommu=off"  # fixes VP9/VAAPI video glitches
       "amd_pstate=active"  # enables power profiles daemon
       "amdgpu.sg_display=0"  # fixes white screen / glitches
+      "ipv6.disable=1"
       "mem_sleep_default=deep"  # hibernation
       #"quiet"
       "rtc_cmos.use_acpi_alarm=1"  # fixes waking after 5 minutes - remove at kernel 6.8?
@@ -317,7 +318,6 @@ in {
   networking = with host; {
     enableIPv6 = false;
     hostName = hostName;
-    #useDHCP = lib.mkDefault true;
 
     firewall = {
       enable = true;
@@ -325,21 +325,22 @@ in {
       #allowedUDPPorts = [ ];
     };
 
-    interfaces = {
-      # Ethernet adapter left-rear USB port
-      #enp195s0f4u1c2.useDHCP = lib.mkDefault true;
-      # Ethernet adapter right-rear USB port
-      #enp195s0f3u1c2.useDHCP = lib.mkDefault true;
-
-      # Wireless
-      wlp1s0.useDHCP = lib.mkDefault true;
-    };
+    # Interfaces not needed with NetworkManager enabled
+    #interfaces.wlp1s0.useDHCP = lib.mkDefault true;
+    #
+    # Ethernet adapter left-rear USB port
+    #interfaces.enp195s0f4u1c2.useDHCP = lib.mkDefault true;
+    # Ethernet adapter right-rear USB port
+    #interfaces.enp195s0f3u1c2.useDHCP = lib.mkDefault true;
 
     networkmanager = {
       enable = true;
-      # Faster wifi on AMD models
-      wifi.backend = "iwd";
-      wifi.powersave = false;
+      wifi = {
+        # Faster wifi on AMD models
+        backend = "iwd";
+        macAddress = "stable-ssid";
+        powersave = false;
+      };
     };
   };
 
