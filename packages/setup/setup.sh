@@ -212,6 +212,11 @@ gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume creat
   /mnt/log
 if [ "$SWAP_TYPE" == 'File' ]; then
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
+  # Bug where offset doesn't get calculated correctly on first file
+  btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
+  rm -rf /mnt/swap/swapfile
+  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
+  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
 fi
 # Empty, read-only snapshot used to potentially restore / at boot, if enabled
 gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
@@ -232,11 +237,6 @@ if [ "$SWAP_TYPE" == 'File' ]; then
   mkdir -p /mnt/swap
   # BTRFS subvolumes currently inherit options from "/", so these options do nothing
   gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
-  # Bug where offset doesn't get calculated correctly on first file
-  btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
-  rm -rf /mnt/swap/swapfile
-  gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
-  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
   # Swapfile hibernation variables to add to swap.nix
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
   SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
@@ -301,9 +301,8 @@ printf '\n'
 
 # Remove previous swap.nix repo file for a fresh slate
 if [ -f /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
-  rm /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+  gum spin --show-output --title "Removing previous swap.nix..." -- rm /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
-
 # Create swap.nix file in host's directory
 if [ "$SWAP_TYPE" == 'File' ]; then
   {
@@ -324,6 +323,10 @@ elif [ "$SWAP_TYPE" == 'Partition' ]; then
     echo '  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];'
     echo '}'
   } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+fi
+# Check if swap.nix was generated; add to repo so it builds with install
+if [ -f /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
+  gum spin --show-output --title "Adding swap.nix to local repo..." -- git add /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
 
 # Install NixOS
