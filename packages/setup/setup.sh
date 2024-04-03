@@ -32,7 +32,7 @@ lsblk -o name,size,mountpoints | grep 'nvme[0-9]n[0-9]\|sd[a-z]\|vd[a-z]\|hd[a-z
 printf '\n'
 
 # Put system disks into array
-mapfile -t DISKS < <(find "/dev/" -regex '/dev/nvme[0-9]n[0-9]\|/dev/sd[a-z]\|/dev/vd[a-z]\|/dev/hd[a-z]')
+mapfile -t DISKS < <(find "/dev/" -regex '/dev/nvme[0-9]n[0-9]\|/dev/sd[a-z]\|/dev/vd[a-z]\|/dev/hd[a-z]' | sort)
 if (( ${#DISKS[@]} == 0 )); then
   gum style --foreground="$YELLOW" "No disk devices were found! Quitting..." >&2
   exit 1
@@ -43,7 +43,7 @@ gum style --foreground="$PINK" "Select a disk to be formatted for installation:"
 while true; do
   DISK=$(gum choose "${DISKS[@]}")
   if [ -z "$DISK" ]; then
-    gum style --foreground="$RED" "A disk must be selected!" && printf '\n'
+    gum style --foreground="$YELLOW" "A disk must be selected!" && printf '\n'
   else
     gum confirm "Are you sure you want to use $DISK?" --default=false && break || printf '\n'
   fi;
@@ -55,7 +55,7 @@ gum style --foreground="$PINK" "If enabled, swap will be setup to match the amou
 while true; do
   SWAP_TYPE=$(gum choose "File" "Partition" "None")
   if [ -z "$SWAP_TYPE" ]; then
-    gum style --foreground="$RED" "A swap type must be selected!" && printf '\n'
+    gum style --foreground="$YELLOW" "A swap type must be selected!" && printf '\n'
   else
     break
   fi;
@@ -66,7 +66,7 @@ printf '\n'
 while true; do
   NIX_USER=$(gum input --placeholder="username" --prompt="What username is defined in NixOS? ")
   if [ -z "$NIX_USER" ]; then
-    gum style --foreground="$RED" "Username cannot be blank!" && printf '\n'
+    gum style --foreground="$YELLOW" "Username cannot be blank!" && printf '\n'
   else
     break
   fi;
@@ -81,12 +81,12 @@ while true; do
   elif [[ "$NIX_PASS" = "$NIX_PASS2" ]]; then
     break
   else
-    gum style --foreground="$RED" "Passwords do not match! Please try again!" && printf '\n'
+    gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
   fi;
 done
 
 # Prompt for GRUB password
-gum style --background="$PINK" --foreground="$YELLOW" "The GRUB bootloader password will now be setup."
+gum style --background="$PINK" --foreground="$WHITE" "The GRUB bootloader password will now be setup."
 gum style --foreground="$WHITE" "If any action other than booting is performed, a password will be required before allowing access."
 gum style --foreground="$WHITE" "Systemd is the default bootloader, but if GRUB is later enabled, it's ready to go with this."
 printf '\n'
@@ -94,32 +94,32 @@ while true; do
   GRUB_PASS=$(gum input --password --placeholder="password" --prompt="What password would you like to assign to the GRUB bootloader? ")
   GRUB_PASS2=$(gum input --password --placeholder="password" --prompt="Re-enter GRUB password for verification: ")
   if [[ -z "$GRUB_PASS" || -z "$GRUB_PASS2" ]]; then
-    gum style --foreground="$RED" "Password cannot be blank!" && printf '\n'
+    gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
   elif [[ "$GRUB_PASS" = "$GRUB_PASS2" ]]; then
     break
   else
-    gum style --foreground="$RED" "Passwords do not match! Please try again!" && printf '\n'
+    gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
   fi;
 done
 
 # Prompt for cryptkey password
-gum style --background="$PINK" --foreground="$YELLOW" "The first of two partition encryption passwords will now be setup."
+gum style --background="$PINK" --foreground="$WHITE" "The first of two partition encryption passwords will now be setup."
 gum style --foreground="$WHITE" "First, cryptkey, will be used at every boot to unlock the system partitions."
 printf '\n'
 while true; do
   CRYPTKEY_PASS=$(gum input --password --placeholder="cryptkey" --prompt="What will your cryptkey password be? ")
   CRYPTKEY_PASS2=$(gum input --password --placeholder="cryptkey" --prompt="Re-enter cryptkey password for verification: ")
   if [[ -z "$CRYPTKEY_PASS" || -z "$CRYPTKEY_PASS2" ]]; then
-    gum style --foreground="$RED" "Password cannot be blank!" && printf '\n'
+    gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
   elif [[ "$CRYPTKEY_PASS" = "$CRYPTKEY_PASS2" ]]; then
     break
   else
-    gum style --foreground="$RED" "Passwords do not match! Please try again!" && printf '\n'
+    gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
   fi;
 done
 
 # Prompt for cryptroot password
-gum style --background="$PINK" --foreground="$YELLOW" "The second of two partition encryption passwords will now be setup."
+gum style --background="$PINK" --foreground="$WHITE" "The second of two partition encryption passwords will now be setup."
 gum style --foreground="$WHITE" "Second, cryptroot, will be an emergency backup password. (cryptkey partition gets corrupted, chroot, etc)"
 gum style --foreground="$YELLOW" "This password should be different from the first. Be sure to document it somewhere safe!"
 gum style --foreground="$WHITE" "Here are some generated diceware passwords using 6, 5, and 4 rolls, respectively."
@@ -136,11 +136,11 @@ while true; do
   CRYPTROOT_PASS=$(gum input --password --placeholder="cryptroot" --prompt="What will your cryptroot password be? ")
   CRYPTROOT_PASS2=$(gum input --password --placeholder="cryptroot" --prompt="Re-enter cryptroot password for verification: ")
   if [[ -z "$CRYPTROOT_PASS" || -z "$CRYPTROOT_PASS2" ]]; then
-    gum style --foreground="$RED" "Password cannot be blank!" && printf '\n'
+    gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
   elif [[ "$CRYPTROOT_PASS" = "$CRYPTROOT_PASS2" ]]; then
     break
   else
-    gum style --foreground="$RED" "Passwords do not match! Please try again!" && printf '\n'
+    gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
   fi;
 done
 
@@ -258,7 +258,7 @@ mount -o bind /mnt/persist/etc/ssh /mnt/etc/ssh
 # Export cryptkey/root LUKS header files for backup
 gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/cryptkey --header-backup-file /mnt/persist/backups/cryptkey_header.img
 gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/cryptroot --header-backup-file /mnt/persist/backups/cryptroot_header.img
-gum style --foreground="$YELLOW" "LUKS headers exported to '/persist/backups'!"
+gum style --foreground="$PINK" "LUKS headers exported to '/persist/backups'!"
 find /mnt/persist/backups/ -name "*.img"
 sleep 3
 
@@ -292,7 +292,7 @@ while true; do
   gum style --foreground="$PINK" "Select a host to deploy:"
   NIX_HOST=$(gum choose "${HOSTS[@]}")
   if [ -z "$NIX_HOST" ]; then
-    gum style --foreground="$RED" "A hostname must be selected!" && printf '\n'
+    gum style --foreground="$YELLOW" "A hostname must be selected!" && printf '\n'
   else
     gum confirm "Are you sure you want to use '$NIX_HOST'?" --default=false && break || printf '\n'
   fi;
@@ -333,5 +333,5 @@ printf '\n'
 # Delete unneeded system links from persistance
 rm -rf /mnt/persist/etc/nix/{nix.conf,registry.json} /mnt/persist/etc/ssh/ssh_{config,known_hosts}
 
-gum style --foreground="$YELLOW" "Remember to copy LUKS headers from '/persist/backups' to another device."
+gum style --foreground="$PINK" "Remember to copy LUKS headers from '/persist/backups' to another device."
 gum style --foreground="$GREEN" "Installation complete! Please reboot when ready."
