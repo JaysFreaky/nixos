@@ -101,15 +101,6 @@ in {
       xwayland                    # Interface X11 apps with Wayland
     ];
 
-    # Should already be configured in hardware-configuration.nix
-    #hardware.opengl.enable = true;
-
-    # Cachix
-    nix.settings = {
-      substituters = [ "https://hyprland.cachix.org" ];
-      trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-    };
-
     programs = {
       hyprland = {
         enable = true;
@@ -159,7 +150,9 @@ in {
 
       network-manager-applet.enable = true;
 
-      xserver.excludePackages = with pkgs; [ xterm ];
+      xserver.excludePackages = with pkgs; [
+        xterm
+      ];
     };
 
     xdg.portal = {

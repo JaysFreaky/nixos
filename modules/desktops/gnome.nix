@@ -3,11 +3,11 @@ with lib;
 let
   day_cw = pkgs.writeShellScriptBin "day_cw.sh" ''
     day=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f2 | cut -c 8-)
-    wal -l -n -q -i "$day"
+    wal -lnqsti "$day"
   '';
   night_cw = pkgs.writeShellScriptBin "night_cw.sh" ''
     night=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f2 | cut -c 8-)
-    wal -n -q -i "$night"
+    wal -nqsti "$night"
   '';
 in {
   options.gnome.enable = mkOption {
@@ -19,7 +19,7 @@ in {
     environment = {
       # System-Wide Packages
       systemPackages = with pkgs; [
-        gnome.dconf-editor           # GUI dconf editor
+        gnome.dconf-editor            # GUI dconf editor
         gnome.gnome-tweaks            # Gnome tweaks
         gnome.nautilus-python         # Allow custom nautilus scripts/open-any-terminal
         gnome-extension-manager       # Gnome extensions
@@ -27,6 +27,7 @@ in {
         libappindicator               # Allow tray icons to be displayed in GNOME
         libsecret                     # Secret storage used by gnome-keyring / KDE-wallet
         nautilus-open-any-terminal    # Open custom terminals in nautilus
+        neovide                       # GUI launcher for neovim
       ];
       # Removed Packages
       gnome.excludePackages = (with pkgs; [
@@ -195,6 +196,9 @@ in {
         "org/gnome/mutter/wayland/keybindings" = {
           restore-shortcuts = [];
         };
+        "org/gnome/nautilus/preferences" = {
+          always-use-location-entry = false;
+        };
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
@@ -228,6 +232,7 @@ in {
             "drive-menu@gnome-shell-extensions.gcampax.github.com"
             "launch-new-instance@gnome-shell-extensions.gcampax.github.com"
             "user-theme@gnome-shell-extensions.gcampax.github.com"
+            "AlphabeticalAppGrid@stuarthayhurst"
             "appindicatorsupport@rgcjonas.gmail.com"
             "bluetooth-quick-connect@bjarosze.gmail.com"
             "blur-my-shell@aunetx"
@@ -356,8 +361,8 @@ in {
         };
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          #sunrise = "${day_cw}/bin/day_cw.sh";
-          #sunset = "${night_cw}/bin/night_cw.sh";
+          sunrise = "${day_cw}/bin/day_cw.sh";
+          sunset = "${night_cw}/bin/night_cw.sh";
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;
@@ -408,6 +413,7 @@ in {
         #launch-new-instance
         #removable-drive-menu
         #user-themes
+        alphabetical-app-grid
         appindicator
         bluetooth-quick-connect
         blur-my-shell
@@ -422,14 +428,23 @@ in {
         weather-or-not
       ];
 
+      # Generate an empty filo from right click menu
+      home.file."Templates/Empty file".text = "";
+
+      # Hide neovim from app grid
+      xdg.desktopEntires.nvim = {
+        name = "Neovim wrapper";
+        noDisplay = true;
+      };
+
+      # Set default applications
       xdg.mimeApps = {
         enable = true;
-
         defaultApplications = {
           "image/gif" = [ "org.gnome.Loupe.desktop" ];
           "image/jpg" = [ "org.gnome.Loupe.desktop" ];
           "image/png" = [ "org.gnome.Loupe.desktop" ];
-          "text/plain" = [ "org.gnome.TextEditor.desktop" ];
+          "text/plain" = [ "neovide.desktop" ];
         };
       };
     };
