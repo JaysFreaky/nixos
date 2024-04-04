@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, stable, vars, ... }:
 let
-  pywalfox = pkgs.python39.pkgs.buildPythonPackage {
+  pywalfox = pkgs.python3.pkgs.buildPythonPackage {
     pname = "pywalfox";
     version = "2.8.0rc1";
     src = pkgs.fetchFromGitHub {
@@ -43,73 +43,74 @@ in {
     # stable.wget
     systemPackages = with pkgs; [
     # ASCII Art
-      asciiquarium          # Fishies swimming
-      cbonsai               # Bonsai growing
+      asciiquarium                # Fishies swimming
+      cbonsai                     # Bonsai growing
 
     # Browsers
-      #floorp               # Privacy-focused Firefox fork
+      #floorp                     # Privacy-focused Firefox fork
 
     # File Support
-      #cifs-utils           # SMB support
-      imagemagick           # Image tools
-      nfs-utils             # NFS support
-      p7zip                 # Zip encryption
-      qview                 # Image viewer
-      unzip                 # Zip files
-      unrar                 # Rar files
-      zip                   # Zip files
+      #cifs-utils                 # SMB support
+      imagemagick                 # Image tools
+      nfs-utils                   # NFS support
+      p7zip                       # Zip encryption
+      qview                       # Image viewer
+      unzip                       # Zip files
+      unrar                       # Rar files
+      zip                         # Zip files
 
     # Messaging
-      discord               # Discord
+      discord                     # Discord
 
     # Multimedia
-      mpv                   # Media player
-      plex-media-player     # Plex player
-      spotify               # Music
+      mpv                         # Media player
+      plex-media-player           # Plex player
+      spotify                     # Music
 
     # Notes
-      obsidian              # Markdown notes
+      obsidian                    # Markdown notes
 
     # Notifications
-      libnotify             # Notification engine
+      libnotify                   # Notification engine
 
     # Terminal
-      bat                   # cat with syntax highlighting
-      btop                  # Resource manager
-      coreutils             # GNU utilities
-      fastfetch             # Faster system info
-      file                  # File information
-      killall               # Process killer
-      lm_sensors            # Hardware sensors | 'sensors-detect'
-      lshw                  # Hardware config
-      neofetch              # System info
-      nix-tree              # Browse nix store
-      pciutils              # Manage PCI | 'lspci'
-      #${vars.terminal}     # Terminal installed via variable
-      tldr                  # Helper
-      tmux                  # Multiplexor
-      tree                  # Directory layout
-      usbutils              # Manage USB | 'lsusb'
-      vim                   # Editor
-      wget                  # Retriever
-      xdg-utils             # Environment integration
-      xdragon               # Terminal drag'n'drop
-      #zellij               # Tmux alternative
+      bat                         # cat with syntax highlighting
+      btop                        # Resource manager
+      coreutils                   # GNU utilities
+      fastfetch                   # Faster system info
+      file                        # File information
+      killall                     # Process killer
+      lm_sensors                  # Hardware sensors | 'sensors-detect'
+      lshw                        # Hardware config
+      neofetch                    # System info
+      nix-tree                    # Browse nix store
+      pciutils                    # Manage PCI | 'lspci'
+      #${vars.terminal}           # Terminal installed via variable
+      tldr                        # Helper
+      tmux                        # Multiplexor
+      tree                        # Directory layout
+      usbutils                    # Manage USB | 'lsusb'
+      vim                         # Editor
+      wget                        # Retriever
+      xdg-utils                   # Environment integration
+      xdragon                     # Terminal drag'n'drop
+      #zellij                     # Tmux alternative
 
     # Theming
-      pywal                 # System theme colors based off current wallpaper
-      #pywalfox-native      # Firefox integration
-      #(python39.withPackages (ps: with ps; [ pip virtualenv pywalfox ])) # NixOS fix
-      spicetify-cli         # Spotify theming
-      #variety              # Wallpapers
-      #wpgtk                # Pywal GUI
+      pywal                       # Theme colors from current wallpaper
+      (python3.withPackages (ps: with ps; [
+        pip virtualenv pywalfox   # pywalfox-native NixOS fix
+      ]))
+      spicetify-cli               # Spotify theming
+      #variety                    # Wallpapers
+      #wpgtk                      # Pywal GUI
     ];
   };
 
   fonts.packages = with pkgs; [
-    cantarell-fonts         # GNOME
-    font-awesome            # Icons
-    inter                   # Good for Waybar
+    cantarell-fonts               # GNOME
+    font-awesome                  # Icons
+    inter                         # Good for waybar
     (nerdfonts.override {
       fonts = [
         "FiraCode"
@@ -165,6 +166,7 @@ in {
     # Enable SSD trim
     fstrim.enable = lib.mkDefault true;
 
+    # Can still SSH into external systems with this disabled
     openssh = {
       enable = false;
       #knownHosts.<name>.publicKeyFile = "";

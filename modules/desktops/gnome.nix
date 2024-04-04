@@ -3,11 +3,15 @@ with lib;
 let
   day_cw = pkgs.writeShellScriptBin "day_cw.sh" ''
     day=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f2 | cut -c 8-)
-    wal -lnqsti "$day"
+    wal -nqsti "$day"
+    pywalfox update
+    pywalfox light
   '';
   night_cw = pkgs.writeShellScriptBin "night_cw.sh" ''
     night=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f2 | cut -c 8-)
     wal -nqsti "$night"
+    pywalfox update
+    pywalfox dark
   '';
 in {
   options.gnome.enable = mkOption {
