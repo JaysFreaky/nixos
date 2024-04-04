@@ -1,6 +1,16 @@
 { config, inputs, lib, pkgs, stable, vars, ... }:
-with lib;
-{
+let
+  pywalfox = pkgs.python39.pkgs.buildPythonPackage {
+    pname = "pywalfox";
+    version = "2.8.0rc1";
+    src = pkgs.fetchFromGitHub {
+      owner = "Frewacom";
+      repo = "pywalfox-native";
+      rev = "7ecbbb193e6a7dab424bf3128adfa7e2d0fa6ff9";
+      hash = "sha256-i1DgdYmNVvG+mZiFiBmVHsQnFvfDFOFTGf0GEy81lpE=";
+    };
+  };
+in {
   imports = (
     import ../modules/desktops ++
     import ../modules/hardware ++
@@ -88,7 +98,8 @@ with lib;
 
     # Theming
       pywal                 # System theme colors based off current wallpaper
-      pywalfox-native       # Firefox integration
+      #pywalfox-native      # Firefox integration
+      #(python39.withPackages (ps: with ps; [ pip virtualenv pywalfox ])) # NixOS fix
       spicetify-cli         # Spotify theming
       #variety              # Wallpapers
       #wpgtk                # Pywal GUI
@@ -152,7 +163,7 @@ with lib;
     };
 
     # Enable SSD trim
-    fstrim.enable = mkDefault true;
+    fstrim.enable = lib.mkDefault true;
 
     openssh = {
       enable = false;
@@ -179,7 +190,7 @@ with lib;
 
   system.stateVersion = "23.11";
 
-  systemd.services.NetworkManager-wait-online.enable = mkDefault false;
+  systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
   users = {
     # All users setup via declaration
