@@ -18,17 +18,17 @@ in {
           "Amazon" = {
             color = "yellow";
             icon = "cart";
-            id = "1";
+            id = 1;
           };
           "Google" = {
             color = "red";
             icon = "fence";
-            id = "0";
+            id = 0;
           };
           "Banking" = {
             color = "green";
             icon = "dollar";
-            id = "2";
+            id = 2;
           };
         };
 
