@@ -436,7 +436,7 @@ in {
       home.file."Templates/Empty file".text = "";
 
       # Hide neovim from app grid
-      xdg.desktopEntires.nvim = {
+      xdg.desktopEntries.nvim = {
         name = "Neovim wrapper";
         noDisplay = true;
       };
