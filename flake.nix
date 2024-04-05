@@ -104,7 +104,7 @@
         inherit (nixpkgs) lib;
         specialArgs = {
           inherit inputs pkgs stable system vars;
-          hosthostName = "VM";
+          host.hostName = "VM";
         };
         modules = standardModules ++ [
           ./hosts/VM
