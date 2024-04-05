@@ -15,6 +15,21 @@ in {
         #userContent = builtins.readFile ./userContent.css;
 
         containers = {
+          "Amazon" = {
+            color = "yellow";
+            icon = "cart";
+            id = "1";
+          };
+          "Google" = {
+            color = "red";
+            icon = "fence";
+            id = "0";
+          };
+          "Banking" = {
+            color = "green";
+            icon = "dollar";
+            id = "2";
+          };
         };
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
