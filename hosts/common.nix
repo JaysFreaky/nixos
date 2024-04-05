@@ -92,6 +92,7 @@ in {
       usbutils                    # Manage USB | 'lsusb'
       vim                         # Editor
       wget                        # Retriever
+      wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
       xdg-utils                   # Environment integration
       xdragon                     # Terminal drag'n'drop
       #zellij                     # Tmux alternative

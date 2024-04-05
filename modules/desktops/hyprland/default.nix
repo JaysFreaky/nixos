@@ -53,7 +53,6 @@ in {
 
     # Clipboard
       cliphist                    # Save clipboard history after closing apps
-      wl-clipboard                # Enable wl-copy/wl-paste
 
     # File Manager
       gnome.file-roller           # Archive GUI manager
