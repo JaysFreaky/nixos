@@ -1,21 +1,24 @@
 # NixOS Flake
-This is my flake for an immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and uses the BTRFS filesystem with optional boot rollbacks to a freshly-installed root snapshot. It utilizes environment.etc to persist /etc files & the [impermanence](https://github.com/nix-community/impermanence) addon for both /etc and /var/lib sub-directories. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the laptop. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
+This is my flake for a potentially-immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and uses the BTRFS filesystem with optional boot rollbacks to a freshly-installed root snapshot. It utilizes environment.etc to persist certain /etc files & the [impermanence](https://github.com/nix-community/impermanence) addon for both /etc and /var/lib sub-directories. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the system's features. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
+
+I'm in the process of switching my desktop to NixOS, and will be utilizing Hyprland on it.
 
 ---
 ## Installation
 While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
 
 * Scans and selects disk devices to prepare for installation
-* Create either a swap partition or swap file, based on system RAM, or no swap
+* Prompts to create either a swap file or partition, based on system RAM, or no swap at all
 * Prompts what user name is used in the flake, which is used for the password file name
 * Prompts to set the user password and then generates a hashed password file
 * Prompts to set GRUB2 password and then generates hashed password file (Systemd is used by default, but sets this for possible future use.)
-* Creates, encrypts, and formats: boot, key, swap (if selected), and root partitions
+* Creates, encrypts, and formats: boot, key, swap (if used), and root partitions
 * Prompts for cryptkey and cryptroot passwords (cryptkey is used at every boot; cryptroot is a backup in the case cryptkey gets corrupted.)
 * Backs up LUKS headers for cryptkey/root
 * Creates persist directories
 * Clones this repo into the persistant config directory
 * Select a system hostname based off what is already established in the flake
+* Generates and adds a swap.nix file to the local repo before install (if used)
 * Install NixOS
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
@@ -24,15 +27,12 @@ Now for the fun part! To start the installation script from within the NixOS ins
 
 ---
 ## Breakdown
-The main flake.nix has your typical inputs/outputs declaration, as well as the setup package that is used for formatting/preparing/installing the system.
-
-Instead of your typical nixosConfiguration(s) being declared here, the /hosts directory is directly imported, which is where the declarations live.
+The main flake.nix contains all your typical inputs/outputs, nixosConfigurations, some custom variables, as well as the setup package that is used for formatting/preparing/installing the system.
 
 ### Hosts
 Inside /hosts:
 
-* default.nix is where all the typical systems/hostnames are declared. There are also some custom variables that are established, like: username, user's name, and which terminal/editor will be used.
-* common.nix is the base system configuration that is deployed with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
+* common.nix is the base system configuration that is imported with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
 * Each system will then have its own directory with their configuration file(s) inside of it. If swap was setup during install, there will also be a swap.nix file generated inside the deployed system's directory.
 
 ### Modules

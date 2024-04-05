@@ -1,4 +1,4 @@
-{ config, inputs, lib, pkgs, stable, vars, ... }:
+{ config, lib, pkgs, stable, vars, ... }:
 let
   pywalfox = pkgs.python3.pkgs.buildPythonPackage {
     pname = "pywalfox";
@@ -136,11 +136,10 @@ in {
 
     settings = {
       auto-optimise-store = true;
+      experimental-features = [ "nix-command" "flakes" ];
       trusted-users = [ "@wheel" ];
     };
   };
-
-  nixpkgs.config.allowUnfree = true;
 
   programs.dconf.enable = true;
 

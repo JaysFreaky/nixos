@@ -16,7 +16,6 @@
   };
 
   nixConfig = {
-    extra-experimental-features = [ "nix-command" "flakes" ];
     extra-substituters = [
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
@@ -42,20 +41,80 @@
     ...
   } @ inputs:
   let
-    inherit (self) outputs;
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-  in {
-    packages.${system} = {
-      setup = pkgs.callPackage ./packages/setup { };
+    nixosSystem = nixpkgs.lib.nixosSystem;
+
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    stable = import nixpkgs-stable {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    vars = {
+      user = "jays";
+      name = "Jason";
+      editor = "nvim";
+      # alacritty or kitty
+      terminal = "alacritty";
     };
 
-    # Available through 'nixos-rebuild --flake .#your-hostname'
-    nixosConfigurations = (
-      import ./hosts {
-        inherit (nixpkgs) lib;
-        inherit inputs outputs hardware home-manager impermanence nix-flatpak nixpkgs nixpkgs-stable nur;
+    standardModules = [
+      ./hosts/common.nix
+      home-manager.nixosModules.home-manager {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
       }
-    );
+      impermanence.nixosModules.impermanence
+      nix-flatpak.nixosModules.nix-flatpak
+      nur.nixosModules.nur
+    ];
+  in {
+    # Available through 'nixos-rebuild --flake .#your-hostname'
+    nixosConfigurations = {
+      FW13 = nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs pkgs stable system vars;
+          host.hostName = "FW13";
+        };
+        modules = standardModules ++ [
+          ./hosts/FW13
+          hardware.nixosModules.framework-13-7040-amd
+        ];
+      };
+
+      T450s = nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs pkgs stable system vars;
+          host.hostName = "T450s";
+        };
+        modules = standardModules ++ [
+          ./hosts/T450s
+          hardware.nixosModules.lenovo-thinkpad-t450s
+        ];
+      };
+
+      VM = nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs pkgs stable system vars;
+          hosthostName = "VM";
+        };
+        modules = standardModules ++ [
+          ./hosts/VM
+        ];
+      };
+    };
+
+    packages.${system} = {
+      setup = nixpkgs.legacyPackages.${system}.callPackage ./packages/setup { };
+    };
+
   };
 }
