@@ -216,7 +216,6 @@ if [ "$SWAP_TYPE" == 'File' ]; then
   btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
   rm -rf /mnt/swap/swapfile
   gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
-  gum spin --show-output --title "Disabling copy-on-write for swapfile..." -- chattr +C /mnt/swap/swapfile
 fi
 # Empty, read-only snapshot used to potentially restore / at boot, if enabled
 gum spin --show-output --title "Snapshotting empty root subvolume..." -- btrfs subvolume snapshot -r /mnt/root /mnt/root-blank
@@ -235,7 +234,7 @@ gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,com
 # Mount swap file/partition
 if [ "$SWAP_TYPE" == 'File' ]; then
   mkdir -p /mnt/swap
-  # BTRFS subvolumes currently inherit options from "/", so these options do nothing
+  # BTRFS subvolumes currently inherit options from "/"; mkswapfile sets +C attribute (disables copy-on-write)
   gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
   # Swapfile hibernation variables to add to swap.nix
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
