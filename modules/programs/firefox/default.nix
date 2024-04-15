@@ -34,8 +34,8 @@ in {
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
         extensions = with firefox-addons; [
-          #adaptive-tab-bar-color (Not added to repo yet)
-          bypass-paywalls-clean
+          #adaptive-tab-bar-color       # Not added to repo yet
+          #bypass-paywalls-clean        # DMCA takedown - causes install/rebuilds to fail
           canvasblocker
           darkreader
           enhancer-for-youtube
