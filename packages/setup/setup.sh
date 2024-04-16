@@ -216,7 +216,7 @@ gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume creat
   /mnt/log
 if [ "$SWAP_TYPE" == 'File' ]; then
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
-  # Bug where offset doesn't get calculated correctly on first file | running 'lsattr' can verify +C attribute was added
+  # Bug where offset doesn't get calculated correctly on first file
   btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
   rm -rf /mnt/swap/swapfile
   gum spin --show-output --title "Creating swapfile..." -- btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile
@@ -238,8 +238,8 @@ gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,com
 # Mount swap file/partition
 if [ "$SWAP_TYPE" == 'File' ]; then
   mkdir -p /mnt/swap
-  # BTRFS subvolumes currently inherit options from "/"; mkswapfile sets +C attribute (disables copy-on-write)
-  gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime,nodatacow,nodatasum /dev/mapper/cryptroot /mnt/swap
+  # BTRFS subvolumes currently inherit options from "/"; mkswapfile sets +C attribute (disables copy-on-write) | 'lsattr' can verify +C attribute was added
+  gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime /dev/mapper/cryptroot /mnt/swap
   # Swapfile hibernation variables to add to swap.nix
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
   SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
@@ -305,18 +305,16 @@ fi
 # Create swap.nix file in host's directory
 if [ "$SWAP_TYPE" == 'File' ]; then
   {
-    echo '{ config, ... }:'
-    echo '{'
+    echo '{ config, ... }: {'
     echo '  boot.kernelParams = [ "resume_offset='"$SWAP_OFFSET"'" ];'
     echo '  boot.resumeDevice = "/dev/disk/by-uuid/'"$SWAP_UUID"'";'
-    echo '  fileSystems."/swap" = { device = "/dev/mapper/cryptroot"; fsType = "btrfs"; options = [ "subvol=swap" "compress=no" "noatime" "nodatacow" "nodatasum" ]; };'
+    echo '  fileSystems."/swap" = { device = "/dev/mapper/cryptroot"; fsType = "btrfs"; options = [ "subvol=swap" "compress=no" "noatime" ]; };'
     echo '  swapDevices = [ { device = "/swap/swapfile"; } ];'
     echo '}'
   } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 elif [ "$SWAP_TYPE" == 'Partition' ]; then
   {
-    echo '{ config, ... }:'
-    echo '{'
+    echo '{ config, ... }: {'
     echo '  boot.initrd.luks.devices."cryptswap" = { device = "/dev/disk/by-partlabel/cryptswap"; keyFile = "/dev/mapper/cryptkey"; keyFileSize = 8192; };'
     echo '  boot.resumeDevice = "/dev/mapper/cryptswap";'
     echo '  swapDevices = [ { device = "/dev/mapper/cryptswap"; } ];'
