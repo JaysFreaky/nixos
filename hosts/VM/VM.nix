@@ -33,7 +33,7 @@
     ];
   };
 
-  services.xserver.displayManager.autoLogin = {
+  services.displayManager.autoLogin = {
     enable = lib.mkForce true;
     user = "${vars.user}";
   };

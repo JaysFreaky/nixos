@@ -66,6 +66,13 @@ in {
       # Manages keys/passwords in gnome-keyring
       dbus.packages = [ pkgs.gnome.seahorse ];
 
+      # Auto login can be enabled because LUKS is setup
+      # However, this will prevent the keyring from unlocking
+      displayManager.autoLogin = {
+        enable = mkDefault false;
+        user = "${vars.user}";
+      };
+
       # Remove all games instead of individually above
       gnome.games.enable = false;
 
@@ -74,17 +81,7 @@ in {
       xserver = {
         enable = true;
         desktopManager.gnome.enable = true;
-
-        displayManager = {
-          gdm.enable = true;
-
-          # Auto login can be enabled because LUKS is setup
-          # This will prevent the keyring from unlocking
-          autoLogin = {
-            enable = mkDefault false;
-            user = "${vars.user}";
-          };
-        };
+        displayManager.gdm.enable = true;
 
         excludePackages = with pkgs; [
           xterm
