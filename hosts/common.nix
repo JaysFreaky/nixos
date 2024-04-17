@@ -111,7 +111,7 @@ in {
   fonts.packages = with pkgs; [
     cantarell-fonts               # GNOME
     font-awesome                  # Icons
-    inter                         # Good for waybar
+    inter                         # Waybar
     (nerdfonts.override {
       fonts = [
         "FiraCode"
@@ -138,6 +138,14 @@ in {
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
+      substituters = [
+        "https://nix-community.cachix.org"
+        "https://hyprland.cachix.org"
+      ];
+      trusted-public-keys = [
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      ];
       trusted-users = [ "@wheel" ];
     };
   };
@@ -148,7 +156,7 @@ in {
     polkit.enable = true;
 
     sudo = {
-      # TmpFS/rollbacks result in sudo lectures after each reboot
+      # Rollbacks would result in sudo lectures after each reboot
       extraConfig = ''
         Defaults lecture = never
       '';
@@ -166,7 +174,7 @@ in {
     # Enable SSD trim
     fstrim.enable = lib.mkDefault true;
 
-    # Can still SSH into external systems with this disabled
+    # SSHing into these systems is disabled, but can still SSH out
     openssh = {
       enable = false;
       #knownHosts.<name>.publicKeyFile = "";
@@ -202,11 +210,19 @@ in {
     users.root.initialHashedPassword = "!";
     #users.root.shell = "/run/current-system/sw/bin/nologin";
 
-    # Just me using this system, so user is dynamic
+    # Only me using these systems, so user is a variable
     users.${vars.user} = {
       createHome = true;
       description = "${vars.name}";
-      extraGroups = [ "audio" "gamemode" "input" "networkmanager" "syncthing" "video" "wheel" ];
+      extraGroups = [
+        "audio"
+        "gamemode"
+        "input"
+        "networkmanager"
+        "syncthing"
+        "video"
+        "wheel"
+      ];
       hashedPasswordFile = "/persist/etc/users/${vars.user}";
       isNormalUser = true;
     };
