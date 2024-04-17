@@ -101,6 +101,7 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
+      #"amdgpu.sg_display=0"
       #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];

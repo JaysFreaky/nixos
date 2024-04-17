@@ -227,18 +227,27 @@ in {
       zenpower
     ];
 
+    # Latest kernel - 6.8.5
     kernelPackages = pkgs.linuxPackages_latest;
-    # Previous stable kernel
+    # Previous stable kernels
+    #kernelPackages = pkgs.linuxPackages_6_6;
     #kernelPackages = pkgs.linuxPackages_6_1;
 
     kernelParams = [
-      "amd_iommu=off"  # fixes VP9/VAAPI video glitches
-      "amd_pstate=active"  # enables power profiles daemon
-      "amdgpu.sg_display=0"  # fixes white screen / glitches
+      # Fixes VP9/VAAPI video glitches
+      "amd_iommu=off"
+      # Enables power profiles daemon
+      "amd_pstate=active"
+      # Fixes white screen / glitches
+      "amdgpu.sg_display=0"
+      # Disable IPv6 stack
       "ipv6.disable=1"
-      "mem_sleep_default=deep"  # hibernation
+      # Hibernation fix
+      "mem_sleep_default=deep"
+      # Fixes waking after 5 minutes - Testing off with 6.8.5 kernel
+      #"rtc_cmos.use_acpi_alarm=1"
       #"quiet"
-      "rtc_cmos.use_acpi_alarm=1"  # fixes waking after 5 minutes - remove at kernel 6.8?
+      #"splash"
     ];
    
     kernelPatches = [
@@ -306,8 +315,9 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  # 6.7 introduced a wifi disconnection bug: https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
-  # on resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
+  # 6.7 introduced a wifi disconnection bug - still occurring in 6.8.2
+  # On resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
+  # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
     enableIPv6 = false;
     hostName = host.hostName;
