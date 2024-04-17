@@ -1,4 +1,4 @@
-{ config, host, lib, modulesPath, pkgs, vars, ... }:
+{ config, host, lib, pkgs, vars, ... }:
 let
   set_dpm = pkgs.writeShellScriptBin "dpm.sh" ''
     #!/usr/bin/env bash
@@ -17,8 +17,7 @@ let
     echo $DRM_PERF_LEVEL > /sys/class/drm/card1/device/power_dpm_force_performance_level
   '';
 in {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
-    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
+  imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -116,8 +115,6 @@ in {
   # Hardware
   ##########################################################
   hardware = {
-    cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
     enableAllFirmware = true;
 
     # For kernels older than 6.7
@@ -149,8 +146,6 @@ in {
     };
   };
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
   # Auto-tune on startup
   powerManagement = {
     # “ondemand” “powersave” “performance”
@@ -165,10 +160,10 @@ in {
     fwupd = {
       enable = true;
 
-      /*
       # v1.9.7 is required to downgrade the fingerprint sensor firmware
       # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
       # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
+      /*
       package = (import (builtins.fetchTarball {
         url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
         sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
@@ -221,19 +216,20 @@ in {
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
+    # Allow 5GHz wifi
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
     '';
 
-    kernelModules = [ "kvm-amd" ];
+    kernelModules = [ ];
     extraModulePackages = with config.boot.kernelPackages; [
       framework-laptop-kmod
       zenpower
     ];
 
+    kernelPackages = pkgs.linuxPackages_latest;
     # Previous stable kernel
     #kernelPackages = pkgs.linuxPackages_6_1;
-    kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
       "amd_iommu=off"  # fixes VP9/VAAPI video glitches
@@ -250,19 +246,16 @@ in {
         name = "fw-amd-ec";
         patch = ./fw-amd-ec.patch;
       }
+      {
+        name = "fw-amd-usbpd";
+        patch = ./fw-amd-usbpd.patch;
+      }
     ];
 
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [
-        "cryptd"
-        "nvme"
-        "sd_mod"
-        "thunderbolt"
-        "usb_storage"
-        "xhci_pci"
-      ];
+      availableKernelModules = [ "cryptd" ];
       kernelModules = [ "amdgpu" ];
 
       # Required for full Plymouth experience (password prompt)
@@ -315,28 +308,19 @@ in {
   ##########################################################
   # 6.7 introduced a wifi disconnection bug: https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   # on resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
-  networking = with host; {
+  networking = {
     enableIPv6 = false;
-    hostName = hostName;
-
-    firewall = {
-      enable = true;
-      #allowedTCPPorts = [ ];
-      #allowedUDPPorts = [ ];
-    };
-
+    hostName = host.hostName;
     # Interfaces not needed with NetworkManager enabled
-    #interfaces.wlp1s0.useDHCP = lib.mkDefault true;
-    #
-    # Ethernet adapter left-rear USB port
-    #interfaces.enp195s0f4u1c2.useDHCP = lib.mkDefault true;
-    # Ethernet adapter right-rear USB port
+    # USB Ethernet right-rear port
     #interfaces.enp195s0f3u1c2.useDHCP = lib.mkDefault true;
+    # USB Ethernet left-rear port
+    #interfaces.enp195s0f4u1c2.useDHCP = lib.mkDefault true;
 
     networkmanager = {
       enable = true;
       wifi = {
-        # Faster wifi on AMD models
+        # Faster wifi on AMD models with iwd
         backend = "iwd";
         macAddress = "stable-ssid";
         powersave = false;

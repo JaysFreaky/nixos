@@ -1,3 +1,6 @@
 {
-  imports = [ ./T450s.nix ];
+  imports = [
+    ./T450s.nix
+    ./hardware-configuration.nix
+  ];
 }

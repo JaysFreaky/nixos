@@ -1,3 +1,6 @@
 {
-  imports = [ ./M1EVO.nix ];
+  imports = [
+    ./M1EVO.nix
+    ./hardware-configuration.nix
+  ];
 }

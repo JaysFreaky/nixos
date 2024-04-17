@@ -1,0 +1,17 @@
+Link: https://patchwork.kernel.org/project/chrome-platform/patch/20240406191734.137797-1-superm1@gmail.com/
+---
+
+diff --git a/drivers/power/supply/cros_usbpd-charger.c b/drivers/power/supply/cros_usbpd-charger.c
+index b6c96376776a..4e69da2cce7b 100644
+--- a/drivers/power/supply/cros_usbpd-charger.c
++++ b/drivers/power/supply/cros_usbpd-charger.c
+@@ -570,7 +570,8 @@ static int cros_usbpd_charger_probe(struct platform_device *pd)
+ 		 * This can happen on a system that doesn't support USB PD.
+ 		 * Log a message, but no need to warn.
+ 		 */
+-		dev_info(dev, "No USB PD charging ports found\n");
++		dev_dbg(dev, "No USB PD charging ports found\n");
++		return -ENODEV;
+ 	}
+
+ 	charger->num_charger_ports = cros_usbpd_charger_get_num_ports(charger);

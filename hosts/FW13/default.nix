@@ -1,3 +1,6 @@
 {
-  imports = [ ./FW13.nix ];
+  imports = [
+    ./FW13.nix
+    ./hardware-configuration.nix
+  ];
 }

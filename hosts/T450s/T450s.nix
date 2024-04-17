@@ -1,8 +1,7 @@
-{ config, host, lib, modulesPath, pkgs, vars, ... }:
+{ config, host, lib, pkgs, vars, ... }:
 
 {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
-    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
+  imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -46,8 +45,6 @@
   # Hardware
   ##########################################################
   hardware = {
-    cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
     opengl = {
       enable = true;
       driSupport = true;
@@ -62,8 +59,6 @@
     };
   };
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
 
   ##########################################################
   # Boot / Encryption
@@ -75,7 +70,7 @@
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    kernelModules = [ "kvm-intel" ];
+    kernelModules = [ ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
@@ -84,16 +79,7 @@
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [
-        "aesni_intel"
-        "ahci"
-        "cryptd"
-        "ehci_pci"
-        "rtsx_pci_sdmmc"
-        "sd_mod"
-        "usb_storage"
-        "xhci_pci"
-      ];
+      availableKernelModules = [ "aesni_intel" "cryptd" ];
       kernelModules = [ "nfs" ];
 
       # Required for full Plymouth experience (password prompt)
@@ -144,13 +130,10 @@
   ##########################################################
   # Network
   ##########################################################
-  networking = with host; {
-    hostName = hostName;
+  networking = {
+    hostName = host.hostName;
     networkmanager.enable = true;
-
     # Interfaces not needed with NetworkManager enabled
-    #interfaces.enp0s25.useDHCP = lib.mkDefault true;
-    #interfaces.wlp3s0.useDHCP = lib.mkDefault true;
   };
 
 

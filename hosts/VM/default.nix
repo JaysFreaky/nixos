@@ -1,3 +1,6 @@
 {
-  imports = [ ./VM.nix ];
+  imports = [
+    ./VM.nix
+    ./hardware-configuration.nix
+  ];
 }

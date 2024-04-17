@@ -1,9 +1,8 @@
-{ config, host, lib, modulesPath, pkgs, vars, ... }:
+{ config, host, lib, pkgs, vars, ... }:
 let
   scale = 1.25;
 in {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ] ++
-    lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
+  imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
@@ -60,8 +59,6 @@ in {
   # Hardware
   ##########################################################
   hardware = {
-    cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
     opengl = {
       enable = true;
       driSupport = true;
@@ -89,8 +86,6 @@ in {
 
   services.hardware.openrgb.enable = true;
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
 
   ##########################################################
   # Boot / Encryption
@@ -102,7 +97,7 @@ in {
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    kernelModules = [ "kvm-amd" ];
+    kernelModules = [ ];
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
@@ -111,15 +106,7 @@ in {
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [
-        "ahci"
-        "cryptd"
-        "nvme"
-        "sd_mod"
-        "usb_storage"
-        "usbhid"
-        "xhci_pci"
-      ];
+      availableKernelModules = [ "cryptd" ];
       kernelModules = [
         #"amdgpu"
         "nfs"
@@ -173,14 +160,10 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  networking = with host; {
-    hostName = hostName;
+  networking = {
+    hostName = host.hostName;
     networkmanager.enable = true;
-    networkmanager.unmanaged = [ "wlp6s0" ];
-
     # Interfaces not needed with NetworkManager enabled
-    #interfaces.enp7s0.useDHCP = lib.mkDefault true;
-    #interfaces.wlp6s0.useDHCP = lib.mkForce false;
   };
 
 
