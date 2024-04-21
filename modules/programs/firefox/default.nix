@@ -15,22 +15,23 @@ in {
         #userContent = builtins.readFile ./userContent.css;
 
         containers = {
-          "Amazon" = {
-            color = "yellow";
-            icon = "cart";
-            id = 1;
-          };
           "Google" = {
             color = "red";
             icon = "fence";
-            id = 0;
+            id = 1;
+          };
+          "Amazon" = {
+            color = "yellow";
+            icon = "cart";
+            id = 2;
           };
           "Banking" = {
             color = "green";
             icon = "dollar";
-            id = 2;
+            id = 3;
           };
         };
+        containersForce = true;
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
         extensions = with firefox-addons; [
