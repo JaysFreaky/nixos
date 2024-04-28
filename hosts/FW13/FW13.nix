@@ -54,12 +54,15 @@ in {
       protonmail-desktop
 
     # Framework Hardware
+      amdgpu_top          # GPU stats
+      corectrl            # CPU/GPU undervolting
       dmidecode           # Firmware | 'dmidecode -s bios-version'
       framework-tool      # Swiss army knife for FWs
       fw-ectool           # ectool
       iio-sensor-proxy    # Ambient light sensor | 'monitor-sensor'
+      #lact                # GPU controller
       lshw                # Firmware
-      radeontop           # GPU stats
+      powertop            # Power monitor
       zenmonitor          # CPU stats
 
     # VPN
@@ -71,6 +74,8 @@ in {
       MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
+
+  #programs.coolercontrol.enable = true;
 
 
   ##########################################################
@@ -106,6 +111,16 @@ in {
     xdg.configFile = {
       # Minimize on-start not yet integrated
       #"autostart/protonvpn-app.desktop".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/applications/protonvpn-app.desktop";
+      "autostart/easyeffects-service.desktop".text = ''
+        [Desktop Entry]
+        Name=Easy Effects
+        Comment=Easy Effects Service
+        Exec=easyeffects --gapplication-service
+        Icon=com.github.wwmm.easyeffects
+        StartupNotify=false
+        Terminal=false
+        Type=Application
+      '';
       "easyeffects/output/philonmetal.json".source = ./philonmetal.json;
     };
   };
@@ -116,12 +131,12 @@ in {
   ##########################################################
   hardware = {
     enableAllFirmware = true;
+    
+    # amdgpu / wifi
+    firmware = [ pkgs.linux-firmware ];
 
-    # For kernels older than 6.7
-    #framework.amd-7040.preventWakeOnAC = true;
-
-    # Ambient light sensor
-    sensor.iio.enable = true;
+    # For kernels < 6.7
+    framework.amd-7040.preventWakeOnAC = false;
 
     # Allow 5GHz wifi
     wirelessRegulatoryDatabase = true;
@@ -148,9 +163,8 @@ in {
 
   # Auto-tune on startup
   powerManagement = {
-    # “ondemand” “powersave” “performance”
+    # "powersave" “ondemand” “performance”
     cpuFreqGovernor = "ondemand";
-
     # Auto-tuning
     powertop.enable = true;
   };
@@ -159,7 +173,6 @@ in {
     # Firmware updater
     fwupd = {
       enable = true;
-
       # v1.9.7 is required to downgrade the fingerprint sensor firmware
       # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
       # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
@@ -171,31 +184,22 @@ in {
       */
     };
 
-    # Power management
-    upower.enable = true;
-
-    xserver.videoDrivers = [
-      "amdgpu"
-      "modesetting"
-    ];
-
-    # Suspend-then-hibernate everywhere
+    # Lid close, power button, and idle actions
     logind = {
-      lidSwitch = "suspend-then-hibernate";
+      lidSwitch = "suspend";
       powerKey = "suspend-then-hibernate";
       extraConfig = ''
-        IdleAction=suspend-then-hibernate
+        IdleAction=suspend
         IdleActionSec=15m
       '';
     };
-
-    # Power profiles
-    power-profiles-daemon.enable = true;
 
     # GPU performance - power_dpm_force_performance_level is auto by default
     udev.extraRules = ''
       SUBSYSTEM=="power_supply" RUN+="${set_dpm}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
     '';
+    
+    xserver.videoDrivers = [ "amdgpu" ];
   };
 
   # Sleep for 30m then hibernate
@@ -211,14 +215,15 @@ in {
   ##########################################################
   boot = {
     plymouth = {
-      enable = false;
+      enable = true;
       theme = "nixos-bgrt";
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    # Allow 5GHz wifi
+    # Allow 5GHz wifi & framework-laptop-kmod
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
+      framework_laptop
     '';
 
     kernelModules = [ ];
@@ -227,27 +232,20 @@ in {
       zenpower
     ];
 
-    # Latest kernel - 6.8.5
     kernelPackages = pkgs.linuxPackages_latest;
-    # Previous stable kernels
-    #kernelPackages = pkgs.linuxPackages_6_6;
+    # Previous stable kernel
     #kernelPackages = pkgs.linuxPackages_6_1;
 
     kernelParams = [
+      # Mask gpe0B ACPI interrupts
+      "acpi_mask_gpe=0x0B"
       # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
       # Enables power profiles daemon
       "amd_pstate=active"
-      # Fixes white screen / glitches
-      "amdgpu.sg_display=0"
       # Disable IPv6 stack
       "ipv6.disable=1"
-      # Hibernation fix
-      "mem_sleep_default=deep"
-      # Fixes waking after 5 minutes - Testing off with 6.8.5 kernel
-      #"rtc_cmos.use_acpi_alarm=1"
-      #"quiet"
-      #"splash"
+      "quiet"
     ];
    
     kernelPatches = [
@@ -315,22 +313,22 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  # 6.7 introduced a wifi disconnection bug - still occurring in 6.8.2
+  # 6.7 introduced a wifi disconnection bug - still occurring in 6.8.2?
   # On resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
   # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
     enableIPv6 = false;
     hostName = host.hostName;
     # Interfaces not needed with NetworkManager enabled
-    # USB Ethernet right-rear port
+    # USBC Ethernet right-rear port
     #interfaces.enp195s0f3u1c2.useDHCP = lib.mkDefault true;
-    # USB Ethernet left-rear port
+    # USBC Ethernet left-rear port
     #interfaces.enp195s0f4u1c2.useDHCP = lib.mkDefault true;
 
     networkmanager = {
       enable = true;
       wifi = {
-        # Faster wifi on AMD models with iwd
+        # iwd provides more stability/throughput on AMD FW models
         backend = "iwd";
         macAddress = "stable-ssid";
         powersave = false;
