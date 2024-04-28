@@ -54,15 +54,15 @@ in {
       protonmail-desktop
 
     # Framework Hardware
-      amdgpu_top          # GPU stats
-      corectrl            # CPU/GPU undervolting
       dmidecode           # Firmware | 'dmidecode -s bios-version'
       framework-tool      # Swiss army knife for FWs
       fw-ectool           # ectool
       iio-sensor-proxy    # Ambient light sensor | 'monitor-sensor'
-      #lact                # GPU controller
       lshw                # Firmware
-      powertop            # Power monitor
+
+    # Monitoring
+      amdgpu_top          # GPU stats
+      powertop            # Power stats
       zenmonitor          # CPU stats
 
     # VPN
@@ -74,8 +74,6 @@ in {
       MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
-
-  #programs.coolercontrol.enable = true;
 
 
   ##########################################################

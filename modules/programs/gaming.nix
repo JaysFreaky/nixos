@@ -8,10 +8,9 @@ with lib;
 
   config = mkIf (config.gaming.enable) {
     environment.systemPackages = with pkgs; [
-      #coolercontrol.coolercontrold     # Fan control daemon
-      #coolercontrol.coolercontrol-gui  # Fan control GUI
       corectrl                          # CPU/GPU undervolting
       #heroic                           # Game launcher
+      lact                              # GPU controller
       #lutris                           # Game launcher
       #mangohud                         # FPS counter
       #moonlight-qt                     # Remote streaming

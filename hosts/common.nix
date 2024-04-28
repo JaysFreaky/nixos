@@ -76,6 +76,7 @@ in {
     # Terminal
       bat                         # cat with syntax highlighting
       btop                        # Resource manager
+      clinfo                      # OpenCL info | 'clinfo -l' or -a
       coreutils                   # GNU utilities
       fastfetch                   # Faster system info
       file                        # File information
