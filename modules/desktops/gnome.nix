@@ -78,27 +78,24 @@ in {
 
       gnome.gnome-keyring.enable = true;
 
+      libinput = {
+        enable = true;
+        touchpad = {
+          disableWhileTyping = true;
+          tapping = true;
+          tappingDragLock = true;
+        };
+      };
+
       xserver = {
         enable = true;
         desktopManager.gnome.enable = true;
         displayManager.gdm.enable = true;
+        xkb.layout = "us";
 
         excludePackages = with pkgs; [
           xterm
         ];
-
-        libinput = {
-          enable = true;
-          touchpad = {
-            disableWhileTyping = true;
-            tapping = true;
-            tappingDragLock = true;
-          };
-        };
-
-        xkb = {
-          layout = "us";
-        };
       };
 
       # Enable additional systray icons
