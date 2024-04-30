@@ -62,6 +62,7 @@ in {
 
     # Monitoring
       amdgpu_top          # GPU stats
+      nvtopPackages.amd   # GPU stats
       powertop            # Power stats
       zenmonitor          # CPU stats
 
