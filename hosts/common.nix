@@ -85,6 +85,7 @@ in {
       lshw                        # Hardware config
       neofetch                    # System info
       nix-tree                    # Browse nix store
+      nvme-cli
       pciutils                    # Manage PCI | 'lspci'
       #${vars.terminal}           # Terminal installed via variable
       tldr                        # Helper
