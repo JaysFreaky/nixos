@@ -222,10 +222,14 @@ in {
     # Allow 5GHz wifi & framework-laptop-kmod
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
-      framework_laptop
     '';
 
-    kernelModules = [ ];
+    # Zenpower uses same PCI device as k10temp, so disabling k10temp
+    blacklistedKernelModules = [ "k10temp" ];
+    kernelModules = [
+      "framework_laptop"
+      "zenpower"
+    ];
     extraModulePackages = with config.boot.kernelPackages; [
       framework-laptop-kmod
       zenpower
