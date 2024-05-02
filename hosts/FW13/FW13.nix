@@ -317,6 +317,7 @@ in {
   # Network
   ##########################################################
   # 6.7 introduced a wifi disconnection bug - still occurring in 6.8.2?
+  # I haven't experienced this yet - maybe present in wpa_supplicant and not iwd?
   # On resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
   # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
