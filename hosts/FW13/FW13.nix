@@ -148,7 +148,7 @@ in {
         amdvlk
         libvdpau-va-gl
         #mesa
-        rocmPackages.clr
+        rocmPackages.clr.icd
         vaapiVdpau
       ];
       extraPackages32 = with pkgs; [
@@ -162,6 +162,7 @@ in {
 
   # Auto-tune on startup
   powerManagement = {
+    enable = true;
     # "powersave" “ondemand” “performance”
     cpuFreqGovernor = "ondemand";
     # Auto-tuning
@@ -198,6 +199,11 @@ in {
       SUBSYSTEM=="power_supply" RUN+="${set_dpm}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
     '';
     
+    upower = {
+      enable = true;
+      criticalPowerAction = "Hibernate";
+    };
+
     xserver.videoDrivers = [ "amdgpu" ];
   };
 
