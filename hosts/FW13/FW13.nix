@@ -48,26 +48,24 @@ in {
       ffmpeg
 
     # Email
-      #thunderbird        # Email client
-      #protonmail-bridge  # Allows Thunderbird to connect to Proton
-      #protonmail-bridge-gui
-      protonmail-desktop
+      thunderbird             # Email client
+      protonmail-bridge-gui   # GUI bridge for Thunderbird
 
     # Framework Hardware
-      dmidecode           # Firmware | 'dmidecode -s bios-version'
-      framework-tool      # Swiss army knife for FWs
-      fw-ectool           # ectool
-      iio-sensor-proxy    # Ambient light sensor | 'monitor-sensor'
-      lshw                # Firmware
+      dmidecode               # Firmware | 'dmidecode -s bios-version'
+      framework-tool          # Swiss army knife for FWs
+      fw-ectool               # ectool
+      iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
+      lshw                    # Firmware
 
     # Monitoring
-      amdgpu_top          # GPU stats
-      nvtopPackages.amd   # GPU stats
-      powertop            # Power stats
-      zenmonitor          # CPU stats
+      amdgpu_top              # GPU stats
+      nvtopPackages.amd       # GPU stats
+      powertop                # Power stats
+      zenmonitor              # CPU stats
 
     # VPN
-      protonvpn-gui       # VPN client
+      protonvpn-gui           # VPN client
     ];
 
     variables = {
@@ -75,6 +73,22 @@ in {
       MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
+
+  programs.gamescope.args = [
+    #"--adaptive-sync"
+    #"--borderless"
+    #"--expose-wayland"
+    #"--filter fsr"
+    "--fullscreen"
+    "--framerate-limit 60"
+    #"--hdr-enabled"
+    "--mangoapp"
+    "--nested-height 1504"
+    "--nested-refresh 60"
+    "--nested-width 2256"
+    #"--prefer-vk-device \"1002:15bf\""
+    "--rt"
+  ];
 
 
   ##########################################################
@@ -142,20 +156,19 @@ in {
 
     opengl = {
       enable = true;
+      # dri are Mesa drivers
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl
-        #mesa
         rocmPackages.clr.icd
         vaapiVdpau
       ];
-      extraPackages32 = with pkgs; [
-        driversi686Linux.amdvlk
-        driversi686Linux.libvdpau-va-gl
-        #driversi686Linux.mesa
-        driversi686Linux.vaapiVdpau
+      extraPackages32 = with pkgs.driversi686Linux; [
+        amdvlk
+        libvdpau-va-gl
+        vaapiVdpau
       ];
     };
   };

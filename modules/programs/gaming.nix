@@ -7,32 +7,73 @@ with lib;
   };
 
   config = mkIf (config.gaming.enable) {
+    # Increase stability/performance of games
+    boot.kernel.sysctl."vm.max_map_count" = lib.mkForce 2147483642;
+
     environment.systemPackages = with pkgs; [
       corectrl                          # CPU/GPU undervolting
-      #heroic                           # Game launcher
+      gamescope-wsi                     # Required for HDR?
+      #heroic                           # Game launcher - Epic, GOG, Prime
       lact                              # GPU controller
-      #lutris                           # Game launcher
-      #mangohud                         # FPS counter
       #moonlight-qt                     # Remote streaming
       #playonlinux                      # GUI for Windows programs
-      #protonup-ng                      # CLI updater for ProtonGE
-      #protonup-qt                      # GUI updater for ProtonGE
-      #steam-run                        # Run commands in same environment as Steam
+      protonup-ng                       # CLI updater for ProtonGE | 'protonup'
+      (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
+        extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
+          then extraPackages
+          else extraPackages32
+        );
+
+        # Still determining which wine packages to use
+        extraPkgs = pkgs: with pkgs; ( if pkgs.hostPlatform.is64bit
+            then [ pkgs.wine64 ]
+            else [ pkgs.wine ]
+          ) ++ [
+          dxvk
+          vkd3d
+          winetricks
+        ];
+      })
     ];
 
     environment.variables = {
-      # Lutris Feral gamemode enablement
-      #LD_PRELOAD = "/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so";
+      # Lutris feral gamemode enablement - pre v1.3
+      #LD_PRELOAD = "$LD_PRELOAD:/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so";
 
-      # ProtonGE path - not needed with proton-ge-bin?
+      # ProtonGE path - pre proton-ge-bin
       #STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${vars.user}/.steam/root/compatibilitytools.d";
     };
 
     home-manager.users.${vars.user} = {
       programs.mangohud = {
         enable = true;
+        enableSessionWide = false;
+
         settings = {
-          #settings
+          time = true;
+          gpu_stats = true;
+          gpu_temp = true;
+          gpu_power = true;
+          #gpu_text = "GPU";
+          cpu_stats = true;
+          cpu_temp = true;
+          cpu_power = true;
+          #cpu_text = "CPU";
+          ram = true;
+          fps = true;
+          vulkan_driver = true;
+          gamemode = true;
+          fsr = true;
+          hdr = true;
+          mangoapp_steam = true;
+          position = "top-left";
+          round_corners = 7; 
+          #width = ;
+          #height = ;
+          table_columns = 3;
+          background_alpha = 0.5;
+          #pci_dev = "0:c1:00.0";
+          toggle_hud = "Shift_R+F12";
         };
       };
     };
@@ -41,41 +82,43 @@ with lib;
       coolercontrol.enable = true;
 
       # Better gaming performance
-      # Steam: Right-click game - Properties - Launch options: gamemoderun %command%
-      # Lutris: General Preferences - Enable Feral GameMode
-        # - Global options - Add Environment Variables: LD_PRELOAD="/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so";
+      # Steam: Right-click game -> Properties -> Launch options: gamemoderun %command%
+      # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
       gamemode = {
         enable = true;
-        settings.general.inhibit_screensaver = 0;
+        settings.general.inhibit_screensaver = 1;
       };
 
-      # Steam compositor
-      gamescope.enable = true;
-
-      # Same as pkgs.steam/pkgs.steamPackages.steam - Used to also be pkgs.steam-original
       steam = {
         enable = true;
-        dedicatedServer.openFirewall = false;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
+        # Steam compositor
         gamescopeSession.enable = true;
-        remotePlay.openFirewall = false;
 
+        # Firewall related
+        dedicatedServer.openFirewall = false;
+        localNetworkGameTransfers.openFirewall = true;
+        remotePlay.openFirewall = true;
+        
         package = pkgs.steam.override {
-          extraPkgs = (pkgs: with pkgs; [
-            #gamemode
-            /* Don't remember what these do - Not sure if needed
-            xorg.libXcursor
-            xorg.libXi
-            xorg.libXinerama
-            xorg.libXScrnSaver
+          extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
+            then [ package ] ++ extraPackages
+            else [ package32 ] ++ extraPackages32
+          );
+
+          extraPkgs = pkgs: with pkgs; [
+            # Gamescope fixes for undefined symbols in X11 session
+            keyutils
+            libkrb5
             libpng
             libpulseaudio
             libvorbis
             stdenv.cc.cc.lib
-            libkrb5
-            keyutils
-            */
-          ]);
+            xorg.libXcursor
+            xorg.libXi
+            xorg.libXinerama
+            xorg.libXScrnSaver
+          ];
         };
       };
     };
