@@ -81,11 +81,11 @@ in {
       fastfetch                   # Faster system info
       file                        # File information
       killall                     # Process killer
+      libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
       lm_sensors                  # Hardware sensors | 'sensors-detect'
       lshw                        # Hardware config
-      neofetch                    # System info
       nix-tree                    # Browse nix store
-      nvme-cli
+      nvme-cli                    # Manage NVMe
       pciutils                    # Manage PCI | 'lspci'
       #${vars.terminal}           # Terminal installed via variable
       tldr                        # Helper
