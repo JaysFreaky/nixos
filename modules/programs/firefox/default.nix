@@ -7,6 +7,18 @@ in {
       enable = true;
       package = pkgs.firefox;
 
+      policies = {
+        Cookies = {
+          Allow = [
+            "https://google.com/"
+            "http://google.com/"
+            "https://youtube.com/"
+            "http://youtube.com/"
+          ];
+          Locked = false;
+        };
+      };
+
       profiles.default = {
         id = 0;
         isDefault = true;
