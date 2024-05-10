@@ -147,8 +147,8 @@ in {
         };
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
-          maximize = [];
-          minimize = [];
+          #maximize = [];
+          #minimize = [];
           move-to-monitor-down = [];
           move-to-monitor-left = [];
           move-to-monitor-right = [];
@@ -171,7 +171,7 @@ in {
           switch-to-workspace-left = [ "<Super>Page_Up" "<Super><Alt>Left" "<Control><Alt>Left" ];
           switch-to-workspace-right = [ "<Super>Page_Down" "<Super><Alt>Right" "<Control><Alt>Right" ];
           toggle-fullscreen = [ "<Shift><Super>f" ];
-          unmaximize = [];
+          #unmaximize = [];
         };
         "org/gnome/desktop/wm/preferences" = {
           button-layout = "appmenu:minimize,maximize,close";
@@ -182,14 +182,14 @@ in {
         "org/gnome/mutter" = {
           center-new-windows = true;
           edge-tiling = false;
-          # Adds 1.25 scaling option under Display
+          # Adds scaling option under Display
           experimental-features = [ "scale-monitor-framebuffer" ];
           workspaces-only-on-primary = false;
         };
         "org/gnome/mutter/keybindings" = {
-          cancel-input-capture = [ "<Super><Shift>Escape" ];
-          toggle-tiled-left = [];
-          toggle-tiled-right = [];
+          #cancel-input-capture = [ "<Super><Shift>Escape" ];
+          #toggle-tiled-left = [];
+          #toggle-tiled-right = [];
         };
         "org/gnome/mutter/wayland/keybindings" = {
           restore-shortcuts = [];
@@ -200,10 +200,9 @@ in {
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
           ];
           help = [];
-          home = [];
+          home = [ "<Super>e" ];
           magnifier = [];
           magnifier-zoom-in = [];
           magnifier-zoom-out = [];
@@ -216,11 +215,6 @@ in {
           binding = "<Super>Return";
           command = "${vars.terminal}";
           name = "Launch Terminal";
-        };
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-          binding = "<Super>e";
-          command = "nautilus";
-          name = "Launch File Manager";
         };
         "org/gnome/settings-daemon/plugins/power" = {
           sleep-inactive-ac-type = "nothing";
@@ -235,7 +229,7 @@ in {
             "bluetooth-quick-connect@bjarosze.gmail.com"
             "blur-my-shell@aunetx"
             "clipboard-indicator@tudmotu.com"
-            "forge@jmmaranan.com"
+            #"forge@jmmaranan.com"
             "just-perfection-desktop@just-perfection"
             "lockkeys@vaina.lt"
             "nightthemeswitcher@romainvigier.fr"
@@ -250,8 +244,9 @@ in {
             "kitty.desktop"
             "org.gnome.Nautilus.desktop"
             "firefox.desktop"
-            "floorp.desktop"
+            #"floorp.desktop"
             "spotify.desktop"
+            "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
             "plexmediaplayer.desktop"
@@ -293,6 +288,7 @@ in {
           strip-text = true;
           topbar-preview-size = 10;
         };
+        /*
         "org/gnome/shell/extensions/forge" = {
           css-last-update = lib.hm.gvariant.mkUint32 37;
           css-updated = "1702937809549";
@@ -348,6 +344,7 @@ in {
           window-toggle-float = [ "<Super>v" ];
           workspace-active-tile-toggle = [ "<Shift><Super>w" ];
         };
+        */
         "org/gnome/shell/extensions/just-perfection" = {
           notification-banner-position = 1;
           panel-button-padding-size = 0;
@@ -416,7 +413,7 @@ in {
         bluetooth-quick-connect
         blur-my-shell
         clipboard-indicator
-        forge
+        #forge
         just-perfection
         lock-keys
         night-theme-switcher
