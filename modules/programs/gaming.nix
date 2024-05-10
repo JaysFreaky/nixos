@@ -24,22 +24,17 @@ with lib;
           else extraPackages32
         );
 
-        # Still determining which wine packages to use
-        extraPkgs = pkgs: with pkgs; ( if pkgs.hostPlatform.is64bit
-            then [ pkgs.wine64 ]
-            else [ pkgs.wine ]
-          ) ++ [
+        extraPkgs = pkgs: with pkgs; [
           dxvk
           vkd3d
           winetricks
+          # wineWow has both x86/64 - stable, staging, or wayland
+          wineWowPackages.staging
         ];
       })
     ];
 
     environment.variables = {
-      # Lutris feral gamemode enablement - pre v1.3
-      #LD_PRELOAD = "$LD_PRELOAD:/nix/store/*-gamemode-*-lib/lib/libgamemodeauto.so";
-
       # ProtonGE path - pre proton-ge-bin
       #STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${vars.user}/.steam/root/compatibilitytools.d";
     };
@@ -82,16 +77,23 @@ with lib;
       coolercontrol.enable = true;
 
       # Better gaming performance
-      # Steam: Right-click game -> Properties -> Launch options: gamemoderun %command%
+      # Steam: Right-click game -> Properties -> Launch options: gamemoderun gamescope -- mangohud %command%
       # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
       gamemode = {
         enable = true;
-        settings.general.inhibit_screensaver = 1;
+        settings = {
+          custom = {
+            start = "${pkgs.libnotify}/bin/notify-send 'Gamemode started'";
+            end = "${pkgs.libnotify}/bin/notify-send 'Gamemode ended'";
+          };
+          general.inhibit_screensaver = 1;
+        };
       };
 
       steam = {
         enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
+
         # Steam compositor
         gamescopeSession.enable = true;
 
@@ -119,6 +121,10 @@ with lib;
             xorg.libXinerama
             xorg.libXScrnSaver
           ];
+
+          extraProfile = let gmLib = "${lib.getLib(pkgs.gamemode)}/lib"; in ''
+            export LD_PRELOAD="${gmLib}/libgamemode.so:${gmLib}/libgamemodeauto.so:$LD_PRELOAD";
+          '';
         };
       };
     };
