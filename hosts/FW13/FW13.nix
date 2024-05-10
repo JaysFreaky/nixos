@@ -82,7 +82,8 @@ in {
     "--fullscreen"
     "--framerate-limit 60"
     #"--hdr-enabled"
-    "--mangoapp"
+    # Toggling doesn't work using --mangoapp
+    #"--mangoapp"
     "--nested-height 1504"
     "--nested-refresh 60"
     "--nested-width 2256"
@@ -176,13 +177,26 @@ in {
   # Auto-tune on startup
   powerManagement = {
     enable = true;
-    # "powersave" “ondemand” “performance”
-    cpuFreqGovernor = "ondemand";
     # Auto-tuning
     powertop.enable = true;
   };
 
   services = {
+    # CPU power mode
+    auto-cpufreq = {
+      enable = true;
+      settings = {
+        battery = {
+          governor = "powersave";
+          turbo = "never";
+        };
+        charger = {
+          governor = "performance";
+          turbo = "auto";
+        };
+      };
+    };
+
     # Firmware updater
     fwupd = {
       enable = true;
@@ -207,6 +221,9 @@ in {
       '';
     };
 
+    # Temperature management
+    thermald.enable = true;
+
     # GPU performance - power_dpm_force_performance_level is auto by default
     udev.extraRules = ''
       SUBSYSTEM=="power_supply" RUN+="${set_dpm}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
@@ -216,8 +233,6 @@ in {
       enable = true;
       criticalPowerAction = "Hibernate";
     };
-
-    xserver.videoDrivers = [ "amdgpu" ];
   };
 
   # Sleep for 30m then hibernate
