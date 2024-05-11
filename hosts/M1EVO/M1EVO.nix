@@ -29,15 +29,34 @@ in {
   environment = {
     systemPackages = with pkgs; [
     # Monitoring
-      #radeontop          # GPU stats
-      zenmonitor          # CPU stats
+      amdgpu_top              # GPU stats
+      nvtopPackages.amd       # GPU stats
+      zenmonitor              # CPU stats
     ];
 
     variables = {
-      # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
+      # Set Firefox to use GPU for video codecs - run 'stat /dev/dri/*' to list GPUs
+      # Might need to set this as a package override extraProfile
       MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
+
+  programs.gamescope.args = [
+    "--adaptive-sync"
+    #"--borderless"
+    #"--expose-wayland"
+    "--filter fsr"
+    "--fullscreen"
+    #"--framerate-limit 144"
+    "--hdr-enabled"
+    # Toggling doesn't work using --mangoapp
+    #"--mangoapp"
+    "--nested-height 1440"
+    "--nested-refresh 144"
+    "--nested-width 2560"
+    #"--prefer-vk-device \"10de:2206\""
+    "--rt"
+  ];
 
 
   ##########################################################
@@ -61,20 +80,19 @@ in {
   hardware = {
     opengl = {
       enable = true;
+      # dri are Mesa/Vulkan drivers
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
-        #amdvlk
-        #libvdpau-va-gl
-        #mesa
-        #rocmPackages.clr
-        #vaapiVdpau
+        amdvlk
+        libvdpau-va-gl
+        rocmPackages.clr.icd
+        vaapiVdpau
       ];
-      extraPackages32 = with pkgs; [
-        #driversi686Linux.amdvlk
-        #driversi686Linux.libvdpau-va-gl
-        #driversi686Linux.mesa
-        #driversi686Linux.vaapiVdpau
+      extraPackages32 = with pkgs.driversi686Linux; [
+        amdvlk
+        libvdpau-va-gl
+        vaapiVdpau
       ];
     };
 
@@ -97,11 +115,15 @@ in {
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    kernelModules = [ ];
+    # Zenpower uses same PCI device as k10temp, so disabling k10temp
+    blacklistedKernelModules = [ "k10temp" ];
+    kernelModules = [
+      "openrazer"
+      "zenpower"
+    ];
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      #"amdgpu.sg_display=0"
       #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];
@@ -109,7 +131,7 @@ in {
     initrd = {
       availableKernelModules = [ "cryptd" ];
       kernelModules = [
-        #"amdgpu"
+        "amdgpu"
         "nfs"
       ];
 
@@ -196,7 +218,7 @@ in {
       ];
     };
 
-    "/home/${vars.user}/Games/Steam" = {
+    "/media/steam" = {
       device = "/dev/nvme1n1p1";
       fsType = "ext4";
       options = [
