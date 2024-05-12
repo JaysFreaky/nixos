@@ -7,17 +7,9 @@ in {
       enable = true;
       package = pkgs.firefox;
 
-      policies = {
-        Cookies = {
-          Allow = [
-            "https://google.com/"
-            "http://google.com/"
-            "https://youtube.com/"
-            "http://youtube.com/"
-          ];
-          Locked = false;
-        };
-      };
+      # Setup definied cookie exceptions
+      #policies.Cookies.Allow = [];
+      #policies.Cookies.Locked = false;
 
       profiles.default = {
         id = 0;
@@ -220,26 +212,26 @@ in {
             "privacy.clearOnShutdown.formdata" = true;
             "privacy.clearOnShutdown.history" = true;
             "privacy.clearOnShutdown.offlineApps" = true;
-            "privacy.clearOnShutdown.openWindows" = true;
-            "privacy.clearOnShutdown.sessions" = true;
-            "privacy.clearOnShutdown.siteSettings" = true;
+            "privacy.clearOnShutdown.openWindows" = false;
+            "privacy.clearOnShutdown.sessions" = false;
+            "privacy.clearOnShutdown.siteSettings" = false;
             "privacy.clearOnShutdown_v2.cache" = true;
             "privacy.clearOnShutdown_v2.cookiesAndStorage" = true;
             "privacy.clearOnShutdown_v2.historyFormDataAndDownloads" = true;
             "privacy.clearOnShutdown_v2.siteSettings" = true;
           # Ignores site exceptions
             "privacy.cpd.cache" = true;
-            "privacy.cpd.cookies" = false;
+            "privacy.cpd.cookies" = true;
             "privacy.cpd.downloads" = true;
             "privacy.cpd.formdata" = true;
             "privacy.cpd.history" = true;
-            "privacy.cpd.offlineApps" = false;
-            "privacy.cpd.openWindows" = false;
+            "privacy.cpd.offlineApps" = true;
+            "privacy.cpd.openWindows" = true;
             "privacy.cpd.sessions" = true;
-            "privacy.cpd.siteSettings" = false;
+            "privacy.cpd.siteSettings" = true;
           "privacy.history.custom" = true;
           "privacy.sanitize.pending" = ''
-            [{"id":"shutdown","itemsToClear":["cache","history","formdata","downloads"],"options":{}},{"id":"newtab-container","itemsToClear":[],"options":{}}]
+            [{"id":"shutdown","itemsToClear":["cache","cookies","downloads","formdata","history","offlineApps"],"options":{}},{"id":"newtab-container","itemsToClear":[],"options":{}}]
           '';
           "privacy.sanitize.sanitizeOnShutdown" = true;
           "privacy.sanitize.timeSpan" = 0;
