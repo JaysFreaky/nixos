@@ -85,8 +85,8 @@ with lib;
         enable = true;
         settings = {
           custom = {
-            start = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'Activated'";
-            end = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'Deactivated'";
+            start = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
+            end = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
           };
           # Prevents errors when screensaver not installed
           general.inhibit_screensaver = 0;
