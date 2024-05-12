@@ -10,33 +10,35 @@ with lib;
     # Increase stability/performance of games
     boot.kernel.sysctl."vm.max_map_count" = lib.mkForce 2147483642;
 
-    environment.systemPackages = with pkgs; [
-      corectrl                          # CPU/GPU undervolting
-      gamescope-wsi                     # Required for HDR?
-      #heroic                           # Game launcher - Epic, GOG, Prime
-      lact                              # GPU controller
-      #moonlight-qt                     # Remote streaming
-      #playonlinux                      # GUI for Windows programs
-      protonup-ng                       # CLI updater for ProtonGE | 'protonup'
-      (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-        extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
-          then extraPackages
-          else extraPackages32
-        );
+    environment = {
+      systemPackages = with pkgs; [
+        corectrl                          # CPU/GPU undervolting
+        gamescope-wsi                     # Required for HDR?
+        #heroic                           # Game launcher - Epic, GOG, Prime
+        lact                              # GPU controller
+        #moonlight-qt                     # Remote streaming
+        #playonlinux                      # GUI for Windows programs
+        protonup-ng                       # CLI updater for ProtonGE | 'protonup'
+        (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
+          extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
+            then extraPackages
+            else extraPackages32
+          );
 
-        extraPkgs = pkgs: with pkgs; [
-          dxvk
-          vkd3d
-          winetricks
-          # wineWow has both x86/64 - stable, staging, or wayland
-          wineWowPackages.staging
-        ];
-      })
-    ];
+          extraPkgs = pkgs: with pkgs; [
+            dxvk
+            vkd3d
+            winetricks
+            # wineWow has both x86/64 - stable, staging, or wayland
+            wineWowPackages.staging
+          ];
+        })
+      ];
 
-    environment.variables = {
-      # ProtonGE path - pre proton-ge-bin
-      #STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${vars.user}/.steam/root/compatibilitytools.d";
+      variables = {
+        # ProtonGE path - pre proton-ge-bin
+        #STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${vars.user}/.steam/root/compatibilitytools.d";
+      };
     };
 
     home-manager.users.${vars.user} = {
@@ -128,5 +130,17 @@ with lib;
         };
       };
     };
+
+    # Lact does not currently support automatically initializing the daemon
+    systemd.services.lactd = {
+      after = [ "multi-user.target" ];
+      description = "AMDGPU Control Daemon";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        ExecStart = ''${pkgs.lact}/bin/lact daemon'';
+        Nice = "-10";
+      };
+    };
+
   };
 }
