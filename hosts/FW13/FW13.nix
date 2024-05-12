@@ -280,6 +280,8 @@ in {
       "amd_iommu=off"
       # Enables power profiles daemon
       "amd_pstate=active"
+      # Adjust GPU clocks/voltages
+      #"amdgpu.ppfeaturemask=0xfff7ffff"
       # Disable IPv6 stack
       "ipv6.disable=1"
       "quiet"

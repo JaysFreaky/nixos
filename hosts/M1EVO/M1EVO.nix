@@ -123,6 +123,8 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
+      # Adjust GPU clocks/voltages
+      #"amdgpu.ppfeaturemask=0xfff7ffff"
       #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];
