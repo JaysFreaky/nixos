@@ -85,10 +85,11 @@ with lib;
         enable = true;
         settings = {
           custom = {
-            start = "${pkgs.libnotify}/bin/notify-send 'Gamemode started'";
-            end = "${pkgs.libnotify}/bin/notify-send 'Gamemode ended'";
+            start = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'Activated'";
+            end = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'Deactivated'";
           };
-          general.inhibit_screensaver = 1;
+          # Prevents errors when screensaver not installed
+          general.inhibit_screensaver = 0;
         };
       };
 
@@ -125,7 +126,7 @@ with lib;
           ];
 
           extraProfile = let gmLib = "${lib.getLib(pkgs.gamemode)}/lib"; in ''
-            export LD_PRELOAD="${gmLib}/libgamemode.so:${gmLib}/libgamemodeauto.so:$LD_PRELOAD";
+            export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
           '';
         };
       };
