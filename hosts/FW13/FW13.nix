@@ -157,7 +157,7 @@ in {
 
     opengl = {
       enable = true;
-      # dri are Mesa drivers
+      # dri are Mesa/Vulkan drivers
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [

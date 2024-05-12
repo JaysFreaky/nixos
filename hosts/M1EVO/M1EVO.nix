@@ -36,7 +36,6 @@ in {
 
     variables = {
       # Set Firefox to use GPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      # Might need to set this as a package override extraProfile
       MOZ_DRM_DEVICE = "/dev/dri/card1";
     };
   };
