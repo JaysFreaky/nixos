@@ -79,7 +79,7 @@ in {
   hardware = {
     opengl = {
       enable = true;
-      # dri are Mesa/Vulkan drivers
+      # DRI are Mesa drivers
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
@@ -123,35 +123,20 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      # Adjust GPU clocks/voltages
+      # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       #"amdgpu.ppfeaturemask=0xfff7ffff"
       #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [ "cryptd" ];
+      availableKernelModules = [ ];
       kernelModules = [
         "amdgpu"
         "nfs"
       ];
-
-      # Required for full Plymouth experience (password prompt)
+      # Required for Plymouth (password prompt)
       systemd.enable = true;
-
-      luks.devices = {
-        "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
-
-        "cryptroot" = {
-          # SSD trim
-          allowDiscards = true;
-          # Faster SSD performance
-          bypassWorkqueues = true;
-          device = "/dev/disk/by-partlabel/cryptroot";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
-      };
     };
 
     loader = {
@@ -165,7 +150,7 @@ in {
         configurationLimit = 5;
         device = "nodev";
         efiSupport = true;
-        enableCryptodisk = true;
+        enableCryptodisk = false;
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -186,8 +171,8 @@ in {
   ##########################################################
   networking = {
     hostName = host.hostName;
-    networkmanager.enable = true;
     # Interfaces not needed with NetworkManager enabled
+    networkmanager.enable = true;
   };
 
 
@@ -196,7 +181,7 @@ in {
   ##########################################################
   fileSystems = {
     "/" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -211,7 +196,7 @@ in {
     };
 
     "/home" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -244,7 +229,7 @@ in {
     };
 
     "/nix" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -254,7 +239,7 @@ in {
     };
 
     "/persist" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       neededForBoot = true;
       options = [
@@ -265,7 +250,7 @@ in {
     };
 
     "/var/log" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       neededForBoot = true;
       options = [

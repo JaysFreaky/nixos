@@ -157,7 +157,7 @@ in {
 
     opengl = {
       enable = true;
-      # dri are Mesa/Vulkan drivers
+      # DRI are Mesa drivers
       driSupport = true;
       driSupport32Bit = true;
       extraPackages = with pkgs; [
@@ -280,7 +280,7 @@ in {
       "amd_iommu=off"
       # Enables power profiles daemon
       "amd_pstate=active"
-      # Adjust GPU clocks/voltages
+      # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       #"amdgpu.ppfeaturemask=0xfff7ffff"
       # Disable IPv6 stack
       "ipv6.disable=1"
@@ -303,19 +303,18 @@ in {
     initrd = {
       availableKernelModules = [ "cryptd" ];
       kernelModules = [ "amdgpu" ];
-
-      # Required for full Plymouth experience (password prompt)
+      # Required for Plymouth (password prompt)
       systemd.enable = true;
 
       luks.devices = {
-        "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
+        "cryptkey" = { device = "/dev/disk/by-partlabel/key"; };
 
         "cryptroot" = {
           # SSD trim
           allowDiscards = true;
           # Faster SSD performance
           bypassWorkqueues = true;
-          device = "/dev/disk/by-partlabel/cryptroot";
+          device = "/dev/disk/by-partlabel/root";
           keyFile = "/dev/mapper/cryptkey";
           keyFileSize = 8192;
         };

@@ -52,9 +52,9 @@
       extraPackages = with pkgs; [
         # Imported through nixos-hardware/lenovo/T450s from nixos-hardware/common/gpu/intel
       ];
-      extraPackages32 = with pkgs; [
-        driversi686Linux.intel-media-driver
-        driversi686Linux.intel-vaapi-driver
+      extraPackages32 = with pkgs.driversi686Linux; [
+        intel-media-driver
+        intel-vaapi-driver
       ];
     };
   };
@@ -74,30 +74,15 @@
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      #"quiet"
+      "quiet"
     ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
-      availableKernelModules = [ "aesni_intel" "cryptd" ];
+      availableKernelModules = [ ];
       kernelModules = [ "nfs" ];
-
-      # Required for full Plymouth experience (password prompt)
+      # Required for Plymouth (password prompt)
       systemd.enable = true;
-
-      luks.devices = {
-        "cryptkey" = { device = "/dev/disk/by-partlabel/cryptkey"; };
-
-        "cryptroot" = {
-          # SSD trim
-          allowDiscards = true;
-          # Faster SSD performance
-          bypassWorkqueues = true;
-          device = "/dev/disk/by-partlabel/cryptroot";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
-      };
     };
 
     loader = {
@@ -111,7 +96,7 @@
         configurationLimit = 5;
         devices = [ "nodev" ];
         efiSupport = true;
-        enableCryptodisk = true;
+        enableCryptodisk = false;
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -132,8 +117,8 @@
   ##########################################################
   networking = {
     hostName = host.hostName;
-    networkmanager.enable = true;
     # Interfaces not needed with NetworkManager enabled
+    networkmanager.enable = true;
   };
 
 
@@ -142,7 +127,7 @@
   ##########################################################
   fileSystems = {
     "/" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -157,7 +142,7 @@
     };
 
     "/home" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -178,7 +163,7 @@
     };
 
     "/nix" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       options = [
         "compress=zstd"
@@ -188,7 +173,7 @@
     };
 
     "/persist" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       neededForBoot = true;
       options = [
@@ -199,7 +184,7 @@
     };
 
     "/var/log" = {
-      device = "/dev/mapper/cryptroot";
+      device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
       neededForBoot = true;
       options = [
