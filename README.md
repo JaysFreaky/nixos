@@ -7,18 +7,21 @@ I'm in the process of switching my desktop to NixOS, and will be utilizing Hyprl
 ## Installation
 While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
 
-* Scans and selects disk devices to prepare for installation
-* Prompts to create either a swap file or partition, based on system RAM, or no swap at all
-* Prompts what user name is used in the flake, which is used for the password file name
-* Prompts to set the user password and then generates a hashed password file
-* Prompts to set GRUB2 password and then generates hashed password file (Systemd is used by default, but sets this for possible future use.)
-* Creates, encrypts, and formats: boot, key, swap (if used), and root partitions
-* Prompts for cryptkey and cryptroot passwords (cryptkey is used at every boot; cryptroot is a backup in the case cryptkey gets corrupted.)
-* Backs up LUKS headers for cryptkey/root
+* Scans and prompts for disk selection to use for installation
+* Prompts for creating either a file or partition for swap, based on system RAM, or no swap at all
+* Prompts for what user name is declared in the flake
+* Prompts to set the user password and then generates a hashed password file named after the user
+* Prompts to set a GRUB2 password and then generates a hashed password file (systemd is used by default, but is set for future use)
+* Creates boot, swap (if used), and root partitions
+* Prompts for encryption, and if selected:
+  * Prompts for cryptkey and cryptroot passwords (cryptkey is used at every boot; cryptroot is a backup in the case cryptkey gets corrupted.)
+  * Creates a key partition and generates a random key for unlocking
+  * Encrypts key, swap (if used), and root partitions
+  * Backs up LUKS headers for key & root partitions
 * Creates persist directories
 * Clones this repo into the persistant config directory
-* Select a system hostname based off what is already established in the flake
-* Generates and adds a swap.nix file to the local repo before install (if used)
+* Select an existing system hostname based off of entries in the flake
+* Generates and commits a swap.nix file to the local repo before install (if used)
 * Install NixOS
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
@@ -50,10 +53,10 @@ I'm not very experienced with neovim yet, so I haven't bothered to translate (an
 ### Packages
 This is where the setup script lives. If there were any future scripts/packages I would want to call individually, they would go into their own respective directory.
 
-Inside /packages/setup:
+Inside /packages:
 
-* default.nix declares all the packages that will be used by the script and creates a shell application that reads from setup.sh
-* setup.sh is the actual script and is read by default.nix
+* /setup contains the package declaration and setup script used for initial install
+* /plymouth-fw creates a derivation for a custom framework boot logo
 
 ---
 ## Credits
