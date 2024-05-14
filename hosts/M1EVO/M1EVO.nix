@@ -140,6 +140,8 @@ in {
     };
 
     loader = {
+      timeout = 1;
+
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
@@ -151,6 +153,8 @@ in {
         device = "nodev";
         efiSupport = true;
         enableCryptodisk = false;
+        memtest86.enable = true;
+        theme = "pkgs.sleek-grub-theme.override { withStyle = "dark"; }";
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -160,6 +164,7 @@ in {
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        editor = false;
         memtest86.enable = true;
       };
     };

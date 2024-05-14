@@ -97,6 +97,7 @@
         devices = [ "nodev" ];
         efiSupport = true;
         enableCryptodisk = false;
+        memtest86.enable = true;
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -106,6 +107,7 @@
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        editor = false;
         memtest86.enable = true;
       };
     };

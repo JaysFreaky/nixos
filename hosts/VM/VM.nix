@@ -68,7 +68,7 @@
   ##########################################################
   boot = {
     plymouth = {
-      enable = true;
+      enable = false;
       theme = "nixos-bgrt";
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
@@ -78,6 +78,7 @@
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "quiet"
+      "splash"
     ];
     supportedFilesystems = [ "btrfs" ];
 
@@ -100,6 +101,7 @@
         device = "nodev";
         efiSupport = true;
         enableCryptodisk = false;
+        memtest86.enable = true;
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -109,6 +111,7 @@
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        editor = false;
         memtest86.enable = true;
       };
     };
