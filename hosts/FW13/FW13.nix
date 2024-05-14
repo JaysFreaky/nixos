@@ -1,5 +1,7 @@
 { config, host, lib, pkgs, vars, ... }:
 let
+  plymouth-fw = pkgs.callPackage ../../packages/plymouth-fw {};
+
   set_dpm = pkgs.writeShellScriptBin "dpm.sh" ''
     #!/usr/bin/env bash
 
@@ -249,8 +251,8 @@ in {
   boot = {
     plymouth = {
       enable = true;
-      theme = "nixos-bgrt";
-      themePackages = [ pkgs.nixos-bgrt-plymouth ];
+      theme = "framework";
+      themePackages = [ plymouth-fw ];
     };
 
     # Allow 5GHz wifi & framework-laptop-kmod
@@ -333,6 +335,7 @@ in {
         device = "nodev";
         efiSupport = true;
         enableCryptodisk = true;
+        memtest86.enable = true;
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };
@@ -342,6 +345,7 @@ in {
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
+        editor = false;
         memtest86.enable = true;
       };
     };
