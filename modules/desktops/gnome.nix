@@ -26,6 +26,7 @@ in {
     environment = {
       # System-Wide Packages
       systemPackages = with pkgs; [
+        bibata-cursors                # For GDM login screen
         gnome.dconf-editor            # GUI dconf editor
         gnome.gnome-tweaks            # Gnome tweaks
         gnome.nautilus-python         # Allow custom nautilus scripts/open-any-terminal
@@ -59,8 +60,26 @@ in {
       ]);
     };
 
-    # Manages keys/passwords in gnome-keyring
-    programs.seahorse.enable = true;
+    programs = {
+      # Manages keys/passwords in gnome-keyring
+      seahorse.enable = true;
+
+      # GDM login screen settings
+      dconf.profiles.gdm.databases = [{
+        settings = {
+          "org/gnome/desktop/interface" = with lib.gvariant; {
+            # 32 is equivalent to 24 w/ scale-monitor @ 1.5
+            cursor-size = mkInt32 32;
+            cursor-theme = mkString "Bibata-Modern-Classic";
+            text-scaling-factor = mkDouble 1.5;
+          };
+          "org/gnome/desktop/peripherals/touchpad" = {
+            tap-to-click = true;
+          };
+          #"org/gnome/login-screen".logo = "../../assets/logo.png";
+        };
+      }];
+    };
 
     # Unlock keyring upon logon
     security.pam.services.gdm.enableGnomeKeyring = true;
@@ -125,7 +144,7 @@ in {
       Icon=/var/lib/AccountsService/icons/${vars.user}" > /var/lib/AccountsService/users/${vars.user}
     '';
  
-    home-manager.users.${vars.user} = { config, lib, ... }: {
+    home-manager.users.${vars.user} = { config, lib, ... }: rec {
       # Sets profile image
       home.file.".face".source = profileImg;
 
@@ -236,23 +255,11 @@ in {
           sleep-inactive-ac-type = "nothing";
         };
         "org/gnome/shell" = {
-          enabled-extensions = [
+          enabled-extensions = (map (extension: extension.extensionUuid) home.packages) ++ [
+            # Enable extensions that ship, but aren't enabled by default
             "drive-menu@gnome-shell-extensions.gcampax.github.com"
             "launch-new-instance@gnome-shell-extensions.gcampax.github.com"
             "user-theme@gnome-shell-extensions.gcampax.github.com"
-            "AlphabeticalAppGrid@stuarthayhurst"
-            "appindicatorsupport@rgcjonas.gmail.com"
-            "bluetooth-quick-connect@bjarosze.gmail.com"
-            "blur-my-shell@aunetx"
-            "clipboard-indicator@tudmotu.com"
-            #"forge@jmmaranan.com"
-            "just-perfection-desktop@just-perfection"
-            "lockkeys@vaina.lt"
-            "nightthemeswitcher@romainvigier.fr"
-            "pip-on-top@rafostar.github.com"
-            "power-profile-switcher@eliapasquali.github.io"
-            "Vitals@CoreCoding.com"
-            "weatherornot@somepaulo.github.io"
           ];
           disable-user-extensions = false;
           favorite-apps = [
@@ -260,13 +267,11 @@ in {
             "kitty.desktop"
             "org.gnome.Nautilus.desktop"
             "firefox.desktop"
-            #"floorp.desktop"
             "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
             "plexmediaplayer.desktop"
-            #"org.gnome.Settings.desktop"
           ];
         };
         "org/gnome/shell/extensions/appindicator" = {
@@ -420,10 +425,6 @@ in {
       };
 
       home.packages = with pkgs.gnomeExtensions; [
-        # These 3 are already installed with ExtManager
-        #launch-new-instance
-        #removable-drive-menu
-        #user-themes
         alphabetical-app-grid
         appindicator
         bluetooth-quick-connect
@@ -433,7 +434,7 @@ in {
         just-perfection
         lock-keys
         night-theme-switcher
-        pip-on-top
+        #pip-on-top
         power-profile-switcher
         vitals
         weather-or-not
