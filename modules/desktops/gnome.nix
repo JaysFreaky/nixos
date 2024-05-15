@@ -68,15 +68,14 @@ in {
       dconf.profiles.gdm.databases = [{
         settings = {
           "org/gnome/desktop/interface" = with lib.gvariant; {
-            # 32 is equivalent to 24 w/ scale-monitor @ 1.5
-            cursor-size = mkInt32 32;
-            cursor-theme = mkString "Bibata-Modern-Classic";
-            text-scaling-factor = mkDouble 1.5;
+            cursor-size = mkInt32 24;
+            cursor-theme = "Bibata-Modern-Classic";
           };
           "org/gnome/desktop/peripherals/touchpad" = {
             tap-to-click = true;
           };
           #"org/gnome/login-screen".logo = "../../assets/logo.png";
+          "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
         };
       }];
     };
