@@ -218,8 +218,9 @@ in {
       lidSwitch = "suspend";
       powerKey = "suspend-then-hibernate";
       extraConfig = ''
+        HandleLidSwitch=suspend
         IdleAction=suspend
-        IdleActionSec=15m
+        IdleActionSec=10m
       '';
     };
 
@@ -233,6 +234,9 @@ in {
     
     upower = {
       enable = true;
+      percentageLow = 10;
+      percentageCritical = 5;
+      percentageAction = 2;
       criticalPowerAction = "Hibernate";
     };
   };
