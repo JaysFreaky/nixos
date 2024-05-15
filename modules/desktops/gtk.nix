@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
+{ pkgs, vars, ... }:
 
 {
   home-manager.users.${vars.user} = {
@@ -6,9 +6,7 @@
       enable = true;
 
       cursorTheme = {
-        #name = "Bibata_Ghost";
-        #package = pkgs.bibata-cursors-translucent;
-        # Variants: Bibata-(Modern/Original)-(Classic/Ice)
+        # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
         name = "Bibata-Modern-Classic";
         package = pkgs.bibata-cursors;
         # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
@@ -16,22 +14,22 @@
       };
 
       iconTheme = {
-        # Papirus Papirus-Dark Papirus-Light
+        # Variants: Papirus Papirus-Dark Papirus-Light
         name = "Papirus";
-        # Folder colors: https://github.com/PapirusDevelopmentTeam/papirus-folders
+        # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
         # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
         # green grey indigo magenta nordic orange palebrown paleorange pink red
         # teal violet white yaru yellow
         package = pkgs.papirus-icon-theme.override { color = "violet"; };
       };
-/*
-      theme = {
+
+   /* theme = {
         name = "";
         package = "";
-      };
-*/
+      }; */
     };
   };
+
 }
 
 
