@@ -7,12 +7,15 @@ let
     pywalfox update
     pywalfox light
   '';
+
   night_cw = pkgs.writeShellScriptBin "night_cw.sh" ''
     night=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f2 | cut -c 8-)
     wal -nqsti "$night"
     pywalfox update
     pywalfox dark
   '';
+
+  profileImg = ../../assets/profile.png;
 in {
   options.gnome.enable = mkOption {
     default = false;
@@ -111,8 +114,21 @@ in {
         "autovt@tty1".enable = false;
       };
     };
+
+    # Workaround to display profile image at login screen - image needs +x
+    system.activationScripts.showProfileImage.text = ''
+      cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
+
+      echo "[User]
+      Session=gnome
+      SystemAccount=false
+      Icon=/var/lib/AccountsService/icons/${vars.user}" > /var/lib/AccountsService/users/${vars.user}
+    '';
  
     home-manager.users.${vars.user} = { config, lib, ... }: {
+      # Sets profile image
+      home.file.".face".source = profileImg;
+
       dconf.settings = {
         "ca/desrt/dconf-editor" = {
           show-warning = false;
@@ -182,8 +198,8 @@ in {
         "org/gnome/mutter" = {
           center-new-windows = true;
           edge-tiling = false;
-          # Adds scaling option under Display
-          experimental-features = [ "scale-monitor-framebuffer" ];
+          # Adds scaling/vrr options under Settings->Display
+          experimental-features = [ "scale-monitor-framebuffer" "variable-refresh-rate" ];
           workspaces-only-on-primary = false;
         };
         "org/gnome/mutter/keybindings" = {
@@ -443,5 +459,6 @@ in {
         };
       };
     };
+
   };
 }
