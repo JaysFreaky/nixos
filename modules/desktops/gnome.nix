@@ -15,6 +15,7 @@ let
     pywalfox dark
   '';
 
+  logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
 in {
   options.gnome.enable = mkOption {
@@ -74,7 +75,7 @@ in {
           "org/gnome/desktop/peripherals/touchpad" = {
             tap-to-click = true;
           };
-          #"org/gnome/login-screen".logo = "../../assets/logo.png";
+          "org/gnome/login-screen".logo = toString logoImg;
           "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
         };
       }];
