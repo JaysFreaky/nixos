@@ -1,6 +1,6 @@
 { config, host, lib, pkgs, vars, ... }:
 let
-  scale = 1.25;
+  #scale = 1.25;
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -8,9 +8,11 @@ in {
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  hyprland.enable = true;
+  gnome.enable = true;
+  #hyprland.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
+  bluetooth.enable = true;
 
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
@@ -36,7 +38,7 @@ in {
 
     variables = {
       # Set Firefox to use GPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card1";
+      MOZ_DRM_DEVICE = "/dev/dri/card*";
     };
   };
 
@@ -46,14 +48,14 @@ in {
     #"--expose-wayland"
     "--filter fsr"
     "--fullscreen"
-    #"--framerate-limit 144"
+    "--framerate-limit 144"
     "--hdr-enabled"
     # Toggling doesn't work using --mangoapp
     #"--mangoapp"
     "--nested-height 1440"
     "--nested-refresh 144"
     "--nested-width 2560"
-    #"--prefer-vk-device \"10de:2206\""
+    #"--prefer-vk-device \"1002:73a5\""
     "--rt"
   ];
 
@@ -61,6 +63,7 @@ in {
   ##########################################################
   # Home Manager Options
   ##########################################################
+  /*
   home-manager.users.${vars.user} = {
     wayland.windowManager.hyprland.settings = {
       # hyprctl monitors all
@@ -70,7 +73,7 @@ in {
         #"eDP-1,2560x1440@144,0x0,${toString scale}"
       ];
     };
-  };
+  }; */
 
 
   ##########################################################
@@ -110,8 +113,12 @@ in {
   boot = {
     plymouth = {
       enable = false;
-      theme = "nixos-bgrt";
-      themePackages = [ pkgs.nixos-bgrt-plymouth ];
+      theme = "rog_2";
+      themePackages = [
+        # Overriding installs the one theme instead of all 80, reducing the required size
+        # Theme previews: https://github.com/adi1090x/plymouth-themes
+        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
+      ];
     };
 
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
@@ -123,8 +130,9 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
+      "amd_pstate=active"
       # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      #"amdgpu.ppfeaturemask=0xfff7ffff"
+      "amdgpu.ppfeaturemask=0xffffffff"
       #"quiet"
     ];
     supportedFilesystems = [ "btrfs" ];

@@ -73,6 +73,18 @@
         ];
       };
 
+      Ridge = nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs pkgs stable system vars;
+          host.hostName = "Ridge";
+        };
+        modules = standardModules ++ [
+          ./hosts/Ridge
+        ];
+      };
+
       T450s = nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;

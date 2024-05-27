@@ -1,6 +1,6 @@
 {
   imports = [
-    ./M1EVO.nix
+    ./Ridge.nix
     ./hardware-configuration.nix
   ];
 }

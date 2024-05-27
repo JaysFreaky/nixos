@@ -23,6 +23,9 @@ in {
   # Prioritize swap for hibernation only
   boot.kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
 
+  # Clear /tmp on every boot
+  boot.tmp.cleanOnBoot = true;
+
   console = {
     #font = "Lat2-Terminus16";
     keyMap = "us";
