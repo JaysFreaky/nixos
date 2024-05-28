@@ -20,11 +20,12 @@ in {
 
   ${vars.terminal}.enable = true;
 
-  # Prioritize swap for hibernation only
-  boot.kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
-
-  # Clear /tmp on every boot
-  boot.tmp.cleanOnBoot = true;
+  boot = {
+    # Prioritize swap for hibernation only
+    kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
+    # Clear /tmp on every boot
+    tmp.cleanOnBoot = true;
+  };
 
   console = {
     #font = "Lat2-Terminus16";
@@ -49,9 +50,6 @@ in {
       asciiquarium                # Fishies swimming
       cbonsai                     # Bonsai growing
 
-    # Browsers
-      #floorp                     # Privacy-focused Firefox fork
-
     # File Support
       #cifs-utils                 # SMB support
       imagemagick                 # Image tools
@@ -61,17 +59,6 @@ in {
       unzip                       # Zip files
       unrar                       # Rar files
       zip                         # Zip files
-
-    # Messaging
-      discord                     # Discord
-
-    # Multimedia
-      mpv                         # Media player
-      plex-media-player           # Plex player
-      spotify                     # Music
-
-    # Notes
-      obsidian                    # Markdown notes
 
     # Notifications
       libnotify                   # Notification engine
@@ -107,7 +94,6 @@ in {
       (python3.withPackages (ps: with ps; [
         pip virtualenv pywalfox   # pywalfox-native NixOS fix
       ]))
-      spicetify-cli               # Spotify theming
       #variety                    # Wallpapers
       #wpgtk                      # Pywal GUI
     ];
@@ -215,7 +201,7 @@ in {
     users.root.initialHashedPassword = "!";
     #users.root.shell = "/run/current-system/sw/bin/nologin";
 
-    # Only me using these systems, so user is a variable
+    # Just me using these systems, so user is a variable
     users.${vars.user} = {
       createHome = true;
       description = "${vars.name}";

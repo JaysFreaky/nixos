@@ -61,10 +61,21 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
+    # Messaging
+      discord                 # Discord
+
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
       zenmonitor              # CPU stats
+
+    # Multimedia
+      mpv                     # Media player
+      plex-media-player       # Plex player
+      spotify                 # Music
+
+    # Notes
+      obsidian                # Markdown notes
     ];
 
     variables = {

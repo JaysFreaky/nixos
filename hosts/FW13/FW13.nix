@@ -60,11 +60,23 @@ in {
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       lshw                    # Firmware
 
+    # Messaging
+      discord                 # Discord
+
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
       powertop                # Power stats
       zenmonitor              # CPU stats
+
+    # Multimedia
+      mpv                     # Media player
+      plex-media-player       # Plex player
+      spicetify-cli           # Spotify theming
+      spotify                 # Music
+
+    # Notes
+      obsidian                # Markdown notes
 
     # VPN
       protonvpn-gui           # VPN client
