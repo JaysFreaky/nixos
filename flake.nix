@@ -9,6 +9,7 @@
     };
     #hyprland.url = "github:hyprwm/Hyprland";
     impermanence.url = "github:nix-community/impermanence";
+    #jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.11";
@@ -21,6 +22,7 @@
     home-manager,
     #hyprland,
     impermanence,
+    #jovian,
     nix-flatpak,
     nixpkgs,
     nixpkgs-stable,
@@ -60,6 +62,19 @@
   in {
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
+      Dekki = nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs pkgs stable system vars;
+          host.hostName = "Dekki";
+        };
+        modules = standardModules ++ [
+          ./hosts/Dekki
+          #jovian.nixosModules.jovian
+        ];
+      };
+
       FW13 = nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
@@ -112,6 +127,7 @@
     };
 
     packages.${system} = {
+      plymouth-fw = nixpkgs.legacyPackages.${system}.callPackage ./packages/plymouth-fw { };
       setup = nixpkgs.legacyPackages.${system}.callPackage ./packages/setup { };
     };
 
