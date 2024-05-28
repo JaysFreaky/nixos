@@ -7,6 +7,7 @@
   ./gaming.nix
   ./git.nix
   ./kitty.nix
+  ./lact.nix
   #./lf
   ./nvim
   ./starship

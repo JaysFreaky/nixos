@@ -18,19 +18,19 @@ let
     echo c | sudo tee "$gpuDevice"/pp_od_clk_voltage
 
     # Set max wattage (first 3 numbers are wattage - 284 default)
-    echo 255000000 | sudo tee "$gpuDevice"/hwmon/hwmon2/power1_cap
+    echo 255000000 > "$gpuDevice"/hwmon/hwmon2/power1_cap
 
     # Set fan mode: 0=off, 1=manual, 2=auto
-    #echo 2 | sudo tee "$gpuDevice"/hwmon/hwmon2/pwm1_enable
+    #echo 2 > "$gpuDevice"/hwmon/hwmon2/pwm1_enable
     # Set fan pwm max % (mode must be manual) - 128=50%; 255=100%
-    #echo 128 | sudo tee "$gpuDevice"/hwmon/hwmon2/pwm1_max
+    #echo 128 > "$gpuDevice"/hwmon/hwmon2/pwm1_max
 
     # Set power profile level: auto, low, high, manual
-    echo manual | sudo tee "$gpuDevice"/power_dpm_force_performance_level
+    echo manual > "$gpuDevice"/power_dpm_force_performance_level
     # Set power profile mode: cat "$gpuDevice"/pp_power_profile_mode
-    echo 1 | sudo tee "$gpuDevice"/pp_power_profile_mode
+    echo 1 > "$gpuDevice"/pp_power_profile_mode
     # Set highest VRAM power state: cat "$gpuDevice"/pp_dpm_mclk
-    echo 3 | sudo tee "$gpuDevice"/pp_dpm_mclk
+    echo 3 > "$gpuDevice"/pp_dpm_mclk
   '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -45,9 +45,11 @@ in {
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
 
-  # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
+  "1password".enable = true;
   gaming.enable = true;
+  lact.enable = true;
   syncthing.enable = true;
 
   # Root persistance - rollback
@@ -60,7 +62,13 @@ in {
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
+    #etc."lact/config.yaml".text = ''
+    #'';
+
     systemPackages = with pkgs; [
+    # Hardware
+      corectrl                # CPU/GPU control
+
     # Messaging
       discord                 # Discord
 
@@ -84,22 +92,27 @@ in {
     };
   };
 
-  programs.gamescope.args = [
-    "--adaptive-sync"
-    #"--borderless"
-    #"--expose-wayland"
-    "--filter fsr"
-    "--fullscreen"
-    "--framerate-limit 144"
-    "--hdr-enabled"
-    # Toggling doesn't work using --mangoapp
-    #"--mangoapp"
-    "--nested-height 1440"
-    "--nested-refresh 144"
-    "--nested-width 2560"
-    #"--prefer-vk-device \"1002:73a5\""
-    "--rt"
-  ];
+  programs = {
+    # PWM fan control
+    coolercontrol.enable = true;
+
+    gamescope.args = [
+      "--adaptive-sync"
+      #"--borderless"
+      #"--expose-wayland"
+      "--filter fsr"
+      "--fullscreen"
+      "--framerate-limit 144"
+      "--hdr-enabled"
+      # Toggling doesn't work using --mangoapp
+      #"--mangoapp"
+      "--nested-height 1440"
+      "--nested-refresh 144"
+      "--nested-width 2560"
+      #"--prefer-vk-device \"1002:73a5\""
+      "--rt"
+    ];
+  };
 
   # Create a service to auto-undervolt
   systemd.services.gpu_uv = {

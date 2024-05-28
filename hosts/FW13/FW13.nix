@@ -2,12 +2,11 @@
 let
   plymouth-fw = pkgs.callPackage ../../packages/plymouth-fw {};
 
-  set_dpm = pkgs.writeShellScriptBin "dpm.sh" ''
+  gpuPower = pkgs.writeShellScriptBin "dpm.sh" ''
     #!/usr/bin/env bash
 
     # Default level
     DRM_PERF_LEVEL=low
-
     # Evaluate argument passed by udev
     if [ $1 -eq 1 ] ; then
       DRM_PERF_LEVEL=high
@@ -15,8 +14,10 @@ let
       DRM_PERF_LEVEL=low
     fi
 
+    # Find persistant device: readlink -f /sys/class/drm/card1/device
+    gpuDevice=/sys/devices/pci0000:00/0000:00:08.1/0000:c1:00.0
     # Set drm performance level
-    echo $DRM_PERF_LEVEL > /sys/class/drm/card1/device/power_dpm_force_performance_level
+    echo $DRM_PERF_LEVEL > "$gpuDevice"/power_dpm_force_performance_level
   '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -30,9 +31,11 @@ in {
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
 
-  # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
+  "1password".enable = true;
   gaming.enable = true;
+  lact.enable = true;
   syncthing.enable = true;
 
   # Root persistance - rollback
@@ -84,7 +87,7 @@ in {
 
     variables = {
       # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card1";
+      MOZ_DRM_DEVICE = "/dev/dri/card*";
     };
   };
 
@@ -241,7 +244,7 @@ in {
 
     # GPU performance - power_dpm_force_performance_level is auto by default
     udev.extraRules = ''
-      SUBSYSTEM=="power_supply" RUN+="${set_dpm}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
+      SUBSYSTEM=="power_supply" RUN+="${gpuPower}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
     '';
     
     upower = {
@@ -296,10 +299,10 @@ in {
       "acpi_mask_gpe=0x0B"
       # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
-      # Enables power profiles daemon
+      # Enables power profiles daemon control
       "amd_pstate=active"
       # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      #"amdgpu.ppfeaturemask=0xfff7ffff"
+      "amdgpu.ppfeaturemask=0xfff7ffff"
       # Disable IPv6 stack
       "ipv6.disable=1"
       "quiet"

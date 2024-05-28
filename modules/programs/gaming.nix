@@ -12,10 +12,8 @@ with lib;
 
     environment = {
       systemPackages = with pkgs; [
-        corectrl                          # CPU/GPU undervolting
         gamescope-wsi                     # Required for HDR?
         #heroic                           # Game launcher - Epic, GOG, Prime
-        lact                              # GPU controller
         #moonlight-qt                     # Remote streaming
         #playonlinux                      # GUI for Windows programs
         protonup-ng                       # CLI updater for ProtonGE | 'protonup'
@@ -76,8 +74,6 @@ with lib;
     };
 
     programs = {
-      coolercontrol.enable = true;
-
       # Better gaming performance
       # Steam: Right-click game -> Properties -> Launch options: gamemoderun gamescope -- mangohud %command%
       # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
@@ -129,17 +125,6 @@ with lib;
             export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
           '';
         };
-      };
-    };
-
-    # Lact does not currently support automatically initializing the daemon
-    systemd.services.lactd = {
-      after = [ "multi-user.target" ];
-      description = "AMDGPU Control Daemon";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = ''${pkgs.lact}/bin/lact daemon'';
-        Nice = "-10";
       };
     };
 
