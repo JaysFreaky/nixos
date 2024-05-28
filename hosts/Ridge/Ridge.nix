@@ -1,6 +1,37 @@
 { config, host, lib, pkgs, vars, ... }:
 let
+  # Hyprland display scale
   #scale = 1.25;
+
+  # AMDGPU Undervolting
+  gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
+    #!/usr/bin/env bash
+
+    # Find persistant device: readlink -f /sys/class/drm/card#/device
+    gpuDevice=/sys/devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0
+
+    # Set maximum MHz
+    echo s 1 2250 | sudo tee "$gpuDevice"/pp_od_clk_voltage
+    # Set voltage offset
+    echo vo -30 | sudo tee "$gpuDevice"/pp_od_clk_voltage
+    # Apply UV values
+    echo c | sudo tee "$gpuDevice"/pp_od_clk_voltage
+
+    # Set max wattage (first 3 numbers are wattage - 284 default)
+    echo 255000000 | sudo tee "$gpuDevice"/hwmon/hwmon2/power1_cap
+
+    # Set fan mode: 0=off, 1=manual, 2=auto
+    #echo 2 | sudo tee "$gpuDevice"/hwmon/hwmon2/pwm1_enable
+    # Set fan pwm max % (mode must be manual) - 128=50%; 255=100%
+    #echo 128 | sudo tee "$gpuDevice"/hwmon/hwmon2/pwm1_max
+
+    # Set power profile level: auto, low, high, manual
+    echo manual | sudo tee "$gpuDevice"/power_dpm_force_performance_level
+    # Set power profile mode: cat "$gpuDevice"/pp_power_profile_mode
+    echo 1 | sudo tee "$gpuDevice"/pp_power_profile_mode
+    # Set highest VRAM power state: cat "$gpuDevice"/pp_dpm_mclk
+    echo 3 | sudo tee "$gpuDevice"/pp_dpm_mclk
+  '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -58,6 +89,18 @@ in {
     #"--prefer-vk-device \"1002:73a5\""
     "--rt"
   ];
+
+  # Create a service to auto-undervolt
+  systemd.services.gpu_uv = {
+    after = [ "multi-user.target" ];
+    description = "Set AMDGPU Undervolt";
+    wantedBy = [ "multi-user.target" ];
+    wants = [ "modprobe@amdgpu.service" ];
+    serviceConfig = {
+      ExecStart = ''${gpuUV}/bin/gpu_uv.sh'';
+      Type = "oneshot";
+    };
+  };
 
 
   ##########################################################
