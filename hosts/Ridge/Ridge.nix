@@ -3,6 +3,9 @@ let
   # Hyprland display scale
   #scale = 1.25;
 
+  # Generate GPU path for Firefox environment variable
+  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+
   # AMDGPU Undervolting
   gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
     #!/usr/bin/env bash
@@ -87,8 +90,8 @@ in {
     ];
 
     variables = {
-      # Set Firefox to use GPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card*";
+      # Set Firefox to use GPU for video codecs
+      MOZ_DRM_DEVICE = gpuCard;
     };
   };
 

@@ -2,9 +2,11 @@
 let
   plymouth-fw = pkgs.callPackage ../../packages/plymouth-fw {};
 
+  # Generate GPU path for Firefox environment variable
+  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+
   gpuPower = pkgs.writeShellScriptBin "dpm.sh" ''
     #!/usr/bin/env bash
-
     # Default level
     DRM_PERF_LEVEL=low
     # Evaluate argument passed by udev
@@ -86,8 +88,8 @@ in {
     ];
 
     variables = {
-      # Set Firefox to use iGPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      MOZ_DRM_DEVICE = "/dev/dri/card*";
+      # Set Firefox to use iGPU for video codecs
+      MOZ_DRM_DEVICE = gpuCard;
     };
   };
 

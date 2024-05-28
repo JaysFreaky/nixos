@@ -1,5 +1,8 @@
 { config, host, lib, pkgs, vars, ... }:
-
+#let
+  # Generate GPU path for Firefox environment variable
+  #gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+#in
 {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -35,8 +38,8 @@
     ];
 
     variables = {
-      # Set Firefox to use GPU for video codecs - run 'stat /dev/dri/*' to list GPUs
-      #MOZ_DRM_DEVICE = "/dev/dri/card*";
+      # Set Firefox to use iGPU for video codecs
+      #MOZ_DRM_DEVICE = gpuCard;
     };
   };
 
