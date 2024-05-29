@@ -1,25 +1,26 @@
 { config, host, lib, pkgs, vars, ... }:
 let
+  # Call boot logo package
   plymouth-fw = pkgs.callPackage ../../packages/plymouth-fw {};
-
-  # Generate GPU path for Firefox environment variable
-  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
-
-  gpuPower = pkgs.writeShellScriptBin "dpm.sh" ''
+ 
+  # GPU performance adjustment - power_dpm_force_performance_level is auto by default
+  gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
     #!/usr/bin/env bash
+
+    # Find persistant GPU device: readlink -f /sys/class/drm/card1/device
+    gpuDevice=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
+
     # Default level
-    DRM_PERF_LEVEL=low
+    DPM_PERF_LEVEL=low
     # Evaluate argument passed by udev
     if [ $1 -eq 1 ] ; then
-      DRM_PERF_LEVEL=high
+      DPM_PERF_LEVEL=high
     else
-      DRM_PERF_LEVEL=low
+      DPM_PERF_LEVEL=low
     fi
 
-    # Find persistant device: readlink -f /sys/class/drm/card1/device
-    gpuDevice=/sys/devices/pci0000:00/0000:00:08.1/0000:c1:00.0
-    # Set drm performance level
-    echo $DRM_PERF_LEVEL > "$gpuDevice"/power_dpm_force_performance_level
+    # Set performance level
+    echo $DPM_PERF_LEVEL > "$gpuDevice"/power_dpm_force_performance_level
   '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -33,11 +34,10 @@ in {
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
 
-  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
   "1password".enable = true;
   gaming.enable = true;
-  lact.enable = true;
   syncthing.enable = true;
 
   # Root persistance - rollback
@@ -86,11 +86,6 @@ in {
     # VPN
       protonvpn-gui           # VPN client
     ];
-
-    variables = {
-      # Set Firefox to use iGPU for video codecs
-      MOZ_DRM_DEVICE = gpuCard;
-    };
   };
 
   programs.gamescope.args = [
@@ -244,9 +239,9 @@ in {
     # Temperature management
     thermald.enable = true;
 
-    # GPU performance - power_dpm_force_performance_level is auto by default
+    # GPU mode changes when plugged into power
     udev.extraRules = ''
-      SUBSYSTEM=="power_supply" RUN+="${gpuPower}/bin/dpm.sh %E{POWER_SUPPLY_ONLINE}"
+      SUBSYSTEM=="power_supply" RUN+="${gpuPower}/bin/dpm_level.sh %E{POWER_SUPPLY_ONLINE}"
     '';
     
     upower = {
@@ -293,9 +288,6 @@ in {
     ];
 
     kernelPackages = pkgs.linuxPackages_latest;
-    # Previous stable kernel
-    #kernelPackages = pkgs.linuxPackages_6_1;
-
     kernelParams = [
       # Mask gpe0B ACPI interrupts
       "acpi_mask_gpe=0x0B"
@@ -303,8 +295,6 @@ in {
       "amd_iommu=off"
       # Enables power profiles daemon control
       "amd_pstate=active"
-      # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      "amdgpu.ppfeaturemask=0xfff7ffff"
       # Disable IPv6 stack
       "ipv6.disable=1"
       "quiet"

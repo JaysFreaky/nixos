@@ -3,15 +3,12 @@ let
   # Hyprland display scale
   #scale = 1.25;
 
-  # Generate GPU path for Firefox environment variable
-  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
-
   # AMDGPU Undervolting
   gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
     #!/usr/bin/env bash
 
     # Find persistant device: readlink -f /sys/class/drm/card#/device
-    gpuDevice=/sys/devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0
+    gpuDevice=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
 
     # Set maximum MHz
     echo s 1 2250 | sudo tee "$gpuDevice"/pp_od_clk_voltage
@@ -88,11 +85,6 @@ in {
     # Notes
       obsidian                # Markdown notes
     ];
-
-    variables = {
-      # Set Firefox to use GPU for video codecs
-      MOZ_DRM_DEVICE = gpuCard;
-    };
   };
 
   programs = {

@@ -1,5 +1,8 @@
 { config, lib, pkgs, stable, vars, ... }:
 let
+  # Generate GPU path for Firefox environment variable
+  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+
   pywalfox = pkgs.python3.pkgs.buildPythonPackage {
     pname = "pywalfox";
     version = "2.8.0rc1";
@@ -39,6 +42,8 @@ in {
     variables = {
       TERMINAL = "${vars.terminal}";
       EDITOR = "${vars.editor}";
+      # Set Firefox to use GPU for video codecs
+      MOZ_DRM_DEVICE = gpuCard;
     };
 
     # List packages installed in system profile. To search, run:

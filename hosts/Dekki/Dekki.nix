@@ -1,8 +1,4 @@
 { config, host, lib, pkgs, vars, ... }:
-#let
-  # Generate GPU path for Firefox environment variable
-  #gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
-#in
 {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -18,7 +14,6 @@
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
   gaming.enable = true;
-  syncthing.enable = true;
 
   # Root persistance - rollback
   # Restores "/" on each boot to root-blank btrfs snapshot
@@ -36,11 +31,6 @@
       nvtopPackages.amd       # GPU stats
       #zenmonitor             # CPU stats
     ];
-
-    variables = {
-      # Set Firefox to use iGPU for video codecs
-      #MOZ_DRM_DEVICE = gpuCard;
-    };
   };
 
   jovian = {
