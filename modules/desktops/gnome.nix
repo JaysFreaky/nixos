@@ -216,7 +216,7 @@ in {
         };
         "org/gnome/mutter" = {
           center-new-windows = true;
-          edge-tiling = false;
+          edge-tiling = true;
           # Adds scaling/vrr options under Settings->Display
           experimental-features = [ "scale-monitor-framebuffer" "variable-refresh-rate" ];
           workspaces-only-on-primary = false;
@@ -367,9 +367,13 @@ in {
         };
         */
         "org/gnome/shell/extensions/just-perfection" = {
+          # Top center
           notification-banner-position = 1;
-          panel-button-padding-size = 0;
+          # 2px
+          panel-button-padding-size = 3;
+          # By shell theme
           panel-indicator-padding-size = 0;
+          # 0=desktop, 1=overview
           startup-status = 0;
         };
         "org/gnome/shell/extensions/lockkeys" = {
