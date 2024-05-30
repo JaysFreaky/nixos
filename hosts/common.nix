@@ -1,18 +1,7 @@
-{ config, lib, pkgs, stable, vars, ... }:
+{ lib, pkgs, stable, vars, ... }:
 let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
-
-  pywalfox = pkgs.python3.pkgs.buildPythonPackage {
-    pname = "pywalfox";
-    version = "2.8.0rc1";
-    src = pkgs.fetchFromGitHub {
-      owner = "Frewacom";
-      repo = "pywalfox-native";
-      rev = "7ecbbb193e6a7dab424bf3128adfa7e2d0fa6ff9";
-      hash = "sha256-i1DgdYmNVvG+mZiFiBmVHsQnFvfDFOFTGf0GEy81lpE=";
-    };
-  };
 in {
   imports = (
     import ../modules/desktops ++
@@ -40,8 +29,8 @@ in {
 
   environment = {
     variables = {
-      TERMINAL = "${vars.terminal}";
       EDITOR = "${vars.editor}";
+      TERMINAL = "${vars.terminal}";
       # Set Firefox to use GPU for video codecs
       MOZ_DRM_DEVICE = gpuCard;
     };
@@ -96,9 +85,6 @@ in {
 
     # Theming
       pywal                       # Theme colors from current wallpaper
-      (python3.withPackages (ps: with ps; [
-        pip virtualenv pywalfox   # pywalfox-native NixOS fix
-      ]))
       #variety                    # Wallpapers
       #wpgtk                      # Pywal GUI
     ];

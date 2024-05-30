@@ -1,9 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-let
-  # https://github.com/alacritty/alacritty-theme
-  theme = ./tokyo-night-storm.toml;
-in {
+{ config, lib, vars, ... }: with lib; {
   options.alacritty.enable = mkOption {
     default = false;
     type = types.bool;
@@ -17,18 +12,22 @@ in {
         settings = {
           # Import Pywal wallpaper color theming
           #import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
+
+          # Import symbolically-linked theme
           import = [ "/home/${vars.user}/.config/alacritty/theme.toml" ];
 
-          mouse.hide_when_typing = false;
-          selection.save_to_clipboard = true;
+          live_config_reload = true;
 
           font = {
+            size = 12;
             normal = {
               family = "JetBrainsMono Nerd Font";
               style = "Regular";
             };
-            size = 12;
           };
+
+          mouse.hide_when_typing = false;
+          selection.save_to_clipboard = true;
 
           window = {
             blur = true;
@@ -39,10 +38,14 @@ in {
 
       # Create alacritty pywal template
       xdg.configFile."wal/templates/colors-alacritty.toml".source = ./colors-alacritty.toml;
-      # Create theme color toml
-      xdg.configFile."alacritty/theme.toml".source = theme;
+
+      # Create theme color toml(s)
+      # https://github.com/alacritty/alacritty-theme
+      #xdg.configFile."alacritty/gruvbox-dark.toml".source = ./gruvbox-dark.toml;
+      #xdg.configFile."alacritty/gruvbox-light.toml".source = ./gruvbox-light.toml;
+      #xdg.configFile."alacritty/tokyo-night.toml".source = ./tokyo-night.toml;
+      #xdg.configFile."alacritty/tokyo-night-storm.toml".source = ./tokyo-night-storm.toml;
     };
   };
+
 }
-
-

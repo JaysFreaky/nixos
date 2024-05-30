@@ -1,18 +1,17 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
+{ config, lib, pkgs, vars, ... }: with lib;
 let
-  day_cw = pkgs.writeShellScriptBin "day_cw.sh" ''
-    day=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f2 | cut -c 8-)
-    wal -nqsti "$day"
-    pywalfox update
-    pywalfox light
+  dayTheme = pkgs.writeShellScriptBin "day.sh" ''
+    DAY_WP=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f 2 | cut -c 8-)
+    wal -nqsti "$DAY_WP"
+    # Symbolically link theme to name set via Alacritty config
+    ln -fs /persist/etc/nixos/modules/programs/alacritty/gruvbox-light.toml /home/${vars.user}/.config/alacritty/theme.toml
   '';
 
-  night_cw = pkgs.writeShellScriptBin "night_cw.sh" ''
-    night=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f2 | cut -c 8-)
-    wal -nqsti "$night"
-    pywalfox update
-    pywalfox dark
+  nightTheme = pkgs.writeShellScriptBin "night.sh" ''
+    NIGHT_WP=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f 2 | cut -c 8-)
+    wal -nqsti "$NIGHT_WP"
+    # Symbolically link theme to name set via Alacritty config
+    ln -fs /persist/etc/nixos/modules/programs/alacritty/gruvbox-dark.toml /home/${vars.user}/.config/alacritty/theme.toml
   '';
 
   logoImg = ../../assets/logo.png;
@@ -32,7 +31,6 @@ in {
         gnome.gnome-tweaks            # Gnome tweaks
         gnome.nautilus-python         # Allow custom nautilus scripts/open-any-terminal
         gnome-extension-manager       # Gnome extensions
-        #gradience                    # Monet window theming
         libappindicator               # Allow tray icons to be displayed in GNOME
         libsecret                     # Secret storage used by gnome-keyring / KDE-wallet
         nautilus-open-any-terminal    # Open custom terminals in nautilus
@@ -42,7 +40,7 @@ in {
       gnome.excludePackages = (with pkgs; [
         #gnome-photos               # Image viewer
         gnome-tour                  # Setup walkthrough
-      ]) ++ (with pkgs.gnome; [
+        ]) ++ (with pkgs.gnome; [
         cheese                      # "fun" webcam app
         epiphany                    # Web browser
         #evince                     # Document viewer
@@ -309,63 +307,6 @@ in {
           strip-text = true;
           topbar-preview-size = 10;
         };
-        /*
-        "org/gnome/shell/extensions/forge" = {
-          css-last-update = lib.hm.gvariant.mkUint32 37;
-          css-updated = "1702937809549";
-          dnd-center-layout = "stacked";
-          focus-border-toggle = true;
-          preview-hint-enabled = true;
-          stacked-tiling-mode-enabled = false;
-          tabbed-tiling-mode-enabled = false;
-          tiling-mode-enabled = true;
-          window-gap-hidden-on-single = true;
-          window-gap-size = lib.hm.gvariant.mkUint32 3;
-          window-gap-size-increment = lib.hm.gvariant.mkUint32 1;
-          workspace-skip-tile = "";
-        };
-        "org/gnome/shell/extensions/forge/keybindings" = {
-          con-split-horizontal = [];
-          con-split-layout-toggle = [ "<Super>j" ];
-          con-split-vertical = [];
-          con-stacked-layout-toggle = [];
-          con-tabbed-layout-toggle = [];
-          con-tabbed-showtab-decoration-toggle = [];
-          focus-border-toggle = [];
-          prefs-tiling-toggle = [];
-          window-focus-down = [ "<Super>down" ];
-          window-focus-left = [ "<Super>left" ];
-          window-focus-right = [ "<Super>right" ];
-          window-focus-up = [ "<Super>up" ];
-          window-gap-size-decrease = [ "<Control><Super>minus" ];
-          window-gap-size-increase = [ "<Control><Super>plus" ];
-          window-move-down = [ "<Shift><Super>down" ];
-          window-move-left = [ "<Shift><Super>left" ];
-          window-move-right = [ "<Shift><Super>right" ];
-          window-move-up = [ "<Shift><Super>up" ];
-          window-resize-bottom-decrease = [ "<Shift><Control><Super>u" ];
-          window-resize-bottom-increase = [ "<Control><Super>u" ];
-          window-resize-left-decrease = [ "<Shift><Control><Super>y" ];
-          window-resize-left-increase = [ "<Control><Super>y" ];
-          window-resize-right-decrease = [ "<Shift><Control><Super>o" ];
-          window-resize-right-increase = [ "<Control><Super>o" ];
-          window-resize-top-decrease = [ "<Shift><Control><Super>i" ];
-          window-resize-top-increase = [ "<Control><Super>i" ];
-          window-snap-center = [ "<Control><Alt>c" ];
-          window-snap-one-third-left = [ "<Control><Alt>d" ];
-          window-snap-one-third-right = [ "<Control><Alt>g" ];
-          window-snap-two-third-left = [ "<Control><Alt>e" ];
-          window-snap-two-third-right = [ "<Control><Alt>t" ];
-          window-swap-down = [ "<Control><Super>down" ];
-          window-swap-last-active = [];
-          window-swap-left = [ "<Control><Super>left" ];
-          window-swap-right = [ "<Control><Super>right" ];
-          window-swap-up = [ "<Control><Super>up" ];
-          window-toggle-always-float = [ "<Shift><Super>v" ];
-          window-toggle-float = [ "<Super>v" ];
-          workspace-active-tile-toggle = [ "<Shift><Super>w" ];
-        };
-        */
         "org/gnome/shell/extensions/just-perfection" = {
           # Top center
           notification-banner-position = 1;
@@ -381,8 +322,8 @@ in {
         };
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          sunrise = "${day_cw}/bin/day_cw.sh";
-          sunset = "${night_cw}/bin/night_cw.sh";
+          sunrise = "${dayTheme}/bin/day.sh";
+          sunset = "${nightTheme}/bin/night.sh";
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;
@@ -434,7 +375,6 @@ in {
         bluetooth-quick-connect
         blur-my-shell
         clipboard-indicator
-        #forge
         just-perfection
         lock-keys
         night-theme-switcher
