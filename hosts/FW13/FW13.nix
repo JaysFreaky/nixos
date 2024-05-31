@@ -1,14 +1,14 @@
 { config, host, lib, pkgs, vars, ... }:
 let
-  # Call boot logo package
-  plymouth-fw = pkgs.callPackage ../../packages/plymouth-fw {};
+  # Call custom plymouth package
+  framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
  
   # GPU performance adjustment - power_dpm_force_performance_level is auto by default
   gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
     #!/usr/bin/env bash
 
     # Find persistant GPU device: readlink -f /sys/class/drm/card1/device
-    gpuDevice=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
+    GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
 
     # Default level
     DPM_PERF_LEVEL=low
@@ -20,7 +20,7 @@ let
     fi
 
     # Set performance level
-    echo $DPM_PERF_LEVEL > "$gpuDevice"/power_dpm_force_performance_level
+    echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
   '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -268,7 +268,7 @@ in {
     plymouth = {
       enable = true;
       theme = "framework";
-      themePackages = [ plymouth-fw ];
+      themePackages = [ framework-plymouth ];
     };
 
     # Allow 5GHz wifi & framework-laptop-kmod
@@ -453,5 +453,6 @@ in {
       ];
     };
   };
+
 }
 
