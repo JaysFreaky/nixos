@@ -1,12 +1,9 @@
-{ pkgs, vars, ... }:
-
-{
+{ vars, ... }: {
   home-manager.users.${vars.user} = {
     # Enabling through HM adds the command to .bashrc automatically
     programs.starship.enable = true;
 
-    xdg.configFile."starship.toml".source = ./pastel-powerline.toml;
+    # Import theme file(s)
+    xdg.configFile."starship.toml".source = ./gruvbox-rainbow.toml;
   };
 }
-
-

@@ -32,6 +32,7 @@
           window = {
             blur = true;
             opacity = 0.8;
+            startup_mode = "Maximized";
           };
         };
       };
