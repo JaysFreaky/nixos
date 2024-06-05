@@ -1,4 +1,4 @@
-{ lib, pkgs, stable, vars, ... }:
+{ inputs, lib, pkgs, stable, vars, ... }:
 let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
@@ -116,6 +116,11 @@ in {
     };
 
     optimise.automatic = true;
+
+    registry = {
+      nixpkgs.flake = inputs.nixpkgs;
+      nixpkgs-stable.flake = inputs.nixpkgs-stable;
+    };
 
     settings = {
       auto-optimise-store = true;
