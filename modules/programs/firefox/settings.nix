@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ host, ... }: {
   /****************************************************************************
    * Betterfox                                                                *
    * "Ad meliora"                                                             *
@@ -492,7 +492,7 @@
 
   /** SYNC ***/
   # use hostname for FF account device name
-    "identity.fxaccounts.account.device_name" = config.networking.hostName;
+    "identity.fxaccounts.account.device.name" = host.hostName;
   # only syncing bookmarks/tabs
     "services.sync.declinedEngines" = "addons,addresses,creditcards,forms,history,passwords,prefs";
     "services.sync.addons" = false;

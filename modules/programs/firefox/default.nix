@@ -1,4 +1,4 @@
-{ config, pkgs, vars, ... }:
+{ config, host, pkgs, vars, ... }:
 let
   inherit (config.nur.repos.rycee) firefox-addons;
 in {
@@ -124,7 +124,7 @@ in {
           };
         };
 
-        settings = import ./settings.nix { inherit config; };
+        settings = import ./settings.nix { inherit host; };
       };
 
       profiles.vanilla = {
