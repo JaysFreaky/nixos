@@ -1,6 +1,4 @@
-{ config, host, lib, pkgs, vars, ... }:
-
-{
+{ host, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
@@ -67,12 +65,6 @@
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = false;
-      theme = "nixos-bgrt";
-      themePackages = [ pkgs.nixos-bgrt-plymouth ];
-    };
-
     kernelModules = [ ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;

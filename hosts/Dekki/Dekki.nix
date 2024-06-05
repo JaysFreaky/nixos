@@ -1,19 +1,18 @@
-{ config, host, lib, pkgs, vars, ... }:
-{
+{ host, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  #gnome.enable = true;
+  gnome.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
   #bluetooth.enable = true;
 
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
-  gaming.enable = true;
+  #gaming.enable = true;
 
   # Root persistance - rollback
   # Restores "/" on each boot to root-blank btrfs snapshot
@@ -29,7 +28,6 @@
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
-      #zenmonitor             # CPU stats
     ];
   };
 
@@ -38,38 +36,54 @@
     devices.steamdeck.enable = true;
 
     steam = {
+      # Steam Deck UI
       enable = true;
-      # Big mode
+      # Start in Steam UI
       autoStart = true;
-      # Switch to desktop
-      desktopSession = "plasma";
-      user = ${vars.user};
+      # Switch to desktop - Use 'gamescope-wayland' for no desktop
+      desktopSession = "gnome";
+      user = "${vars.user}";
     };
   };
 
-  programs.gamescope.args = [
-    #"--adaptive-sync"
-    #"--borderless"
-    #"--expose-wayland"
-    #"--filter fsr"
-    "--fullscreen"
-    #"--framerate-limit 144"
-    #"--hdr-enabled"
-    # Toggling doesn't work using --mangoapp
-    #"--mangoapp"
-    #"--nested-height 1440"
-    #"--nested-refresh 144"
-    #"--nested-width 2560"
-    #"--prefer-vk-device \"1002:73a5\""
-    "--rt"
-  ];
-
-  services.desktopManager.plasma6.enable = true;
+  # Disable GDM with jovian.steam.autoStart enabled
+  services.xserver.displayManager.gdm.enable = lib.mkForce false;
 
 
   ##########################################################
   # Home Manager Options
   ##########################################################
+  home-manager.users.${vars.user} = { config, lib, ... }: rec {
+    dconf.settings = {
+      # Enable on-screen keyboard
+      "org/gnome/desktop/a11y/applications" = {
+        screen-keyboard-enabled = true;
+      };
+      "org/gnome/shell".enabled-extensions = (map (extension: extension.extensionUuid) home.packages);
+      # Dash-to-Dock settings for a better touch screen experience
+      "org/gnome/shell/extensions/dash-to-dock" = {
+        background-opacity = 0.80000000000000004;
+        custom-theme-shrink = true;
+        dash-max-icon-size = 48;
+        dock-fixed = true;
+        dock-position = "LEFT";
+        extend-height = true;
+        height-fraction = 0.60999999999999999;
+        hot-keys = false;
+        preferred-monitor = -2;
+        preferred-monitor-by-connector = "eDP-1";
+        scroll-to-focused-application = true;
+        show-apps-at-top = true;
+        show-mounts = true;
+        show-show-apps-button = true;
+        show-trash = false;
+      };
+    };
+    
+    home.packages = with pkgs.gnomeExtensions; [
+      dash-to-dock
+    ];
+  };
 
 
   ##########################################################
@@ -83,14 +97,10 @@
       driSupport32Bit = true;
       extraPackages = with pkgs; [
         #amdvlk
-        #libvdpau-va-gl
         #rocmPackages.clr.icd
-        #vaapiVdpau
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
         #amdvlk
-        #libvdpau-va-gl
-        #vaapiVdpau
       ];
     };
   };
@@ -100,26 +110,14 @@
   # Boot / Encryption
   ##########################################################
   boot = {
-    # Zenpower uses same PCI device as k10temp, so disabling k10temp
-    #blacklistedKernelModules = [ "k10temp" ];
-    kernelModules = [
-      #"zenpower"
-    ];
-    #extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    kernelModules = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      #"amd_pstate=active"
-      # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      #"amdgpu.ppfeaturemask=0xffffffff"
-      #"quiet"
-    ];
+    kernelParams = [ "quiet" "splash" ];
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
       availableKernelModules = [ ];
-      kernelModules = [
-        #"amdgpu"
-      ];
+      kernelModules = [ ];
       # Required for Plymouth (password prompt)
       systemd.enable = true;
     };
@@ -226,5 +224,6 @@
       ];
     };
   };
+
 }
 

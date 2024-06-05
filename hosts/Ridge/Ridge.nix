@@ -87,6 +87,16 @@ in {
     ];
   };
 
+  jovian.steam = {
+    # Steam Deck UI
+    enable = false;
+    # Start in Steam UI
+    autoStart = true;
+    # Switch to desktop - Use 'gamescope-wayland' for no desktop
+    desktopSession = "gnome";
+    user = "${vars.user}";
+  };
+
   programs = {
     # PWM fan control
     coolercontrol.enable = true;
@@ -94,13 +104,12 @@ in {
     gamescope.args = [
       "--adaptive-sync"
       #"--borderless"
-      #"--expose-wayland"
+      "--expose-wayland"
       "--filter fsr"
       "--fullscreen"
       "--framerate-limit 144"
       "--hdr-enabled"
-      # Toggling doesn't work using --mangoapp
-      #"--mangoapp"
+      #"--mangoapp"  # Toggling doesn't work
       "--nested-height 1440"
       "--nested-refresh 144"
       "--nested-width 2560"
@@ -109,17 +118,8 @@ in {
     ];
   };
 
-  # Create a service to auto-undervolt
-  systemd.services.gpu_uv = {
-    after = [ "multi-user.target" ];
-    description = "Set AMDGPU Undervolt";
-    wantedBy = [ "multi-user.target" ];
-    wants = [ "modprobe@amdgpu.service" ];
-    serviceConfig = {
-      ExecStart = ''${gpuUV}/bin/gpu_uv.sh'';
-      Type = "oneshot";
-    };
-  };
+  # Disable GDM with jovian.steam.autoStart enabled
+  #services.xserver.displayManager.gdm.enable = lib.mkForce false;
 
 
   ##########################################################
@@ -142,6 +142,8 @@ in {
   # Hardware
   ##########################################################
   hardware = {
+    bluetooth.powerOnBoot = lib.mkForce true;
+
     opengl = {
       enable = true;
       # DRI are Mesa drivers
@@ -150,6 +152,7 @@ in {
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl
+        rocmPackages.clr
         rocmPackages.clr.icd
         vaapiVdpau
       ];
@@ -167,6 +170,20 @@ in {
   };
 
   services.hardware.openrgb.enable = true;
+
+  # Create a service to auto-undervolt
+  systemd.services.gpu_uv = {
+    after = [ "multi-user.target" ];
+    description = "Set AMDGPU Undervolt";
+    wantedBy = [ "multi-user.target" ];
+    wants = [ "modprobe@amdgpu.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = "yes";
+      ExecStart = ''${gpuUV}/bin/gpu_uv.sh'';
+      ExecReload = ''${gpuUV}/bin/gpu_uv.sh'';
+    };
+  };
 
 
   ##########################################################
@@ -335,5 +352,6 @@ in {
       ];
     };
   };
+
 }
 
