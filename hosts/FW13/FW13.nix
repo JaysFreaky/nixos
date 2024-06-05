@@ -177,6 +177,7 @@ in {
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl
+        rocmPackages.clr
         rocmPackages.clr.icd
         vaapiVdpau
       ];
@@ -293,8 +294,6 @@ in {
       "acpi_mask_gpe=0x0B"
       # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
-      # Enables power profiles daemon control
-      "amd_pstate=active"
       # Disable IPv6 stack
       "ipv6.disable=1"
       "quiet"
