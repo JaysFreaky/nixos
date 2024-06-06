@@ -11,20 +11,24 @@ stdenv.mkDerivation {
     hash = "sha256-TuD+qHQ6+csK33oCYKfWRtpqH6AmYqvZkli0PtFm8+8=";
   };
 
-  # Local .plymouth file overwrites fetched file, preserving firmware image
-  file = ./framework.plymouth;
-
   dontConfigure = true;
   nativeBuildInputs = with pkgs; [ imagemagick ];
   buildPhase = ''
-    buildDir=/tmp/plymouth-fw
+    buildDir=/tmp/framework-plymouth
     mkdir -p $buildDir
     cp -r $src/framework/* $buildDir/
     chmod -R +w $buildDir/
-    cp $file $buildDir/framework.plymouth
     for image in $(ls $buildDir/throbber*.png); do
       convert -resize 25% $image $image;
     done
+    sed -i '2s/F/f/' $buildDir/framework.plymouth
+    sed -i '8s/3/2/' $buildDir/framework.plymouth
+    sed -i '11s/382/8/' $buildDir/framework.plymouth
+    sed -i '13s/382/3/' $buildDir/framework.plymouth
+    sed -i '15s/5/8/' $buildDir/framework.plymouth
+    sed -i '28 i UseFirmwareBackground=true' $buildDir/framework.plymouth
+    sed -i '32 i UseFirmwareBackground=true' $buildDir/framework.plymouth
+    sed -i '36 i UseFirmwareBackground=true' $buildDir/framework.plymouth
   '';
 
   installPhase = ''
@@ -44,4 +48,5 @@ stdenv.mkDerivation {
     maintainers = [ "JaysFreaky" ];
     platforms = platforms.linux;
   };
+
 }
