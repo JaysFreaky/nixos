@@ -3,7 +3,10 @@ let
   # Hyprland display scale
   #scale = 1.25;
 
-  # AMDGPU Undervolting
+  # GPU temp monitoring via fancontrol
+  gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+
+  # GPU Undervolting
   gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
     #!/usr/bin/env bash
 
@@ -59,6 +62,7 @@ in {
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
+    # Lact config not needed if undervolt service works
     #etc."lact/config.yaml".text = ''
     #'';
 
@@ -95,8 +99,8 @@ in {
   };
 
   programs = {
-    # PWM fan control
-    coolercontrol.enable = true;
+    # PWM fan control - not needed if fancontrol works
+    #coolercontrol.enable = true;
 
     gamescope.args = [
       "--adaptive-sync"
@@ -106,7 +110,7 @@ in {
       "--fullscreen"
       "--framerate-limit 144"
       "--hdr-enabled"
-      #"--mangoapp"  # Toggling doesn't work
+      #"--mangoapp"  # Toggling doesn't work with this
       "--nested-height 1440"
       "--nested-refresh 144"
       "--nested-width 2560"
@@ -145,7 +149,20 @@ in {
     fancontrol = {
       #enable = true;
       config = ''
-        #
+        INTERVAL=10
+        DEVPATH=hwmon2=devices/${gpuFC} hwmon3=devices/pci0000:00/0000:00:18.3 hwmon7=devices/platform/nct6775.656
+        DEVNAME=hwmon2=amdgpu hwmon3=zenpower hwmon7=nct6798
+        FCTEMPS=hwmon7/pwm1=hwmon2/temp1_input hwmon7/pwm2=hwmon3/temp2_input
+        FCFANS=hwmon7/pwm1=hwmon7/fan1_input hwmon7/pwm2=hwmon7/fan2_input
+        MINTEMP=hwmon7/pwm1=40 hwmon7/pwm2=40
+        MAXTEMP=hwmon7/pwm1=80 hwmon7/pwm2=80
+        # Always spin @ MINPWM until MINTEMP
+        MINSTART=hwmon7/pwm1=0 hwmon7/pwm2=0
+        MINSTOP=hwmon7/pwm1=64 hwmon7/pwm2=64
+        # Fans @ 25% until 40 degress
+        MINPWM=hwmon7/pwm1=64 hwmon7/pwm2=64
+        # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
+        MAXPWM=hwmon7/pwm1=140 hwmon7/pwm2=217
       '';
     };
 
@@ -181,7 +198,7 @@ in {
 
   services.hardware.openrgb.enable = true;
 
-  # Create a service to auto-undervolt
+  # Create a service to auto undervolt GPU
   systemd.services.gpu_uv = {
     after = [ "multi-user.target" "rc-local.service" "systemd-user-sessions.service" ];
     description = "Set AMDGPU Undervolt";
@@ -220,7 +237,7 @@ in {
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
-      # Adjust GPU clocks/voltages - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
+      # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       "amdgpu.ppfeaturemask=0xffffffff"
       #"quiet"
     ];
@@ -364,4 +381,3 @@ in {
   };
 
 }
-
