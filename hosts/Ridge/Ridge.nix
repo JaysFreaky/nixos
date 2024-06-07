@@ -8,29 +8,26 @@ let
     #!/usr/bin/env bash
 
     # Find persistant device: readlink -f /sys/class/drm/card#/device
-    gpuDevice=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
+    GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
 
-    # Set maximum MHz
-    echo s 1 2250 | sudo tee "$gpuDevice"/pp_od_clk_voltage
-    # Set voltage offset
-    echo vo -30 | sudo tee "$gpuDevice"/pp_od_clk_voltage
-    # Apply UV values
-    echo c | sudo tee "$gpuDevice"/pp_od_clk_voltage
+    # Set GPU max MHz - default max is 2664
+    echo s 1 2250 | sudo tee "$GPU"/pp_od_clk_voltage
+    # Set GPU voltage offset - default mV is 1200
+    echo vo -80 | sudo tee "$GPU"/pp_od_clk_voltage
+    # Set VRAM max MHz - default max is 1124
+    #echo m 1 1124 | sudo tee "$GPU"/pp_od_clk_voltage
+    # Apply values
+    echo c | sudo tee "$GPU"/pp_od_clk_voltage
 
-    # Set max wattage (first 3 numbers are wattage - 284 default)
-    echo 255000000 > "$gpuDevice"/hwmon/hwmon2/power1_cap
-
-    # Set fan mode: 0=off, 1=manual, 2=auto
-    #echo 2 > "$gpuDevice"/hwmon/hwmon2/pwm1_enable
-    # Set fan pwm max % (mode must be manual) - 128=50%; 255=100%
-    #echo 128 > "$gpuDevice"/hwmon/hwmon2/pwm1_max
+    # Set max wattage (first 3 numbers are wattage) - default wattage is 284
+    echo 255000000 > "$GPU"/hwmon/hwmon2/power1_cap
 
     # Set power profile level: auto, low, high, manual
-    echo manual > "$gpuDevice"/power_dpm_force_performance_level
-    # Set power profile mode: cat "$gpuDevice"/pp_power_profile_mode
-    echo 1 > "$gpuDevice"/pp_power_profile_mode
-    # Set highest VRAM power state: cat "$gpuDevice"/pp_dpm_mclk
-    echo 3 > "$gpuDevice"/pp_dpm_mclk
+    echo manual > "$GPU"/power_dpm_force_performance_level
+    # Set power profile mode: cat "$GPU"/pp_power_profile_mode
+    echo 1 > "$GPU"/pp_power_profile_mode
+    # Set highest VRAM power state: cat "$GPU"/pp_dpm_mclk
+    echo 3 > "$GPU"/pp_dpm_mclk
   '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -144,6 +141,14 @@ in {
   hardware = {
     bluetooth.powerOnBoot = lib.mkForce true;
 
+    # Control CPU / case fans
+    fancontrol = {
+      #enable = true;
+      config = ''
+        #
+      '';
+    };
+
     opengl = {
       enable = true;
       # DRI are Mesa drivers
@@ -169,11 +174,16 @@ in {
     };
   };
 
+  # Restart GPU undervolt service upon resume
+  powerManagement.resumeCommands = ''
+    systemctl restart gpu_uv.service
+  '';
+
   services.hardware.openrgb.enable = true;
 
   # Create a service to auto-undervolt
   systemd.services.gpu_uv = {
-    after = [ "multi-user.target" ];
+    after = [ "multi-user.target" "rc-local.service" "systemd-user-sessions.service" ];
     description = "Set AMDGPU Undervolt";
     wantedBy = [ "multi-user.target" ];
     wants = [ "modprobe@amdgpu.service" ];
