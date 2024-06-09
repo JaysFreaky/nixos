@@ -73,7 +73,7 @@ in {
           "org/gnome/desktop/peripherals/touchpad" = {
             tap-to-click = true;
           };
-          "org/gnome/login-screen".logo = toString logoImg;
+          "org/gnome/login-screen".logo = builtins.toString logoImg;
           "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
         };
       }];
