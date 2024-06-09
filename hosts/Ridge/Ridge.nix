@@ -13,12 +13,15 @@ let
     # Find persistant device: readlink -f /sys/class/drm/card#/device
     GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
 
+    # GPU min clock - default min is 500
+    echo "Setting GPU min clock"
+    echo s 1 2100 | tee "$GPU"/pp_od_clk_voltage
     # GPU max clock - default max is 2664
-    echo "Setting GPU clock"
-    echo s 1 2250 | tee "$GPU"/pp_od_clk_voltage
+    echo "Setting GPU max clock"
+    echo s 2 2200 | tee "$GPU"/pp_od_clk_voltage
     # Voltage offset - default mV is 1200
     echo "Setting voltage offset"
-    echo vo -80 | tee "$GPU"/pp_od_clk_voltage
+    echo vo -150 | tee "$GPU"/pp_od_clk_voltage
     # VRAM max clock - default max is 1124 - not adjusting
     #echo "Setting VRAM clock"
     #echo m 1 1124 | tee "$GPU"/pp_od_clk_voltage
@@ -28,17 +31,17 @@ let
 
     # Power usage limit - default wattage is 284 (first 3 numbers are watts)
     echo "Setting power usage limit"
-    echo 255000000 | tee "$GPU"/hwmon/hwmon2/power1_cap
+    echo 284000000 | tee "$GPU"/hwmon/hwmon2/power1_cap
 
     # Performance level: auto, low, high, manual
     echo "Setting performance level"
     echo manual | tee "$GPU"/power_dpm_force_performance_level
     # Power level mode: cat pp_power_profile_mode
-    echo "Setting power level mode"
+    echo "Setting power level mode to 3D Fullscreen"
     echo 1 | tee "$GPU"/pp_power_profile_mode
     # GPU power states: cat pp_dpm_sclk
-    #echo "Enabling all GPU power states"
-    #echo 1 | tee "$GPU"/pp_dpm_sclk
+    echo "Enabling all GPU power states"
+    echo 2 | tee "$GPU"/pp_dpm_sclk
     # VRAM power states: cat pp_dpm_mclk
     echo "Enabling all VRAM power states"
     echo 3 | tee "$GPU"/pp_dpm_mclk
