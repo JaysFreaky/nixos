@@ -1,6 +1,4 @@
-{ pkgs, vars, ... }:
-
-{
+{ vars, ... }: {
   home-manager.users.${vars.user} = {
     programs.bash = {
       enable = true;
@@ -18,10 +16,12 @@
         ".df" = "cd /persist/etc/nixos";
         "ff" = "fastfetch";
         "fishies" = "asciiquarium";
+        "gd" = "git diff";
+        "gs" = "git status";
         "ll" = "ls -la";
       };
     };
   };
-}
 
+}
 
