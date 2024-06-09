@@ -1,5 +1,4 @@
-{ config, hyprland, inputs, lib, pkgs, vars, ... }:
-with lib;
+{ config, hyprland, lib, pkgs, vars, ... }: with lib;
 let
   wall_dir = "/persist/etc/nixos/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
@@ -138,7 +137,7 @@ in {
           initial_session = {
             # Regreet command
             #command = "Hyprland";
-              or
+              #or
             #command = "${pkgs.hyprland}/bin/Hyprland";
             # Tuigreet command
             command = "${pkgs.greetd.tuigreet}/bin/tuigreet --asterisks --remember-user-session --time --cmd ${pkgs.hyprland}/bin/Hyprland";
@@ -167,7 +166,7 @@ in {
     home-manager.users.${vars.user} = { lib, ... }: {
    /* qt = {
         enable = true;
-   */ };
+      }; */
 
       #services.mako.enable = true;
 
@@ -427,4 +426,5 @@ in {
       xdg.configFile."wal/templates/colors-hyprland.conf".source = ./colors-hyprland.conf;
     };
   };
+
 }

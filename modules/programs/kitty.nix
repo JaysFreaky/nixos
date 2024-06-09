@@ -1,6 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, vars, ... }: with lib; {
   options.kitty.enable = mkOption {
     default = false;
     type = types.bool;
@@ -25,12 +23,11 @@ with lib;
         };
 
         # Import Pywal wallpaper color theming
-    /*  extraConfig = ''
+        extraConfig = ''
           #include /home/${vars.user}/.cache/wal/colors-kitty.conf
-        ''; */
+        '';
       };
     };
   };
+
 }
-
-

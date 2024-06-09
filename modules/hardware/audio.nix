@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-with lib;
-{
+{ config, lib, pkgs, ... }: with lib; {
   options.audio.enable = mkOption {
     default = true;
     type = types.bool;
@@ -24,7 +22,6 @@ with lib;
         jack.enable = true;
         pulse.enable = true;
         wireplumber.enable = true;
-
         alsa = {
           enable = true;
           support32Bit = true;
@@ -38,4 +35,5 @@ with lib;
     })
 */
   ];
+
 }

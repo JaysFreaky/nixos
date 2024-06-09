@@ -1,6 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-
-{
+{ ... }: {
   environment = {
     etc = {
       # Hardware clock tracking
@@ -26,4 +24,5 @@
       ];
     };
   };
+
 }

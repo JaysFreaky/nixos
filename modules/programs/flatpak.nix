@@ -1,6 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, ... }: with lib; {
   options.flatpak.enable = mkOption {
     default = false;
     type = types.bool;
@@ -29,4 +27,5 @@ with lib;
       };
     };
   };
+
 }

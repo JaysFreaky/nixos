@@ -1,5 +1,4 @@
-{ config, host, lib, pkgs, vars, ... }:
-{
+{ host, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
@@ -190,4 +189,5 @@
       ];
     };
   };
+
 }

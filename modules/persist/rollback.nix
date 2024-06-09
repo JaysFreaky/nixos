@@ -1,13 +1,11 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, ... }: with lib; {
   options.rollback.enable = mkOption {
     default = false;
     type = types.bool;
   };
 
   config = mkIf (config.rollback.enable) {
-    boot.initrd.postDeviceCommands = pkgs.lib.mkBefore ''
+    boot.initrd.postDeviceCommands = mkBefore ''
       mkdir -p /mnt
 
       # We first mount the btrfs root to /mnt

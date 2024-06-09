@@ -1,6 +1,4 @@
-{ pkgs, vars, ... }:
-
-{
+{ pkgs, vars, ... }: {
   environment.systemPackages = with pkgs; [
   # Previewer tools
     # Archive
@@ -8,7 +6,6 @@
 
     # Audio / Video
     ffmpegthumbnailer    # Video thumbnails
-
 
     #devour               # Hide lf window before displaying image - x only?
     #feh                   # Image viewer
@@ -61,6 +58,5 @@
 
     xdg.configFile."lf/icons".source = ./icons;
   };
+
 }
-
-

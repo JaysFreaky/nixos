@@ -1,6 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, vars, ... }: with lib; {
   options."1password".enable = mkOption {
     default = false;
     type = types.bool;
@@ -36,5 +34,3 @@ with lib;
   };
 
 }
-
-

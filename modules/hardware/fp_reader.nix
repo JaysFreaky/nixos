@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-with lib;
-{
+{ config, lib, pkgs, ... }: with lib; {
   options.fp_reader.enable = mkOption {
     default = false;
     type = types.bool;
@@ -16,4 +14,5 @@ with lib;
       services.fprintd.enable = lib.mkForce false;
     })
   ];
+
 }

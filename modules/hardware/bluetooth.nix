@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-with lib;
-{
+{ config, lib, ... }: with lib; {
   options.bluetooth.enable = mkOption {
     default = false;
     type = types.bool;
@@ -26,4 +24,5 @@ with lib;
 
     services.blueman.enable = true;
   };
+
 }

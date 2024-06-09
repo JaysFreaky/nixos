@@ -1,6 +1,4 @@
-{ pkgs, vars, ... }:
-
-{
+{ pkgs, vars, ... }: {
   home-manager.users.${vars.user} = {
     home.packages = with pkgs; [
       gcc
@@ -24,6 +22,5 @@
       "nvim/.stylua.toml".source = ./.stylua.toml;
     };
   };
+
 }
-
-
