@@ -130,6 +130,13 @@ in {
       battery-health-charging
     ];
 
+    programs.mangohud.settings = {
+      fps_limit = 60;
+      fps_limit_method = "late";
+      # lspci -D | grep -i vga
+      #pci_dev = "0000:c1:00.0";
+    };
+
     # https://github.com/ceiphr/ee-framework-presets
     services.easyeffects = {
       enable = true;

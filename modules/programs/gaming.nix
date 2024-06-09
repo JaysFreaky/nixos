@@ -1,6 +1,4 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, pkgs, vars, ... }: with lib; {
   options.gaming.enable = mkOption {
     default = false;
     type = types.bool;
@@ -62,12 +60,11 @@ with lib;
           hdr = true;
           mangoapp_steam = true;
           position = "top-left";
-          round_corners = 7; 
+          round_corners = 7;
           #width = ;
           #height = ;
           table_columns = 3;
           background_alpha = 0.5;
-          #pci_dev = "0:c1:00.0";
           toggle_hud = "Shift_R+F12";
         };
       };
@@ -129,4 +126,5 @@ with lib;
     };
 
   };
+
 }

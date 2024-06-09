@@ -140,17 +140,23 @@ in {
   ##########################################################
   # Home Manager Options
   ##########################################################
-  /*
   home-manager.users.${vars.user} = {
-    wayland.windowManager.hyprland.settings = {
+    programs.mangohud.settings = {
+      fps_limit = 144;
+      fps_limit_method = "late";
+      # lspci -D | grep -i vga
+      #pci_dev = "0000:00:03.1";
+    };
+
+  /*wayland.windowManager.hyprland.settings = {
       # hyprctl monitors all
       # name,resolution@htz,position,scale
       monitor = [
-        #",preferred,auto,auto"
+        ",preferred,auto,auto"
         #"eDP-1,2560x1440@144,0x0,${toString scale}"
       ];
-    };
-  }; */
+    }; */
+  };
 
 
   ##########################################################
