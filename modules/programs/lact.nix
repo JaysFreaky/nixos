@@ -1,26 +1,16 @@
-{ config, lib, pkgs, vars, ... }:
-with lib;
-{
+{ config, lib, pkgs, ... }: with lib; {
   options.lact.enable = mkOption {
     default = false;
     type = types.bool;
   };
 
   config = mkIf (config.lact.enable) {
-    environment.systemPackages = with pkgs; [
-      lact      # GPU control
-    ];
+    environment.systemPackages = with pkgs; [ lact ];
 
-    # Lact does not currently support automatically initializing the daemon
-    systemd.services.lactd = {
-      after = [ "multi-user.target" ];
-      description = "AMDGPU Control Daemon";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = ''${pkgs.lact}/bin/lact daemon'';
-        Nice = "-10";
-      };
-    };
+    # Create service from package
+    systemd.packages = with pkgs; [ lact ];
+    # Autostart service at boot
+    systemd.services.lactd.wantedBy = [ "multi-user.target" ];
   };
 
 }
