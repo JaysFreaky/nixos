@@ -216,7 +216,16 @@ in {
     systemctl restart gpu_uv.service
   '';
 
-  services.hardware.openrgb.enable = true;
+  services = {
+    hardware.openrgb.enable = true;
+
+    udev.extraRules = ''
+      # Wake system via controller
+      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21f" RUN+="/bin/sh -c 'echo enabled > /sys/bus/usb/devices/1-4/power/wakeup'"
+      # Alternative version
+      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21f" RUN+="/bin/sh -c 'echo enabled > /sys/$env{DEVPATH}/power/wakeup'"
+    '';
+  };
 
   # Create a service to auto undervolt GPU
   systemd.services.gpu_uv = {
