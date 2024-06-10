@@ -6,7 +6,7 @@
 
   config = mkIf (config.gaming.enable) {
     # Increase stability/performance of games
-    boot.kernel.sysctl."vm.max_map_count" = lib.mkForce 2147483642;
+    boot.kernel.sysctl."vm.max_map_count" = mkForce 2147483642;
 
     environment = {
       systemPackages = with pkgs; [
@@ -43,29 +43,44 @@
         enableSessionWide = false;
 
         settings = {
-          time = true;
-          gpu_stats = true;
-          gpu_temp = true;
-          gpu_power = true;
-          #gpu_text = "GPU";
+          position = "top-left";
+          toggle_hud = "Shift_R+F12";
+
+          round_corners = 10;
+          background_alpha = "0.4";
+          #background_color = "000000";
+          #font_size = 24;
+          #text_color = "FFFFFF";
+          table_columns = 4;
+
+          cpu_text = "CPU";
           cpu_stats = true;
+          cpu_load_change = true;
+          cpu_load_value = "50,90";
+          cpu_load_color = "FFFFFF,FFAA7F,CC0000";
           cpu_temp = true;
           cpu_power = true;
-          #cpu_text = "CPU";
-          ram = true;
-          fps = true;
-          vulkan_driver = true;
-          gamemode = true;
+
+          gpu_text = "GPU";
+          gpu_stats = true;
+          gpu_load_change = true;
+          gpu_load_value = "50,90";
+          gpu_load_color = "FFFFFF,FFAA7F,CC0000";
+          gpu_temp = true;
+          gpu_power = true;
+
           fsr = true;
           hdr = true;
+          gl_vsync = "-1";
+          vsync = "0";
+
+          fps = true;
+          fps_limit_method = "late";
+          gamemode = true;
           mangoapp_steam = true;
-          position = "top-left";
-          round_corners = 7;
-          #width = ;
-          #height = ;
-          table_columns = 3;
-          background_alpha = 0.5;
-          toggle_hud = "Shift_R+F12";
+          ram = true;
+          time = true;
+          vulkan_driver = true;
         };
       };
     };

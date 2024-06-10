@@ -133,8 +133,15 @@ in {
     ];
   };
 
-  # Disable GDM with jovian.steam.autoStart enabled
-  #services.xserver.displayManager.gdm.enable = lib.mkForce false;
+/*services = {
+    displayManager.autoLogin = {
+      enable = lib.mkForce true;
+      user = "${vars.user}";
+    };
+
+    # Disable GDM with jovian.steam.autoStart enabled
+    xserver.displayManager.gdm.enable = lib.mkForce false;
+  }; */
 
 
   ##########################################################
@@ -142,10 +149,13 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = {
     programs.mangohud.settings = {
-      fps_limit = 144;
-      fps_limit_method = "late";
       # lspci -D | grep -i vga
-      #pci_dev = "0000:00:03.1";
+      pci_dev = "0:0a:00.0";
+      fps_limit = 144;
+
+      gpu_fan = true;
+      gpu_voltage = true;
+      table_columns = lib.mkForce 6;
     };
 
   /*wayland.windowManager.hyprland.settings = {
@@ -216,16 +226,7 @@ in {
     systemctl restart gpu_uv.service
   '';
 
-  services = {
-    hardware.openrgb.enable = true;
-
-    udev.extraRules = ''
-      # Wake system via controller
-      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21f" RUN+="/bin/sh -c 'echo enabled > /sys/bus/usb/devices/1-4/power/wakeup'"
-      # Alternative version
-      ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21f" RUN+="/bin/sh -c 'echo enabled > /sys/$env{DEVPATH}/power/wakeup'"
-    '';
-  };
+  services.hardware.openrgb.enable = true;
 
   # Create a service to auto undervolt GPU
   systemd.services.gpu_uv = {
@@ -269,6 +270,7 @@ in {
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       "amdgpu.ppfeaturemask=0xffffffff"
       #"quiet"
+      #"splash"
     ];
     supportedFilesystems = [ "btrfs" ];
 
