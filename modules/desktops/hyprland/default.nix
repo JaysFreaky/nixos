@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: with lib;
 let
-  hyprPkgs = inputs.hyprland.packages.${pkgs.system}; 
+  hyprland-flake = inputs.hyprland.packages.${pkgsPsystem}; 
   wall_dir = "/persist/etc/nixos/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
   night_wall = "${wall_dir}/blobs-d.png";
@@ -103,7 +103,7 @@ in {
     programs = {
       hyprland = {
         enable = true;
-        package = hyprPkgs.hyprland;
+        package = hyprland-flake.hyprland;
         # X11 compatability
         xwayland.enable = true;
       };
@@ -165,6 +165,12 @@ in {
     };
 
     home-manager.users.${vars.user} = { lib, ... }: {
+      programs.bash.initExtra = ''
+        if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${vars.terminal}" ]; then
+          wal -Rqe
+        fi
+      '';
+
    /* qt = {
         enable = true;
       }; */
@@ -174,7 +180,7 @@ in {
       wayland.windowManager.hyprland = {
         enable = true;
         # Package doesn't need to be declared since done in the system - use null instead?
-        #package = hyprPkgs.hyprland;
+        #package = hyprland-flake.hyprland;
         package = null;
         xwayland.enable = true;
 
