@@ -1,4 +1,4 @@
-{ config, host, lib, pkgs, vars, ... }:
+{ config, host, inputs, lib, pkgs, vars, ... }:
 let
   # Call custom plymouth package
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
@@ -77,8 +77,6 @@ in {
     # Multimedia
       mpv                     # Media player
       plex-media-player       # Plex player
-      spicetify-cli           # Spotify theming
-      spotify                 # Music
 
     # Notes
       obsidian                # Markdown notes
@@ -88,22 +86,36 @@ in {
     ];
   };
 
-  programs.gamescope.args = [
-    #"--adaptive-sync"
-    #"--borderless"
-    #"--expose-wayland"
-    #"--filter fsr"
-    "--fullscreen"
-    "--framerate-limit 60"
-    #"--hdr-enabled"
-    # Toggling doesn't work using --mangoapp
-    #"--mangoapp"
-    "--nested-height 1504"
-    "--nested-refresh 60"
-    "--nested-width 2256"
-    #"--prefer-vk-device \"1002:15bf\""
-    "--rt"
-  ];
+  programs = {
+    gamescope.args = [
+      #"--adaptive-sync"
+      #"--borderless"
+      #"--expose-wayland"
+      #"--filter fsr"
+      "--fullscreen"
+      "--framerate-limit 60"
+      #"--hdr-enabled"
+      # Toggling doesn't work using --mangoapp
+      #"--mangoapp"
+      "--nested-height 1504"
+      "--nested-refresh 60"
+      "--nested-width 2256"
+      #"--prefer-vk-device \"1002:15bf\""
+      "--rt"
+    ];
+
+    spicetify = let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
+      enable = true;
+      theme = spicePkgs.themes.text;
+      colorScheme = "TokyoNightStorm";
+      enabledExtensions = with spicePkgs.extensions; [
+        fullAlbumDate
+        hidePodcasts
+        savePlaylists
+        wikify
+      ];
+    };
+  };
 
 
   ##########################################################

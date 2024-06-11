@@ -17,6 +17,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
     nur.url = "github:nix-community/NUR";
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    superfile.url = "github:yorukot/superfile";
   };
 
   outputs = {
@@ -55,6 +60,7 @@
       inputs.impermanence.nixosModules.impermanence
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nur.nixosModules.nur
+      inputs.spicetify-nix.nixosModules.spicetify
     ];
   in {
     # Available through 'nixos-rebuild --flake .#your-hostname'
@@ -63,7 +69,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable system vars;
+          inherit inputs pkgs stable vars;
           host.hostName = "Dekki";
         };
         modules = standardModules ++ [
@@ -76,7 +82,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable system vars;
+          inherit inputs pkgs stable vars;
           host.hostName = "FW13";
         };
         modules = standardModules ++ [
@@ -89,7 +95,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable system vars;
+          inherit inputs pkgs stable vars;
           host.hostName = "Ridge";
         };
         modules = standardModules ++ [
@@ -102,7 +108,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable system vars;
+          inherit inputs pkgs stable vars;
           host.hostName = "T450s";
         };
         modules = standardModules ++ [
@@ -115,7 +121,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable system vars;
+          inherit inputs pkgs stable vars;
           host.hostName = "VM";
         };
         modules = standardModules ++ [

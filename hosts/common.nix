@@ -2,6 +2,7 @@
 let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+  spf-flake = inputs.superfile.packages.${pkgs.system};
 in {
   imports = (
     import ../modules/desktops ++
@@ -46,6 +47,7 @@ in {
 
     # File Support
       #cifs-utils                 # SMB support
+      exiftool                    # File metadata
       imagemagick                 # Image tools
       nfs-utils                   # NFS support
       p7zip                       # Zip encryption
@@ -71,7 +73,8 @@ in {
       nix-tree                    # Browse nix store
       nvme-cli                    # Manage NVMe
       pciutils                    # Manage PCI | 'lspci'
-      #${vars.terminal}           # Terminal installed via variable
+      spf-flake.superfile         # CLI file manager
+      #vars.terminal              # Terminal installed via variable
       tldr                        # Helper
       tmux                        # Multiplexor
       tree                        # Directory layout
