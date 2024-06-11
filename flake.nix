@@ -21,15 +21,9 @@
 
   outputs = {
     self,
-    hardware,
     home-manager,
-    #hyprland,
-    impermanence,
-    jovian,
-    nix-flatpak,
     nixpkgs,
     nixpkgs-stable,
-    nur,
     ...
   } @ inputs:
   let
@@ -58,9 +52,9 @@
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
-      impermanence.nixosModules.impermanence
-      nix-flatpak.nixosModules.nix-flatpak
-      nur.nixosModules.nur
+      inputs.impermanence.nixosModules.impermanence
+      inputs.nix-flatpak.nixosModules.nix-flatpak
+      inputs.nur.nixosModules.nur
     ];
   in {
     # Available through 'nixos-rebuild --flake .#your-hostname'
@@ -74,7 +68,7 @@
         };
         modules = standardModules ++ [
           ./hosts/Dekki
-          jovian.nixosModules.jovian
+          inputs.jovian.nixosModules.jovian
         ];
       };
 
@@ -87,7 +81,7 @@
         };
         modules = standardModules ++ [
           ./hosts/FW13
-          hardware.nixosModules.framework-13-7040-amd
+          inputs.hardware.nixosModules.framework-13-7040-amd
         ];
       };
 
@@ -100,7 +94,7 @@
         };
         modules = standardModules ++ [
           ./hosts/Ridge
-          jovian.nixosModules.jovian
+          inputs.jovian.nixosModules.jovian
         ];
       };
 
@@ -113,7 +107,7 @@
         };
         modules = standardModules ++ [
           ./hosts/T450s
-          hardware.nixosModules.lenovo-thinkpad-t450s
+          inputs.hardware.nixosModules.lenovo-thinkpad-t450s
         ];
       };
 

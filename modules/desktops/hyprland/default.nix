@@ -1,11 +1,12 @@
-{ config, hyprland, lib, pkgs, vars, ... }: with lib;
+{ config, inputs, lib, pkgs, vars, ... }: with lib;
 let
+  hyprPkgs = inputs.hyprland.packages.${pkgs.system}; 
   wall_dir = "/persist/etc/nixos/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
   night_wall = "${wall_dir}/blobs-d.png";
 in {
   imports = [
-    hyprland.homeManagerModules.default
+    inputs.hyprland.homeManagerModules.default
   ];
 
   options.hyprland.enable = mkOption {
@@ -15,7 +16,7 @@ in {
 
   config = mkIf (config.hyprland.enable) {
     #imports = [
-      #hyprland.homeManagerModules.default
+      #inputs.hyprland.homeManagerModules.default
     #];
 
     environment.sessionVariables = {
@@ -102,7 +103,7 @@ in {
     programs = {
       hyprland = {
         enable = true;
-        package = hyprland.packages.${pkgs.system}.hyprland;
+        package = hyprPkgs.hyprland;
         # X11 compatability
         xwayland.enable = true;
       };
@@ -173,7 +174,7 @@ in {
       wayland.windowManager.hyprland = {
         enable = true;
         # Package doesn't need to be declared since done in the system - use null instead?
-        #package = hyprland.packages.${pkgs.system}.hyprland;
+        #package = hyprPkgs.hyprland;
         package = null;
         xwayland.enable = true;
 
