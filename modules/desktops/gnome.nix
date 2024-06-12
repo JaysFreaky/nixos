@@ -19,7 +19,7 @@ let
     elif [[ "${vars.terminal}" = "kitty" ]]; then
       ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty)
-    #fi;
+    fi;
   '';
 
   logoImg = ../../assets/logo.png;
