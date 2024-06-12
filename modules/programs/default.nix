@@ -6,7 +6,7 @@
   ./flatpak.nix
   ./gaming.nix
   ./git.nix
-  ./kitty.nix
+  ./kitty
   ./lact.nix
   #./lf
   ./nvim

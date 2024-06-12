@@ -1,17 +1,25 @@
 { config, lib, pkgs, vars, ... }: with lib;
 let
-  dayTheme = pkgs.writeShellScriptBin "day.sh" ''
+  dayTheme = let themeName = "rose-pine"; in pkgs.writeShellScriptBin "day.sh" ''
     DAY_WP=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f 2 | cut -c 8-)
     wal -nqsti "$DAY_WP"
-    # Symbolically link theme to name set via Alacritty config
-    ln -fs /persist/etc/nixos/modules/programs/alacritty/gruvbox-light.toml /home/${vars.user}/.config/alacritty/theme.toml
+    if [[ "${vars.terminal}" = "alacritty" ]]; then
+      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+    elif [[ "${vars.terminal}" = "kitty" ]]; then
+      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      kill -SIGUSR1 $(pidof kitty)
+    fi;
   '';
 
-  nightTheme = pkgs.writeShellScriptBin "night.sh" ''
+  nightTheme = let themeName = "rose-pine-dark"; in pkgs.writeShellScriptBin "night.sh" ''
     NIGHT_WP=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f 2 | cut -c 8-)
     wal -nqsti "$NIGHT_WP"
-    # Symbolically link theme to name set via Alacritty config
-    ln -fs /persist/etc/nixos/modules/programs/alacritty/gruvbox-dark.toml /home/${vars.user}/.config/alacritty/theme.toml
+    if [[ "${vars.terminal}" = "alacritty" ]]; then
+      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+    elif [[ "${vars.terminal}" = "kitty" ]]; then
+      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      kill -SIGUSR1 $(pidof kitty)
+    #fi;
   '';
 
   logoImg = ../../assets/logo.png;
