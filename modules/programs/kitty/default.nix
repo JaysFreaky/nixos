@@ -25,14 +25,6 @@
           touch_scroll_multiplier = "2.0";
           wayland_titlebar_color = "system";
         };
-
-        extraConfig = ''
-          # Import Pywal wallpaper color theming
-          #include /home/${vars.user}/.cache/wal/colors-kitty.conf
-
-          # Import symbolically-linked theme
-          include /home/${vars.user}/.config/kitty/current-theme.conf
-        '';
       };
     };
   };

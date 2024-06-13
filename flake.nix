@@ -48,7 +48,7 @@
       name = "Jason";
       editor = "nvim";
       # alacritty or kitty
-      terminal = "alacritty";
+      terminal = "kitty";
     };
 
     standardModules = [

@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: with lib;
 let
-  hyprland-flake = inputs.hyprland.packages.${pkgsPsystem}; 
+  hyprland-flake = inputs.hyprland.packages.${pkgs.system}; 
   wall_dir = "/persist/etc/nixos/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
   night_wall = "${wall_dir}/blobs-d.png";
@@ -165,15 +165,47 @@ in {
     };
 
     home-manager.users.${vars.user} = { lib, ... }: {
-      programs.bash.initExtra = ''
-        if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${vars.terminal}" ]; then
-          wal -Rqe
-        fi
-      '';
-
-   /* qt = {
+      gtk = {
         enable = true;
-      }; */
+
+        cursorTheme = {
+          # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
+          name = "Bibata-Modern-Classic";
+          package = pkgs.bibata-cursors;
+          # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
+          size = 24;
+        };
+
+        iconTheme = {
+          # Variants: Papirus Papirus-Dark Papirus-Light
+          name = "Papirus";
+          # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
+          # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
+          # green grey indigo magenta nordic orange palebrown paleorange pink red
+          # teal violet white yaru yellow
+          package = pkgs.papirus-icon-theme.override { color = "violet"; };
+        };
+
+        #theme = {
+          #name = "";
+          #package = "";
+        #};
+      };
+
+      # Use Pywal for terminal theming
+      programs = {
+        alacritty.settings.import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
+
+        bash.initExtra = ''
+          if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${vars.terminal}" ]; then
+            wal -Rqe
+          fi
+        '';
+
+        kitty.extraConfig = ''include /home/${vars.user}/.cache/wal/colors-kitty.conf'';
+      };
+
+      #qt.enable = true;
 
       #services.mako.enable = true;
 

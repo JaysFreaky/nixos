@@ -10,13 +10,6 @@
         enable = true;
 
         settings = {
-          # Import Pywal wallpaper color theming
-          #import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
-
-          # https://github.com/alacritty/alacritty-theme
-          # Import symbolically-linked theme
-          import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
-
           live_config_reload = true;
 
           font = {

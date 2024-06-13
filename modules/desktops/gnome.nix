@@ -1,29 +1,24 @@
 { config, lib, pkgs, vars, ... }: with lib;
 let
-  dayTheme = let themeName = "rose-pine"; in pkgs.writeShellScriptBin "day.sh" ''
-    DAY_WP=$(gsettings get org.gnome.desktop.background picture-uri | cut -d "'" -f 2 | cut -c 8-)
-    wal -nqsti "$DAY_WP"
-    if [[ "${vars.terminal}" = "alacritty" ]]; then
-      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-    elif [[ "${vars.terminal}" = "kitty" ]]; then
-      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
-      kill -SIGUSR1 $(pidof kitty)
-    fi;
-  '';
-
-  nightTheme = let themeName = "rose-pine-dark"; in pkgs.writeShellScriptBin "night.sh" ''
-    NIGHT_WP=$(gsettings get org.gnome.desktop.background picture-uri-dark | cut -d "'" -f 2 | cut -c 8-)
-    wal -nqsti "$NIGHT_WP"
-    if [[ "${vars.terminal}" = "alacritty" ]]; then
-      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-    elif [[ "${vars.terminal}" = "kitty" ]]; then
-      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
-      kill -SIGUSR1 $(pidof kitty)
-    fi;
-  '';
-
   logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
+
+  themeChange = let themeName = "everforest"; in pkgs.writeShellScriptBin "theme_change.sh" ''
+    CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
+    if [[ "$CURRENT_THEME" = "default" ]]; then
+      # Alacritty
+      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      # Kitty
+      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+    elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
+      # Alacritty
+      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      # Kitty
+      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+    fi;
+  '';
 in {
   options.gnome.enable = mkOption {
     default = false;
@@ -153,6 +148,7 @@ in {
     home-manager.users.${vars.user} = { config, lib, ... }: rec {
       # Sets profile image
       home.file.".face".source = profileImg;
+
 
       dconf.settings = {
         "ca/desrt/dconf-editor" = {
@@ -330,8 +326,8 @@ in {
         };
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          sunrise = "${dayTheme}/bin/day.sh";
-          sunset = "${nightTheme}/bin/night.sh";
+          sunrise = "${themeChange}/bin/theme_change.sh";
+          sunset = "${themeChange}/bin/theme_change.sh";
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;
@@ -392,8 +388,41 @@ in {
         weather-or-not
       ];
 
+      gtk = {
+        enable = true;
+
+        cursorTheme = {
+          # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
+          name = "Bibata-Modern-Classic";
+          package = pkgs.bibata-cursors;
+          # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
+          size = 24;
+        };
+
+        iconTheme = {
+          # Variants: Papirus Papirus-Dark Papirus-Light
+          name = "Papirus";
+          # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
+          # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
+          # green grey indigo magenta nordic orange palebrown paleorange pink red
+          # teal violet white yaru yellow
+          package = pkgs.papirus-icon-theme.override { color = "violet"; };
+        };
+
+        #theme = {
+          #name = "";
+          #package = "";
+        #};
+      };
+
       # Generate an empty filo from right click menu
       home.file."Templates/Empty file".text = "";
+
+      # Set terminal themes
+      programs = {
+        alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
+        kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
+      };
 
       # Hide neovim from app grid
       xdg.desktopEntries.nvim = {
