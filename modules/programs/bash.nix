@@ -8,7 +8,7 @@
 
       shellAliases = {
         ".." = "cd ..";
-        ".df" = "cd /persist/etc/nixos";
+        ".df" = "cd ${vars.configPath}";
         "ff" = "fastfetch";
         "fishies" = "asciiquarium";
         "ga" = "git add";

@@ -46,6 +46,7 @@
     vars = {
       user = "jays";
       name = "Jason";
+      configPath = "/persist/etc/nixos";
       editor = "nvim";
       # alacritty or kitty
       terminal = "kitty";

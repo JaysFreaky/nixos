@@ -7,15 +7,15 @@ let
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
       # Alacritty
-      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Alacritty
-      ln -fs /persist/etc/nixos/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs /persist/etc/nixos/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
     fi;
   '';

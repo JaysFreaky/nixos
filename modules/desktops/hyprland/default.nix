@@ -1,7 +1,7 @@
 { config, inputs, lib, pkgs, vars, ... }: with lib;
 let
   hyprland-flake = inputs.hyprland.packages.${pkgs.system}; 
-  wall_dir = "/persist/etc/nixos/wallpapers";
+  wall_dir = "${vars.configPath}/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
   night_wall = "${wall_dir}/blobs-d.png";
 in {
@@ -15,10 +15,6 @@ in {
   };
 
   config = mkIf (config.hyprland.enable) {
-    #imports = [
-      #inputs.hyprland.homeManagerModules.default
-    #];
-
     environment.sessionVariables = {
       # Hint electron apps to use Wayland
       NIXOS_OZONE_WL = "1";
@@ -110,8 +106,12 @@ in {
 
       regreet = {
         enable = false;
-        #settings = /home/${vars.user}/.config/regreet/regreet.toml;
-        settings = "./regreet.toml";
+        settings = ''
+          [background]
+          path = "${vars.configPath}/wallpapers/blobs-d.png"
+          # Available values: "Fill", "Contain", "Cover", "ScaleDown"
+          fit = "Contain"
+        '' ++ "./regreet.toml";
       };
 
       waybar = {
