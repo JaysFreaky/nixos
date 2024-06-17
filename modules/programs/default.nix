@@ -12,4 +12,5 @@
   ./nvim
   ./starship
   ./syncthing.nix
+  ./wezterm.nix
 ]

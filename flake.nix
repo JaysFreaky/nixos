@@ -22,6 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     superfile.url = "github:yorukot/superfile";
+    wezterm.url = "github:wez/wezterm?dir=nix";
   };
 
   outputs = {
