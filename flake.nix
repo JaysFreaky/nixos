@@ -21,8 +21,14 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    superfile.url = "github:yorukot/superfile";
-    wezterm.url = "github:wez/wezterm?dir=nix";
+    superfile = {
+      url = "github:yorukot/superfile";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    wezterm = {
+      url = "github:wez/wezterm?dir=nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
