@@ -34,11 +34,12 @@ in {
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
 
-  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
   # Whichever terminal is defined in flake.nix is auto-enabled
   "1password".enable = true;
   gaming.enable = true;
   syncthing.enable = true;
+  wezterm.enable = true;
 
   # Root persistance - rollback
   # Restores "/" on each boot to root-blank btrfs snapshot

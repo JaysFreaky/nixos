@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: with lib; {
   options.wezterm.enable = mkOption {
-    default = true;
+    default = false;
     type = types.bool;
   };
 
