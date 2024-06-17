@@ -1,7 +1,7 @@
 { config, inputs, lib, pkgs, vars, ... }: with lib;
 let
   hyprland-flake = inputs.hyprland.packages.${pkgs.system}; 
-  wall_dir = "${vars.configPath}/wallpapers";
+  wall_dir = "${vars.configPath}/assets/wallpapers";
   day_wall = "${wall_dir}/blobs-l.png";
   night_wall = "${wall_dir}/blobs-d.png";
 in {
@@ -80,6 +80,11 @@ in {
       eww-wayland                 #
       #unstable.waybar            #
       #networkmanagerapplet        # Show network tray icon (nm-applet --indicator)
+
+    # Theming
+      pywal                       # Theme colors from current wallpaper
+      #wpgtk                      # Pywal GUI
+
 
     # Wallpaper
       #hyprpaper                  #

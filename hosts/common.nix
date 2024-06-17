@@ -84,12 +84,10 @@ in {
       wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
       xdg-utils                   # Environment integration
       xdragon                     # Terminal drag'n'drop
-      #zellij                     # Tmux alternative
+      zellij                     # Tmux alternative
 
-    # Theming
-      pywal                       # Theme colors from current wallpaper
+    # Wallpaper
       #variety                    # Wallpapers
-      #wpgtk                      # Pywal GUI
     ];
   };
 
