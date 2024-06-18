@@ -1,4 +1,4 @@
-{ config, host, lib, pkgs, vars, ... }:
+{ config, host, inputs, lib, pkgs, vars, ... }:
 let
   # Hyprland display scale
   #scale = 1.25;
@@ -133,7 +133,7 @@ in {
     ];
   };
 
-/*services = {
+  /*services = {
     displayManager.autoLogin = {
       enable = lib.mkForce true;
       user = "${vars.user}";
@@ -142,6 +142,21 @@ in {
     # Disable GDM with jovian.steam.autoStart enabled
     xserver.displayManager.gdm.enable = lib.mkForce false;
   }; */
+
+  system.autoUpgrade = {
+    enable = false;
+    allowReboot = true;
+    dates = "weekly";
+    flags = [
+      "--commit-lock-file"
+    ];
+    flake = inputs.self.outPath;
+    randomizedDelaySec = "45min";
+    rebootWindow = {
+      lower = "02:00";
+      upper = "06:00";
+    };
+  };
 
 
   ##########################################################
@@ -261,9 +276,13 @@ in {
     blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
       "openrazer"
+      "xone"
       "zenpower"
     ];
-    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    extraModulePackages = with config.boot.kernelPackages; [
+      xone
+      zenpower
+    ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
