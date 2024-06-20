@@ -1,8 +1,12 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
-  # Call custom plymouth package
+  # Custom plymouth package
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
- 
+
+  # Patch kernel modules
+  fw-ec-lpc = pkgs.callPackage ./ec { kernel = config.boot.kernelPackages.kernel; };
+  fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
+
   # GPU performance adjustment - power_dpm_force_performance_level is auto by default
   gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
     #!/usr/bin/env bash
@@ -56,8 +60,8 @@ in {
       ffmpeg
 
     # Email
-      thunderbird             # Email client
       protonmail-bridge-gui   # GUI bridge for Thunderbird
+      thunderbird             # Email client
 
     # Framework Hardware
       dmidecode               # Firmware | 'dmidecode -s bios-version'
@@ -96,8 +100,7 @@ in {
       "--fullscreen"
       "--framerate-limit 60"
       #"--hdr-enabled"
-      # Toggling doesn't work using --mangoapp
-      #"--mangoapp"
+      #"--mangoapp"  # Toggling doesn't work with this
       "--nested-height 1504"
       "--nested-refresh 60"
       "--nested-width 2256"
@@ -178,15 +181,8 @@ in {
   ##########################################################
   hardware = {
     enableAllFirmware = true;
-    
-    # amdgpu / wifi
+    # Firmware updates for amdgpu/wifi
     firmware = [ pkgs.linux-firmware ];
-
-    # For kernels < 6.7
-    framework.amd-7040.preventWakeOnAC = false;
-
-    # Allow 5GHz wifi
-    wirelessRegulatoryDatabase = true;
 
     opengl = {
       enable = true;
@@ -206,36 +202,34 @@ in {
         vaapiVdpau
       ];
     };
+
+    # Allow 5GHz wifi
+    wirelessRegulatoryDatabase = true;
   };
 
   # Auto-tune on startup
   powerManagement = {
     enable = true;
-    # Auto-tuning
+    # Auto-tuning - to use powertop bin, pkg must be declared above
     powertop.enable = true;
   };
 
   services = {
     # Firmware updater
-    fwupd = {
-      enable = true;
-      # v1.9.7 is required to downgrade the fingerprint sensor firmware
-      # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
-      # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
-      /*
-      package = (import (builtins.fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
-        sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
-      }) { inherit (pkgs) system; }).fwupd;
-      */
-    };
+    fwupd.enable = true;
+    # v1.9.7 is required to downgrade the fingerprint sensor firmware
+    # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
+    # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
+    /* fwupd.package = (import (builtins.fetchTarball {
+      url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
+      sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
+    }) { inherit (pkgs) system; }).fwupd; */
 
     # Lid close, power button, and idle actions
     logind = {
       lidSwitch = "suspend";
       powerKey = "suspend-then-hibernate";
       extraConfig = ''
-        HandleLidSwitch=suspend
         IdleAction=suspend
         IdleActionSec=10m
       '';
@@ -276,7 +270,7 @@ in {
       themePackages = [ framework-plymouth ];
     };
 
-    # Allow 5GHz wifi & framework-laptop-kmod
+    # Allow 5GHz wifi
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
     '';
@@ -287,9 +281,12 @@ in {
       "framework_laptop"
       "zenpower"
     ];
-    extraModulePackages = with config.boot.kernelPackages; [
+    extraModulePackages = (with config.boot.kernelPackages; [
       framework-laptop-kmod
       zenpower
+    ]) ++ [
+      (fw-ec-lpc.overrideAttrs (_: { patches = [ ./ec/ec_lpc.patch ]; }))
+      (fw-usbpd-charger.overrideAttrs (_: { patches = [ ./usbpd/usbpd_charger.patch ]; }))
     ];
 
     kernelPackages = pkgs.linuxPackages_latest;
@@ -300,20 +297,10 @@ in {
       "amd_iommu=off"
       # Disable IPv6 stack
       "ipv6.disable=1"
+      # Hides any text before showing plymouth boot logo
       "quiet"
     ];
    
-    kernelPatches = [
-      {
-        name = "fw-amd-ec";
-        patch = ./fw-amd-ec.patch;
-      }
-      {
-        name = "fw-amd-usbpd";
-        patch = ./fw-amd-usbpd.patch;
-      }
-    ];
-
     supportedFilesystems = [ "btrfs" ];
 
     initrd = {
