@@ -134,15 +134,21 @@ in {
     ];
   };
 
-  /*services = {
-    displayManager.autoLogin = {
+  services = {
+    /*displayManager.autoLogin = {
       enable = lib.mkForce true;
       user = "${vars.user}";
     };
 
     # Disable GDM with jovian.steam.autoStart enabled
     xserver.displayManager.gdm.enable = lib.mkForce false;
-  }; */
+    */
+
+    openssh = {
+      enable = lib.mkForce true;
+      knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13";
+    };
+  };
 
   system.autoUpgrade = {
     enable = false;
