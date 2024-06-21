@@ -99,6 +99,7 @@ in {
     ];
   };
 
+/*
   jovian.steam = {
     # Steam Deck UI
     enable = false;
@@ -108,6 +109,7 @@ in {
     desktopSession = "gnome";
     user = "${vars.user}";
   };
+*/
 
   programs = {
     # PWM fan control - not needed if fancontrol works

@@ -108,7 +108,7 @@
         };
         modules = standardModules ++ [
           ./hosts/Ridge
-          inputs.jovian.nixosModules.jovian
+          #inputs.jovian.nixosModules.jovian
         ];
       };
 
