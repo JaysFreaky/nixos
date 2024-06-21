@@ -11,7 +11,7 @@
     environment = {
       systemPackages = with pkgs; [
         gamescope-wsi                     # Required for HDR?
-        #heroic                           # Game launcher - Epic, GOG, Prime
+        heroic                            # Game launcher - Epic, GOG, Prime
         #moonlight-qt                     # Remote streaming
         #playonlinux                      # GUI for Windows programs
         protonup-ng                       # CLI updater for ProtonGE | 'protonup'

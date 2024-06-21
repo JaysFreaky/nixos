@@ -83,6 +83,7 @@ in {
     systemPackages = with pkgs; [
     # Hardware
       corectrl                # CPU/GPU control
+      polychromatic           # Razer lighting GUI
 
     # Messaging
       discord                 # Discord
