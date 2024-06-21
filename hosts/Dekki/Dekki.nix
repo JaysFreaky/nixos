@@ -137,7 +137,7 @@
         efiSupport = true;
         enableCryptodisk = false;
         memtest86.enable = true;
-        #theme = "pkgs.sleek-grub-theme.override { withStyle = "dark"; }";
+        theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
       };

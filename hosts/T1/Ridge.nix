@@ -1,5 +1,8 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
+  # Hyprland display scale
+  #scale = 1.25;
+
   # GPU temp monitoring via fancontrol
   gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
 
@@ -51,6 +54,7 @@ in {
   ##########################################################
   # Desktop - gnome, hyprland
   gnome.enable = true;
+  #hyprland.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
@@ -174,6 +178,15 @@ in {
       gpu_voltage = true;
       table_columns = lib.mkForce 6;
     };
+
+  /*wayland.windowManager.hyprland.settings = {
+      # hyprctl monitors all
+      # name,resolution@htz,position,scale
+      monitor = [
+        ",preferred,auto,auto"
+        #"eDP-1,2560x1440@144,0x0,${toString scale}"
+      ];
+    }; */
   };
 
 
@@ -362,6 +375,18 @@ in {
       options = [
         "compress=zstd"
         "subvol=home"
+      ];
+    };
+
+    "/media/steam" = {
+      device = "/dev/nvme1n1p1";
+      fsType = "ext4";
+      options = [
+        "noatime"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        #"x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
       ];
     };
 
