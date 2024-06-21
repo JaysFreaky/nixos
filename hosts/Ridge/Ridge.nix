@@ -128,7 +128,7 @@ in {
       "--nested-height 1440"
       "--nested-refresh 144"
       "--nested-width 2560"
-      #"--prefer-vk-device \"1002:73a5\""
+      #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
       "--rt"
     ];
   };
@@ -167,7 +167,6 @@ in {
       # lspci -D | grep -i vga
       pci_dev = "0:0a:00.0";
       fps_limit = 144;
-
       gpu_fan = true;
       gpu_voltage = true;
       table_columns = lib.mkForce 6;
@@ -234,6 +233,8 @@ in {
       enable = true;
       users = [ "${vars.user}" ];
     };
+
+    xone.enable = true;
   };
 
   # Restart GPU undervolt service upon resume
@@ -273,15 +274,12 @@ in {
     };
 
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
-    blacklistedKernelModules = [ "k10temp" ];
+    #blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
-      "openrazer"
-      "xone"
-      "zenpower"
+      #"zenpower"
     ];
     extraModulePackages = with config.boot.kernelPackages; [
-      xone
-      zenpower
+      #zenpower
     ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
