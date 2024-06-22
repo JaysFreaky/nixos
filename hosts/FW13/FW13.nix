@@ -11,7 +11,7 @@ let
   gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
     #!/usr/bin/env bash
 
-    # Find persistant GPU device: readlink -f /sys/class/drm/card1/device
+    # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
     GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
 
     # Default level
@@ -44,11 +44,6 @@ in {
   gaming.enable = true;
   syncthing.enable = true;
   wezterm.enable = true;
-
-  # Root persistance - rollback
-  # Restores "/" on each boot to root-blank btrfs snapshot
-  # (partial persistance is enabled regardless of this being enabled - persist.nix)
-  rollback.enable = false;
 
 
   ##########################################################
@@ -338,7 +333,7 @@ in {
         enableCryptodisk = true;
         memtest86.enable = true;
         useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
+        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
 
       systemd-boot = {
@@ -416,28 +411,6 @@ in {
         "compress=zstd"
         "noatime"
         "subvol=nix"
-      ];
-    };
-
-    "/persist" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=persist"
-      ];
-    };
-
-    "/var/log" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=log"
       ];
     };
   };

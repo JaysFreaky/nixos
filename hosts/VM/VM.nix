@@ -14,11 +14,6 @@
   # Whichever terminal is defined in flake.nix is auto-enabled
   #flatpak.enable = true;
 
-  # Root persistance - rollback
-  # Restores "/" on each boot to root-blank btrfs snapshot
-  # (partial persistance is enabled regardless of this being enabled - persist.nix)
-  rollback.enable = false;
-
 
   ##########################################################
   # System-Specific Packages / Variables
@@ -94,7 +89,7 @@
         enableCryptodisk = false;
         memtest86.enable = true;
         useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
+        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
 
       systemd-boot = {
@@ -154,28 +149,6 @@
         "compress=zstd"
         "noatime"
         "subvol=nix"
-      ];
-    };
-
-    "/persist" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=persist"
-      ];
-    };
-
-    "/var/log" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=log"
       ];
     };
   };

@@ -8,7 +8,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     #hyprland.url = "github:hyprwm/Hyprland";
-    impermanence.url = "github:nix-community/impermanence";
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -53,7 +52,7 @@
     vars = {
       user = "jays";
       name = "Jason";
-      configPath = "/persist/etc/nixos";
+      configPath = "/etc/nixos";
       editor = "nvim";
       # alacritty or kitty
       terminal = "kitty";
@@ -65,7 +64,6 @@
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
-      inputs.impermanence.nixosModules.impermanence
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nur.nixosModules.nur
       inputs.spicetify-nix.nixosModules.spicetify
@@ -140,7 +138,7 @@
 
     packages.${system} = {
       framework-plymouth = nixpkgs.legacyPackages.${system}.callPackage ./packages/framework-plymouth { };
-      setup = nixpkgs.legacyPackages.${system}.callPackage ./packages/setup { };
+      system-setup = nixpkgs.legacyPackages.${system}.callPackage ./packages/system-setup { };
     };
   };
 

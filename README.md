@@ -1,7 +1,5 @@
 # NixOS Flake
-This is my flake for a potentially-immutable NixOS installation. It was inspired by [Graham Christensen's Erase Your Darlings](https://grahamc.com/blog/erase-your-darlings/), and uses the BTRFS filesystem with optional boot rollbacks to a freshly-installed root snapshot. It utilizes environment.etc to persist certain /etc files & the [impermanence](https://github.com/nix-community/impermanence) addon for both /etc and /var/lib sub-directories. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the system's features. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
-
-I'm in the process of switching my desktop to NixOS, and will be utilizing Hyprland on it.
+This is my flake for a multi-system NixOS installation. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the system's features. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
 
 ---
 ## Installation
@@ -18,8 +16,7 @@ While you can clone this repo and build on your system, I created a guided insta
   * Creates a key partition and generates a random key for unlocking
   * Encrypts key, swap (if used), and root partitions
   * Backs up LUKS headers for key & root partitions
-* Creates persist directories
-* Clones this repo into the persistant config directory
+* Clones this repo into the /etc/nixos config directory
 * Select an existing system hostname based off of entries in the flake
 * Generates and commits a swap.nix file to the local repo before install (if used)
 * Install NixOS
@@ -45,7 +42,6 @@ Inside /modules:
 
 * /desktops contain the individual desktop environments and their requirements (GNOME/Hyprland)
 * /hardware contains the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader)
-* /persist contains all the configs that deal with persistance
 * /programs contain apps that can be enabled/disabled or the contents didn't seem like a good fit and/or are too long to go inside /hosts/common.nix
 
 I'm not very experienced with neovim yet, so I haven't bothered to translate (and not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files/directories via Home Manager's xdg.configFile.<name>.source feature.
@@ -55,8 +51,8 @@ This is where the setup script lives. If there were any future scripts/packages 
 
 Inside /packages:
 
-* /setup contains the package declaration and setup script used for initial install
-* /plymouth-fw creates a derivation for a custom framework boot logo
+* /framework-plymouth creates a derivation for a custom framework boot logo
+* /system-setup contains the package declaration and setup script used for initial install
 
 ---
 ## Credits

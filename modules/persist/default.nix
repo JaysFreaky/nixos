@@ -1,4 +1,0 @@
-[
-  ./persist.nix
-  ./rollback.nix
-]

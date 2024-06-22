@@ -3,7 +3,7 @@ let
   # GPU Undervolting
   gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
     #!/usr/bin/env bash
-    # Find persistant device: readlink -f /sys/class/drm/card#/device
+    # Find persistant GPU path: readlink -f /sys/class/drm/card#/device
     GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
 
     # GPU min clock - default min is 500
@@ -57,11 +57,6 @@ in {
   gaming.enable = true;
   lact.enable = true;
   syncthing.enable = true;
-
-  # Root persistance - rollback
-  # Restores "/" on each boot to root-blank btrfs snapshot
-  # (partial persistance is enabled regardless of this being enabled - persist.nix)
-  rollback.enable = false;
 
 
   ##########################################################
@@ -304,7 +299,7 @@ in {
         memtest86.enable = true;
         theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/persist/etc/users/grub";
+        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
 
       systemd-boot = {
@@ -376,28 +371,6 @@ in {
         "compress=zstd"
         "noatime"
         "subvol=nix"
-      ];
-    };
-
-    "/persist" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=persist"
-      ];
-    };
-
-    "/var/log" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=log"
       ];
     };
   };

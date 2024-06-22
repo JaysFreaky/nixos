@@ -7,7 +7,6 @@ in {
   imports = (
     import ../modules/desktops ++
     import ../modules/hardware ++
-    import ../modules/persist ++
     import ../modules/programs
   );
 
@@ -156,7 +155,7 @@ in {
     btrfs.autoScrub = {
       enable = true;
       interval = "weekly";
-      fileSystems = [ "/" "/home" "/nix" "/persist" "/var/log" ];
+      fileSystems = [ "/" "/home" "/nix" ];
     };
 
     # Enable SSD trim
@@ -197,7 +196,7 @@ in {
         "video"
         "wheel"
       ];
-      hashedPasswordFile = "/persist/etc/users/${vars.user}";
+      hashedPasswordFile = "/etc/users/${vars.user}";
       isNormalUser = true;
     };
   };
