@@ -311,6 +311,13 @@ in {
           strip-text = true;
           topbar-preview-size = 10;
         };
+        "org/gnome/shell/extensions/dash-to-dock" = {
+          apply-custom-theme = true;
+          custom-theme-shrink = true;
+          disable-overview-on-startup = true;
+          scroll-action = "switch-workspace";
+          show-trash = false;
+        };
         "org/gnome/shell/extensions/just-perfection" = {
           # Top center
           notification-banner-position = 1;
@@ -379,6 +386,7 @@ in {
         bluetooth-quick-connect
         blur-my-shell
         clipboard-indicator
+        dash-to-dock
         just-perfection
         lock-keys
         night-theme-switcher

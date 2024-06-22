@@ -53,15 +53,14 @@
   ##########################################################
   # Home Manager Options
   ##########################################################
-  home-manager.users.${vars.user} = { config, lib, ... }: rec {
+  home-manager.users.${vars.user} = { config, lib, ... }: {
     dconf.settings = {
       # Enable on-screen keyboard
       "org/gnome/desktop/a11y/applications" = {
         screen-keyboard-enabled = true;
       };
-      "org/gnome/shell".enabled-extensions = (map (extension: extension.extensionUuid) home.packages);
       # Dash-to-Dock settings for a better touch screen experience
-      "org/gnome/shell/extensions/dash-to-dock" = {
+      "org/gnome/shell/extensions/dash-to-dock" = lib.mkForce {
         background-opacity = 0.80000000000000004;
         custom-theme-shrink = true;
         dash-max-icon-size = 48;
@@ -79,10 +78,6 @@
         show-trash = false;
       };
     };
-    
-    home.packages = with pkgs.gnomeExtensions; [
-      dash-to-dock
-    ];
   };
 
 
