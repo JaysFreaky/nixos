@@ -1,21 +1,17 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
-  # GPU temp monitoring via fancontrol
-  gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-
   # GPU Undervolting
   gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
     #!/usr/bin/env bash
-
     # Find persistant device: readlink -f /sys/class/drm/card#/device
     GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
 
     # GPU min clock - default min is 500
     echo "Setting GPU min clock"
-    echo s 1 2100 | tee "$GPU"/pp_od_clk_voltage
+    echo s 0 2100 | tee "$GPU"/pp_od_clk_voltage
     # GPU max clock - default max is 2664
     echo "Setting GPU max clock"
-    echo s 2 2200 | tee "$GPU"/pp_od_clk_voltage
+    echo s 1 2200 | tee "$GPU"/pp_od_clk_voltage
     # Voltage offset - default mV is 1200
     echo "Setting voltage offset"
     echo vo -150 | tee "$GPU"/pp_od_clk_voltage
@@ -28,7 +24,7 @@ let
 
     # Power usage limit - default wattage is 284 (first 3 numbers are watts)
     echo "Setting power usage limit"
-    echo 284000000 | tee "$GPU"/hwmon/hwmon2/power1_cap
+    echo 300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
 
     # Performance level: auto, low, high, manual
     echo "Setting performance level"
@@ -72,10 +68,6 @@ in {
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
-    # Lact config not needed if undervolt service works
-    #etc."lact/config.yaml".text = ''
-    #'';
-
     systemPackages = with pkgs; [
     # Hardware
       corectrl                # CPU/GPU control
@@ -112,9 +104,6 @@ in {
 */
 
   programs = {
-    # PWM fan control - not needed if fancontrol works
-    #coolercontrol.enable = true;
-
     gamescope.args = [
       "--adaptive-sync"
       #"--borderless"
@@ -144,7 +133,7 @@ in {
 
     openssh = {
       enable = lib.mkForce true;
-      knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13";
+      knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT";
     };
   };
 
@@ -183,26 +172,30 @@ in {
   # Hardware
   ##########################################################
   hardware = {
-    bluetooth.powerOnBoot = lib.mkForce true;
+    #bluetooth.powerOnBoot = lib.mkForce true;
 
     # Control CPU / case fans
-    fancontrol = {
-      #enable = true;
+    fancontrol = let 
+      gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      fanHW = "devices/platform/nct6775.656";
+      cpuHW = "devices/pci0000:00/0000:00:18.3";
+    in {
+      enable = true;
       config = ''
         INTERVAL=10
-        DEVPATH=hwmon2=devices/${gpuFC} hwmon3=devices/pci0000:00/0000:00:18.3 hwmon7=devices/platform/nct6775.656
-        DEVNAME=hwmon2=amdgpu hwmon3=zenpower hwmon7=nct6798
-        FCTEMPS=hwmon7/pwm1=hwmon2/temp1_input hwmon7/pwm2=hwmon3/temp2_input
-        FCFANS=hwmon7/pwm1=hwmon7/fan1_input hwmon7/pwm2=hwmon7/fan2_input
-        MINTEMP=hwmon7/pwm1=40 hwmon7/pwm2=40
-        MAXTEMP=hwmon7/pwm1=80 hwmon7/pwm2=80
+        DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
+        DEVNAME=hwmon1=amdgpu hwmon2=nct6798 hwmon3=zenpower
+        FCTEMPS=hwmon2/pwm2=hwmon1/temp1_input hwmon2/pwm1=hwmon3/temp1_input
+        FCFANS=hwmon2/pwm2=hwmon2/fan2_input hwmon2/pwm1=hwmon2/fan1_input
+        MINTEMP=hwmon2/pwm2=40 hwmon2/pwm1=40
+        MAXTEMP=hwmon2/pwm2=80 hwmon2/pwm1=80
         # Always spin @ MINPWM until MINTEMP
-        MINSTART=hwmon7/pwm1=0 hwmon7/pwm2=0
-        MINSTOP=hwmon7/pwm1=64 hwmon7/pwm2=64
+        MINSTART=hwmon2/pwm2=0 hwmon2/pwm1=0
+        MINSTOP=hwmon2/pwm2=64 hwmon2/pwm1=64
         # Fans @ 25% until 40 degress
-        MINPWM=hwmon7/pwm1=64 hwmon7/pwm2=64
+        MINPWM=hwmon2/pwm2=64 hwmon2/pwm1=64
         # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-        MAXPWM=hwmon7/pwm1=140 hwmon7/pwm2=217
+        MAXPWM=hwmon2/pwm2=140 hwmon2/pwm1=217
       '';
     };
 
@@ -270,12 +263,13 @@ in {
     };
 
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
-    #blacklistedKernelModules = [ "k10temp" ];
+    blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
-      #"zenpower"
+      "nct6775"
+      "zenpower"
     ];
     extraModulePackages = with config.boot.kernelPackages; [
-      #zenpower
+      zenpower
     ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
