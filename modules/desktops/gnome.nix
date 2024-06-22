@@ -345,11 +345,9 @@ in {
         };
         "org/gnome/shell/extensions/vitals" = {
           alphabetize = false;
-          battery-slot = 0;
           fixed-widths = false;
           hide-icons = false;
           hide-zeros = false;
-          hot-sensors = [ "_processor_usage_" "_memory_usage_" "__network-rx_max__" ];
           menu-centered = true;
           position-in-panel = 2;
           use-higher-precision = false;
