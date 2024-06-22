@@ -8,8 +8,25 @@
     home-manager.users.${vars.user} = {
       programs.wezterm = {
         enable = true;
+        enableBashIntegration = false;
+        enableZshIntegration = false;
         package = inputs.wezterm.packages.${pkgs.system}.default;
         extraConfig = ''
+          function get_appearance()
+            if wezterm.gui then
+              return wezterm.gui.get_appearance()
+            end
+            return 'Dark'
+          end
+
+          function scheme_for_appearance(appearance)
+            if appearance:find 'Dark' then
+              return 'tokyonight-storm'
+            else
+              return 'tokyonight-day'
+            end
+          end
+
           local xcursor_size = nil
           local xcursor_theme = nil
 
@@ -24,6 +41,7 @@
           end
 
           return {
+            color_scheme = scheme_for_appearance(get_appearance()),
             xcursor_theme = xcursor_theme,
             xcursor_size = xcursor_size,
           }
