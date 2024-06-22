@@ -1,51 +1,7 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
   # Hyprland display scale
-  #scale = 1.25;
-
-  # GPU temp monitoring via fancontrol
-  gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-
-  # GPU Undervolting
-  gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
-    #!/usr/bin/env bash
-
-    # Find persistant device: readlink -f /sys/class/drm/card#/device
-    GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
-
-    # GPU min clock - default min is 500
-    echo "Setting GPU min clock"
-    echo s 1 2100 | tee "$GPU"/pp_od_clk_voltage
-    # GPU max clock - default max is 2664
-    echo "Setting GPU max clock"
-    echo s 2 2200 | tee "$GPU"/pp_od_clk_voltage
-    # Voltage offset - default mV is 1200
-    echo "Setting voltage offset"
-    echo vo -150 | tee "$GPU"/pp_od_clk_voltage
-    # VRAM max clock - default max is 1124 - not adjusting
-    #echo "Setting VRAM clock"
-    #echo m 1 1124 | tee "$GPU"/pp_od_clk_voltage
-    # Apply values
-    echo "Applying undervolt settings"
-    echo c | tee "$GPU"/pp_od_clk_voltage
-
-    # Power usage limit - default wattage is 284 (first 3 numbers are watts)
-    echo "Setting power usage limit"
-    echo 284000000 | tee "$GPU"/hwmon/hwmon2/power1_cap
-
-    # Performance level: auto, low, high, manual
-    echo "Setting performance level"
-    echo manual | tee "$GPU"/power_dpm_force_performance_level
-    # Power level mode: cat pp_power_profile_mode
-    echo "Setting power level mode to 3D Fullscreen"
-    echo 1 | tee "$GPU"/pp_power_profile_mode
-    # GPU power states: cat pp_dpm_sclk
-    echo "Enabling all GPU power states"
-    echo 2 | tee "$GPU"/pp_dpm_sclk
-    # VRAM power states: cat pp_dpm_mclk
-    echo "Enabling all VRAM power states"
-    echo 3 | tee "$GPU"/pp_dpm_mclk
-  '';
+  scale = 1.25;
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -76,10 +32,6 @@ in {
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
-    # Lact config not needed if undervolt service works
-    #etc."lact/config.yaml".text = ''
-    #'';
-
     systemPackages = with pkgs; [
     # Hardware
       corectrl                # CPU/GPU control
@@ -103,18 +55,8 @@ in {
     ];
   };
 
-  jovian.steam = {
-    # Steam Deck UI
-    enable = false;
-    # Start in Steam UI
-    autoStart = true;
-    # Switch to desktop - Use 'gamescope-wayland' for no desktop
-    desktopSession = "gnome";
-    user = "${vars.user}";
-  };
-
   programs = {
-    # PWM fan control - not needed if fancontrol works
+    # PWM fan control
     #coolercontrol.enable = true;
 
     gamescope.args = [
@@ -134,35 +76,9 @@ in {
     ];
   };
 
-  services = {
-    /*displayManager.autoLogin = {
-      enable = lib.mkForce true;
-      user = "${vars.user}";
-    };
-
-    # Disable GDM with jovian.steam.autoStart enabled
-    xserver.displayManager.gdm.enable = lib.mkForce false;
-    */
-
-    openssh = {
-      enable = lib.mkForce true;
-      knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13";
-    };
-  };
-
-  system.autoUpgrade = {
-    enable = false;
-    allowReboot = true;
-    dates = "weekly";
-    flags = [
-      "--commit-lock-file"
-    ];
-    flake = inputs.self.outPath;
-    randomizedDelaySec = "45min";
-    rebootWindow = {
-      lower = "02:00";
-      upper = "06:00";
-    };
+  services.openssh = {
+    enable = lib.mkForce true;
+    knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13";
   };
 
 
@@ -197,8 +113,10 @@ in {
     bluetooth.powerOnBoot = lib.mkForce true;
 
     # Control CPU / case fans
-    fancontrol = {
-      #enable = true;
+    fancontrol = let
+      gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+    in {
+      enable = false;
       config = ''
         INTERVAL=10
         DEVPATH=hwmon2=devices/${gpuFC} hwmon3=devices/pci0000:00/0000:00:18.3 hwmon7=devices/platform/nct6775.656
@@ -217,11 +135,9 @@ in {
       '';
     };
 
-    opengl = {
+    graphics = {
       enable = true;
-      # DRI are Mesa drivers
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl
@@ -240,30 +156,9 @@ in {
       enable = true;
       users = [ "${vars.user}" ];
     };
-
-    xone.enable = true;
   };
-
-  # Restart GPU undervolt service upon resume
-  powerManagement.resumeCommands = ''
-    systemctl restart gpu_uv.service
-  '';
 
   services.hardware.openrgb.enable = true;
-
-  # Create a service to auto undervolt GPU
-  systemd.services.gpu_uv = {
-    after = [ "multi-user.target" "rc-local.service" "systemd-user-sessions.service" ];
-    description = "Set AMDGPU Undervolt";
-    wantedBy = [ "multi-user.target" ];
-    wants = [ "modprobe@amdgpu.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStart = ''${gpuUV}/bin/gpu_uv.sh'';
-      ExecReload = ''${gpuUV}/bin/gpu_uv.sh'';
-    };
-  };
 
 
   ##########################################################
@@ -281,18 +176,16 @@ in {
     };
 
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
-    #blacklistedKernelModules = [ "k10temp" ];
+    blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
-      #"zenpower"
+      "zenpower"
     ];
     extraModulePackages = with config.boot.kernelPackages; [
-      #zenpower
+      zenpower
     ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
-      # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      "amdgpu.ppfeaturemask=0xffffffff"
       #"quiet"
       #"splash"
     ];
@@ -301,7 +194,6 @@ in {
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [
-        "amdgpu"
         "nfs"
       ];
       # Required for Plymouth (password prompt)

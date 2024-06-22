@@ -184,11 +184,9 @@ in {
     # Firmware updates for amdgpu/wifi
     firmware = [ pkgs.linux-firmware ];
 
-    opengl = {
+    graphics = {
       enable = true;
-      # DRI are Mesa drivers
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl

@@ -91,17 +91,17 @@ in {
     ];
   };
 
-/*
+  /*
   jovian.steam = {
     # Steam Deck UI
-    enable = false;
+    enable = true;
     # Start in Steam UI
-    autoStart = true;
+    autoStart = false;
     # Switch to desktop - Use 'gamescope-wayland' for no desktop
     desktopSession = "gnome";
     user = "${vars.user}";
   };
-*/
+  */
 
   programs = {
     gamescope.args = [
@@ -122,14 +122,13 @@ in {
   };
 
   services = {
-    /*displayManager.autoLogin = {
-      enable = lib.mkForce true;
+    displayManager.autoLogin = {
+      enable = lib.mkForce false;
       user = "${vars.user}";
     };
 
-    # Disable GDM with jovian.steam.autoStart enabled
-    xserver.displayManager.gdm.enable = lib.mkForce false;
-    */
+    # Enable GDM if jovian.steam.autoStart is disabled
+    #xserver.displayManager.gdm.enable = lib.mkForce (!config.jovian.steam.autoStart);
 
     openssh = {
       enable = lib.mkForce true;
@@ -199,11 +198,9 @@ in {
       '';
     };
 
-    opengl = {
+    graphics = {
       enable = true;
-      # DRI are Mesa drivers
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
         libvdpau-va-gl

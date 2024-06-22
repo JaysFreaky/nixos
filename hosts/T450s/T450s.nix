@@ -38,10 +38,9 @@
   # Hardware
   ##########################################################
   hardware = {
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         # Imported through nixos-hardware/lenovo/T450s from nixos-hardware/common/gpu/intel
       ];

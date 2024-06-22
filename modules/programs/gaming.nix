@@ -16,7 +16,7 @@
         #playonlinux                      # GUI for Windows programs
         protonup-ng                       # CLI updater for ProtonGE | 'protonup'
         (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-          extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
+          extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
             then extraPackages
             else extraPackages32
           );
@@ -114,7 +114,7 @@
         remotePlay.openFirewall = true;
         
         package = pkgs.steam.override {
-          extraLibraries = pkgs: ( with config.hardware.opengl; if pkgs.hostPlatform.is64bit
+          extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
             then [ package ] ++ extraPackages
             else [ package32 ] ++ extraPackages32
           );

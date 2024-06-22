@@ -90,11 +90,9 @@
   # Hardware
   ##########################################################
   hardware = {
-    opengl = {
+    graphics = {
       enable = true;
-      # DRI are Mesa drivers
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         #amdvlk
         #rocmPackages.clr.icd

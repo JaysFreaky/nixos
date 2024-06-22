@@ -45,10 +45,9 @@
   # Hardware
   ##########################################################
   hardware = {
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport = true;
-      driSupport32Bit = true;
+      enable32Bit = true;
       extraPackages = with pkgs; [
         intel-media-driver
         intel-vaapi-driver
