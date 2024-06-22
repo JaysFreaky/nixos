@@ -162,7 +162,6 @@ in {
           clock-show-date = true;
           clock-show-weekday = true;
           #color-scheme = "prefer-dark";
-          enable-hot-corners = false;
           font-antialiasing = "rgba";
           show-battery-percentage = true;
         };
