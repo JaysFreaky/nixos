@@ -23,7 +23,7 @@ While you can clone this repo and build on your system, I created a guided insta
 
 Now for the fun part! To start the installation script from within the NixOS installer, run the following as root:
 
-`nix run github:JaysFreaky/nixos#setup --experimental-features "nix-command flakes"`
+`nix run github:JaysFreaky/nixos#setup-system --experimental-features "nix-command flakes"`
 
 ---
 ## Breakdown
@@ -52,7 +52,7 @@ This is where the setup script lives. If there were any future scripts/packages 
 Inside /packages:
 
 * /framework-plymouth creates a derivation for a custom framework boot logo
-* /system-setup contains the package declaration and setup script used for initial install
+* /setup-system contains the package declaration and setup script used for initial install
 
 ---
 ## Credits

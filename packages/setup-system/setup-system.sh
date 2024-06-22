@@ -232,9 +232,7 @@ gum spin --show-output --title "Mounting root partition for subvolumes..." -- mo
 gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume create /mnt/root
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
-  /mnt/nix \
-  /mnt/persist \
-  /mnt/log
+  /mnt/nix
 if [ "$SWAP_TYPE" == 'File' ]; then
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
   # Bug where offset doesn't get calculated correctly on first file
@@ -249,12 +247,10 @@ printf '\n'
 
 # Mount subvolumes
 gum spin --show-output --title "Mounting /..." -- mount -o subvol=root,compress=zstd,noatime "$ROOT_PATH" /mnt
-mkdir -p /mnt/{boot,home,nix,persist,var/log}
+mkdir -p /mnt/{boot,home,nix}
 gum spin --show-output --title "Mounting /boot to boot partition..." -- mount /dev/disk/by-partlabel/boot /mnt/boot
 gum spin --show-output --title "Mounting /home..." -- mount -o subvol=home,compress=zstd "$ROOT_PATH" /mnt/home
 gum spin --show-output --title "Mounting /nix..." -- mount -o subvol=nix,compress=zstd,noatime "$ROOT_PATH" /mnt/nix
-gum spin --show-output --title "Mounting /persist..." -- mount -o subvol=persist,compress=zstd,noatime "$ROOT_PATH" /mnt/persist
-gum spin --show-output --title "Mounting /var/log..." -- mount -o subvol=log,compress=zstd,noatime "$ROOT_PATH" /mnt/var/log
 
 # Mount swap file/partition
 if [ "$SWAP_TYPE" == 'File' ]; then
@@ -271,32 +267,26 @@ elif [ "$SWAP_TYPE" == 'Partition' ]; then
 fi
 
 ##########################################################
-# Create persistant folders for install files
-gum spin --show-output --title "Creating persistant directories..." -- mkdir -p /mnt/etc/{nix,nixos,NetworkManager/system-connections,ssh} /mnt/persist/backups /mnt/persist/etc/{nix,nixos,NetworkManager/system-connections,secrets,ssh,users} /mnt/persist/var/lib/{bluetooth,flatpak,NetworkManager}
-# Bind post-install files to persist
-gum spin --show-output --title "Binding etc directories to persistant directories..." -- mount -o bind /mnt/persist/etc/NetworkManager /mnt/etc/NetworkManager
-mount -o bind /mnt/persist/etc/nix /mnt/etc/nix
-mount -o bind /mnt/persist/etc/ssh /mnt/etc/ssh
-
 # Export key/root LUKS header files for backup, if encryption enabled
 if [ "$ENCRYPT" == 'YES' ]; then
-  gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/key --header-backup-file /mnt/persist/backups/cryptkey_header.img
-  gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/root --header-backup-file /mnt/persist/backups/cryptroot_header.img
-  gum style --foreground="$PINK" "LUKS headers exported to '/persist/backups'"
-  find /mnt/persist/backups/ -name "*.img"
+  gum spin --show-output --title "Creating luksBackup directory..." -- mkdir -p /mnt/home/"$NIX_USER"/luksBackup
+  gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/key --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptkey_header.img
+  gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/root --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptroot_header.img
+  gum style --foreground="$PINK" "LUKS headers exported to '/mnt/home/"$NIX_USER"/luksBackup'"
+  find /mnt/home/"$NIX_USER"/luksBackup/ -name "*.img"
 fi;
 
 # Set user password
-gum spin --show-output --title "Creating password file for $NIX_USER..." -- echo -n "$NIX_PASS" | mkpasswd --method=SHA-512 --stdin > /mnt/persist/etc/users/"$NIX_USER"
-gum spin --show-output --title "Setting 600 permissions on user password file..." -- chmod 600 /mnt/persist/etc/users/"$NIX_USER"
+gum spin --show-output --title "Creating password file for $NIX_USER..." -- echo -n "$NIX_PASS" | mkpasswd --method=SHA-512 --stdin > /mnt/etc/users/"$NIX_USER"
+gum spin --show-output --title "Setting 600 permissions on user password file..." -- chmod 600 /mnt/etc/users/"$NIX_USER"
 
 # Set GRUB password
-gum spin --show-output --title "Creating password file for GRUB..." -- echo -e "$GRUB_PASS\n$GRUB_PASS" | grub-mkpasswd-pbkdf2 | awk '/grub.pbkdf/{print$NF}' > /mnt/persist/etc/users/grub
-gum spin --show-output --title "Setting 600 permissions on GRUB password file..." -- chmod 600 /mnt/persist/etc/users/grub
+gum spin --show-output --title "Creating password file for GRUB..." -- echo -e "$GRUB_PASS\n$GRUB_PASS" | grub-mkpasswd-pbkdf2 | awk '/grub.pbkdf/{print$NF}' > /mnt/etc/users/grub
+gum spin --show-output --title "Setting 600 permissions on GRUB password file..." -- chmod 600 /mnt/etc/users/grub
 
 # Clone repo locally
-gum spin --show-output --title "Cloning flake repo..." -- git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/persist/etc/nixos
-cd /mnt/persist/etc/nixos
+gum spin --show-output --title "Cloning flake repo..." -- git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
+cd /mnt/etc/nixos
 gum spin --show-output --title "Switching repo to SSH..." -- git remote set-url nixos git@github.com:JaysFreaky/nixos.git
 gum spin --show-output --title "Setting temporary git config..." -- git config --global user.email "95696624+JaysFreaky@users.noreply.github.com" && git config --global user.name "JaysFreaky"
 printf '\n'
@@ -322,8 +312,8 @@ done
 printf '\n'
 
 # Remove previous swap.nix repo file for a fresh slate
-if [ -f /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
-  gum spin --show-output --title "Removing previous swap.nix..." -- rm /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+if [ -f /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
+  gum spin --show-output --title "Removing previous swap.nix..." -- rm /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
 # Create swap.nix file in host's directory
 if [ "$SWAP_TYPE" == 'File' ]; then
@@ -334,7 +324,7 @@ if [ "$SWAP_TYPE" == 'File' ]; then
     echo '  fileSystems."/swap" = { device = "'"$ROOT_PATH"'"; fsType = "btrfs"; options = [ "subvol=swap" "compress=no" "noatime" ]; };'
     echo '  swapDevices = [ { device = "/swap/swapfile"; } ];'
     echo '}'
-  } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+  } > /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 elif [ "$SWAP_TYPE" == 'Partition' ]; then
   {
     echo '{ config, ... }: {'
@@ -344,22 +334,19 @@ elif [ "$SWAP_TYPE" == 'Partition' ]; then
     echo '  boot.resumeDevice = "'"$SWAP_PATH"'";'
     echo '  swapDevices = [ { device = "'"$SWAP_PATH"'"; } ];'
     echo '}'
-  } > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix
+  } > /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
 # Check if swap.nix was generated; commit to repo so it builds with install
-if [ -f /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
-  gum spin --show-output --title "Commiting swap.nix to local repo..." -- git add /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/swap.nix && git commit -m "add swap.nix to $NIX_HOST"
+if [ -f /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
+  gum spin --show-output --title "Commiting swap.nix to local repo..." -- git add /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix && git commit -m "add swap.nix to $NIX_HOST"
 fi
 
 # Generate NixOS hardware config | 2>/dev/null hides 'Not a Btrfs filesystem' output error
-#gum spin --show-output --title "Generating hardware config..." -- sleep 1 && nixos-generate-config --root /mnt --no-filesystems --show-hardware-config > /mnt/persist/etc/nixos/hosts/"$NIX_HOST"/generated-hardware-configuration.nix 2>/dev/null
+#gum spin --show-output --title "Generating hardware config..." -- sleep 1 && nixos-generate-config --root /mnt --no-filesystems --show-hardware-config > /mnt/etc/nixos/hosts/"$NIX_HOST"/generated-hardware-configuration.nix 2>/dev/null
 
 # Install NixOS
-gum spin --show-output --title "Installing NixOS..." -- nixos-install --no-root-passwd --flake /mnt/persist/etc/nixos#"$NIX_HOST"
+gum spin --show-output --title "Installing NixOS..." -- nixos-install --no-root-passwd --flake /mnt/etc/nixos#"$NIX_HOST"
 printf '\n'
-
-# Delete unneeded system links from persistance
-rm -rf /mnt/persist/etc/nix/{nix.conf,registry.json} /mnt/persist/etc/ssh/ssh_{config,known_hosts}
 
 # Pre-reboot tasks
 cd /
@@ -377,7 +364,7 @@ if [ "$ENCRYPT" == 'YES' ]; then
   gum spin --show-output --title "Closing cryptroot..." -- cryptsetup close /dev/mapper/cryptroot
   gum spin --show-output --title "Closing cryptkey..." -- cryptsetup close /dev/mapper/cryptkey
   printf '\n'
-  gum style --foreground="$PINK" "Remember to copy LUKS headers from '/persist/backups' to another device."
+  gum style --foreground="$PINK" "Remember to copy LUKS headers from '/home/"$NIX_USER"/luksBackup/' to another device."
 fi;
 printf '\n'
 gum style --foreground="$GREEN" "Installation complete! Please reboot when ready."

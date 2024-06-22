@@ -138,7 +138,7 @@
 
     packages.${system} = {
       framework-plymouth = nixpkgs.legacyPackages.${system}.callPackage ./packages/framework-plymouth { };
-      system-setup = nixpkgs.legacyPackages.${system}.callPackage ./packages/system-setup { };
+      setup-system = nixpkgs.legacyPackages.${system}.callPackage ./packages/setup-system { };
     };
   };
 
