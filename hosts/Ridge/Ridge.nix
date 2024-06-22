@@ -129,11 +129,6 @@ in {
 
     # Enable GDM if jovian.steam.autoStart is disabled
     #xserver.displayManager.gdm.enable = lib.mkForce (!config.jovian.steam.autoStart);
-
-    openssh = {
-      enable = lib.mkForce true;
-      knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT";
-    };
   };
 
   system.autoUpgrade = {
@@ -165,6 +160,10 @@ in {
       table_columns = lib.mkForce 6;
     };
   };
+
+  users.users.${vars.user}.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
+  ];
 
 
   ##########################################################

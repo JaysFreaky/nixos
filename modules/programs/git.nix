@@ -59,21 +59,6 @@ in {
         };
         user.signingkey = publicKey;
       };
-
-      home.file.".ssh/config" = mkMerge [
-        (mkIf (config."1password".enable) {
-          text = ''
-            Host *
-              IdentityAgent ~/.1password/agent.sock
-          '';
-        })
-        (mkIf (!config."1password".enable) {
-          text = ''
-            Host github.com
-              ForwardAgent yes
-          '';
-        })
-      ];
     })
   ];
 

@@ -162,10 +162,10 @@ in {
     # Enable SSD trim
     fstrim.enable = lib.mkDefault true;
 
-    # Disabling prevents SSHing in
     openssh = {
-      enable = false;
+      enable = true;
       settings = {
+        KbdInteractiveAuthentication = false;
         PasswordAuthentication = false;
         PermitRootLogin = "no";
       };
