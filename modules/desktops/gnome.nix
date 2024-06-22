@@ -315,6 +315,7 @@ in {
           apply-custom-theme = true;
           custom-theme-shrink = true;
           disable-overview-on-startup = true;
+          intellihide-mode = "ALL_WINDOWS";
           scroll-action = "switch-workspace";
           show-trash = false;
         };
