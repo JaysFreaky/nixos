@@ -41,14 +41,11 @@
     system = "x86_64-linux";
     nixosSystem = nixpkgs.lib.nixosSystem;
 
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-    };
     stable = import nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
     };
+
     vars = {
       user = "jays";
       name = "Jason";
@@ -75,7 +72,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable vars;
+          inherit inputs stable vars;
           host.hostName = "Dekki";
         };
         modules = standardModules ++ [
@@ -88,7 +85,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable vars;
+          inherit inputs stable vars;
           host.hostName = "FW13";
         };
         modules = standardModules ++ [
@@ -101,12 +98,12 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable vars;
+          inherit inputs stable vars;
           host.hostName = "Ridge";
         };
         modules = standardModules ++ [
           ./hosts/Ridge
-          #inputs.jovian.nixosModules.jovian
+          inputs.jovian.nixosModules.jovian
         ];
       };
 
@@ -114,7 +111,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable vars;
+          inherit inputs stable vars;
           host.hostName = "T450s";
         };
         modules = standardModules ++ [
@@ -127,7 +124,7 @@
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
-          inherit inputs pkgs stable vars;
+          inherit inputs stable vars;
           host.hostName = "VM";
         };
         modules = standardModules ++ [
