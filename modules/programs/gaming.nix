@@ -8,34 +8,23 @@
     # Increase stability/performance of games
     boot.kernel.sysctl."vm.max_map_count" = mkForce 2147483642;
 
-    environment = {
-      systemPackages = with pkgs; [
-        gamescope-wsi                     # Required for HDR?
-        heroic                            # Game launcher - Epic, GOG, Prime
-        #moonlight-qt                     # Remote streaming
-        #playonlinux                      # GUI for Windows programs
-        protonup-ng                       # CLI updater for ProtonGE | 'protonup'
-        (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-          extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-            then extraPackages
-            else extraPackages32
-          );
-
-          extraPkgs = pkgs: with pkgs; [
-            dxvk
-            vkd3d
-            winetricks
-            # wineWow has both x86/64 - stable, staging, or wayland
-            wineWowPackages.staging
-          ];
-        })
-      ];
-
-      variables = {
-        # ProtonGE path - pre proton-ge-bin
-        #STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${vars.user}/.steam/root/compatibilitytools.d";
-      };
-    };
+    environment.systemPackages = with pkgs; [
+      heroic                            # Game launcher - Epic, GOG, Prime
+      #playonlinux                      # GUI for Windows programs
+      (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
+        extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+          then extraPackages
+          else extraPackages32
+        );
+        extraPkgs = pkgs: with pkgs; [
+          dxvk
+          vkd3d
+          winetricks
+          # wineWow has both x86/64 - stable, staging, or wayland
+          wineWowPackages.staging
+        ];
+      })
+    ];
 
     home-manager.users.${vars.user} = {
       programs.mangohud = {
@@ -101,6 +90,8 @@
         };
       };
 
+      #gamescope.package = pkgs.gamescope-wsi;
+
       steam = {
         enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
@@ -141,5 +132,4 @@
     };
 
   };
-
 }
