@@ -2,16 +2,14 @@
   description = "NixOS Systems Flake";
 
   inputs = {
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     #hyprland.url = "github:hyprwm/Hyprland";
-    jovian = {
-      url = "github:Jovian-Experiments/Jovian-NixOS";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
@@ -32,15 +30,12 @@
 
   outputs = {
     self,
-    home-manager,
     nixpkgs,
     nixpkgs-stable,
     ...
-  } @ inputs:
-  let
+  } @ inputs: let
     system = "x86_64-linux";
     nixosSystem = nixpkgs.lib.nixosSystem;
-
     stable = import nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
@@ -57,7 +52,7 @@
 
     standardModules = [
       ./hosts/common.nix
-      home-manager.nixosModules.home-manager {
+      inputs.home-manager.nixosModules.home-manager {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
       }
@@ -103,6 +98,7 @@
         };
         modules = standardModules ++ [
           ./hosts/Ridge
+          inputs.chaotic.nixosModules.default
           inputs.jovian.nixosModules.jovian
         ];
       };
