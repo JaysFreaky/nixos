@@ -101,6 +101,10 @@
       steam = {
         enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
+        gamescopeSession.enable = true;
+
+        # Wayland xinput
+        extest.enable = true;
 
         # Firewall related
         dedicatedServer.openFirewall = false;
@@ -121,7 +125,6 @@
             xorg.libXinerama
             xorg.libXScrnSaver
           ];
-
           extraProfile = let
             gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
           in ''

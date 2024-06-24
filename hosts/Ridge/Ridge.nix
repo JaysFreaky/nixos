@@ -50,43 +50,27 @@ in {
     ];
   };
 
-  programs = {
-    gamemode.enable = lib.mkForce false;
-    #gamemode.settings.custom = lib.mkForce { };
-
-    gamescope = {
-      enable = true;
-      /*args = [
-        "-W ${resolution.width}"
-        "-H ${resolution.height}"
-        "-r ${resolution.refreshRate}"
-        "-o ${resolution.refreshRate}"  # Unfocused limit
-        "-F fsr"
-        "-f"
-
-        "--adaptive-sync"
-        #"--borderless"
-        "--expose-wayland"
-        "--filter fsr"
-        "--fullscreen"
-        "--framerate-limit ${resolution.refreshRate}"
-        "--hdr-enabled"
-        #"--mangoapp"  # Toggling doesn't work with this
-        "--nested-height ${resolution.height}"
-        "--nested-refresh ${resolution.refreshRate}"
-        "--nested-width ${resolution.width}"
-        #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
-        "--rt"
-      ];*/
-      #capSysNice = true;
-      #env = { };
-      #package = pkgs.gamescope-wsi
+  programs.gamescope = {
+    enable = true;
+    args = [
+      "-W ${resolution.width}"
+      "-H ${resolution.height}"
+      "-r ${resolution.refreshRate}"
+      "-o ${resolution.refreshRate}"        # Unfocused
+      "-F fsr"
+      "--expose-wayland"
+      "--rt"
+      #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
+      "--hdr-enabled"
+      "--framerate-limit ${resolution.refreshRate}"
+      "--fullscreen"
+    ];
+    capSysNice = true;
+    #env = { };
+    package = pkgs.gamescope.override {
+      enableExecutable = true;
+      enableWsi = true;
     };
-
-    # Wayland xinput
-    #steam.extest.enable = true;
-    # Not needed with regular gamescope.enable?
-    #steam.gamescopeSession.enable = true;
   };
 
   services = {
@@ -97,10 +81,7 @@ in {
 
     # Disable gnome so gamescope starts instead
     #xserver.desktopManager.gnome.enable = lib.mkForce false;
-    # Is this needed with gnome disabled?
     #xserver.displayManager.defaultSession = "gamescope-wayland";
-    # GDM should stay enabled?
-    #xserver.displayManager.gdm.enable = lib.mkForce false;
     xserver.videoDrivers = [ "amdgpu" ];
   };
 
@@ -187,14 +168,14 @@ in {
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        #amdvlk
+        amdvlk
         libvdpau-va-gl
         rocmPackages.clr
         rocmPackages.clr.icd
         vaapiVdpau
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
-        #amdvlk
+        amdvlk
         libvdpau-va-gl
         vaapiVdpau
       ];

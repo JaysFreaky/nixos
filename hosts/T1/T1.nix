@@ -1,7 +1,11 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
-  # Hyprland display scale
-  scale = 1.25;
+  resolution = {
+    width = "2560";
+    height = "1440";
+    refreshRate = "144";
+    scale = "1.25";
+  };
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -29,7 +33,6 @@ in {
   environment = {
     systemPackages = with pkgs; [
     # Hardware
-      corectrl                # CPU/GPU control
       polychromatic           # Razer lighting GUI
 
     # Messaging
@@ -38,7 +41,6 @@ in {
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
-      zenmonitor              # CPU stats
 
     # Multimedia
       mpv                     # Media player
@@ -52,28 +54,45 @@ in {
 
   programs = {
     # PWM fan control
-    #coolercontrol.enable = true;
+    coolercontrol.enable = true;
 
-    gamescope.args = [
-      "--adaptive-sync"
-      #"--borderless"
-      "--expose-wayland"
-      "--filter fsr"
-      "--fullscreen"
-      "--framerate-limit 144"
-      "--hdr-enabled"
-      #"--mangoapp"  # Toggling doesn't work with this
-      "--nested-height 1440"
-      "--nested-refresh 144"
-      "--nested-width 2560"
-      #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
-      "--rt"
-    ];
+    gamescope = {
+      enable = true;
+      args = [
+        "-W ${resolution.width}"
+        "-H ${resolution.height}"
+        "-r ${resolution.refreshRate}"
+        "-o ${resolution.refreshRate}"        # Unfocused
+        "-F fsr"
+        "--expose-wayland"
+        "--rt"
+        #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
+        "--hdr-enabled"
+        "--framerate-limit ${resolution.refreshRate}"
+        "--fullscreen"
+      ];
+      capSysNice = true;
+      #env = { };
+      package = pkgs.gamescope.override {
+        enableExecutable = true;
+        enableWsi = true;
+      };
+    };
   };
 
-  services.openssh = {
-    enable = lib.mkForce true;
-    knownHosts."FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13";
+  system.autoUpgrade = {
+    enable = false;
+    allowReboot = true;
+    dates = "weekly";
+    flags = [
+      "--commit-lock-file"
+    ];
+    flake = inputs.self.outPath;
+    randomizedDelaySec = "45min";
+    rebootWindow = {
+      lower = "02:00";
+      upper = "06:00";
+    };
   };
 
 
@@ -82,11 +101,11 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = {
     programs.mangohud.settings = {
-      # lspci -D | grep -i vga
-      pci_dev = "0:0a:00.0";
-      fps_limit = 144;
-      gpu_fan = true;
+      fps_limit = resolution.refreshRate;
       gpu_voltage = true;
+      gpu_fan = true;
+      # lspci -D | grep -i vga
+      #pci_dev = "0:0a:00.0";
       table_columns = lib.mkForce 6;
     };
 
@@ -95,10 +114,27 @@ in {
       # name,resolution@htz,position,scale
       monitor = [
         ",preferred,auto,auto"
-        #"eDP-1,2560x1440@144,0x0,${toString scale}"
+        #"eDP-1,2560x1440@144,0x0,${resolution.scale}"
       ];
     }; */
+
+    # OpenRGB autostart
+    xdg.configFile."autostart/OpenRGB.desktop".text = ''
+      [Desktop Entry]
+      Categories=Utility;
+      Comment=OpenRGB 0.9, for controlling RGB lighting.
+      Exec=${pkgs.openrgb}/bin/.openrgb-wrapped --startminimized
+      Icon=OpenRGB
+      Name=OpenRGB
+      StartupNotify=true
+      Terminal=false
+      Type=Application
+    '';
   };
+
+  users.users.${vars.user}.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
+  ];
 
 
   ##########################################################
@@ -108,25 +144,27 @@ in {
     bluetooth.powerOnBoot = lib.mkForce true;
 
     # Control CPU / case fans
-    fancontrol = let
-      gpuFC = "pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+    fancontrol = let 
+      gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      fanHW = "devices/platform/nct6775.656";
+      cpuHW = "devices/pci0000:00/0000:00:18.3";
     in {
-      enable = false;
+      enable = true;
       config = ''
         INTERVAL=10
-        DEVPATH=hwmon2=devices/${gpuFC} hwmon3=devices/pci0000:00/0000:00:18.3 hwmon7=devices/platform/nct6775.656
-        DEVNAME=hwmon2=amdgpu hwmon3=zenpower hwmon7=nct6798
-        FCTEMPS=hwmon7/pwm1=hwmon2/temp1_input hwmon7/pwm2=hwmon3/temp2_input
-        FCFANS=hwmon7/pwm1=hwmon7/fan1_input hwmon7/pwm2=hwmon7/fan2_input
-        MINTEMP=hwmon7/pwm1=40 hwmon7/pwm2=40
-        MAXTEMP=hwmon7/pwm1=80 hwmon7/pwm2=80
+        DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
+        DEVNAME=hwmon1=amdgpu hwmon2=nct6798 hwmon3=zenpower
+        FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon3/temp2_input
+        FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
+        MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
+        MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
         # Always spin @ MINPWM until MINTEMP
-        MINSTART=hwmon7/pwm1=0 hwmon7/pwm2=0
-        MINSTOP=hwmon7/pwm1=64 hwmon7/pwm2=64
+        MINSTART=hwmon2/pwm1=0 hwmon2/pwm2=0
+        MINSTOP=hwmon2/pwm1=64 hwmon2/pwm2=64
         # Fans @ 25% until 40 degress
-        MINPWM=hwmon7/pwm1=64 hwmon7/pwm2=64
+        MINPWM=hwmon2/pwm1=64 hwmon2/pwm2=64
         # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-        MAXPWM=hwmon7/pwm1=140 hwmon7/pwm2=217
+        MAXPWM=hwmon2/pwm1=140 hwmon2/pwm2=217
       '';
     };
 
@@ -160,32 +198,6 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = false;
-      theme = "rog_2";
-      themePackages = [
-        # Overriding installs the one theme instead of all 80, reducing the required size
-        # Theme previews: https://github.com/adi1090x/plymouth-themes
-        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
-      ];
-    };
-
-    # Zenpower uses same PCI device as k10temp, so disabling k10temp
-    blacklistedKernelModules = [ "k10temp" ];
-    kernelModules = [
-      "zenpower"
-    ];
-    extraModulePackages = with config.boot.kernelPackages; [
-      zenpower
-    ];
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "amd_pstate=active"
-      #"quiet"
-      #"splash"
-    ];
-    supportedFilesystems = [ "btrfs" ];
-
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [
@@ -195,14 +207,30 @@ in {
       systemd.enable = true;
     };
 
-    loader = {
-      timeout = 1;
+    # Zenpower uses same PCI device as k10temp, so disabling k10temp
+    blacklistedKernelModules = [ "k10temp" ];
+    kernelModules = [
+      "nct6775"
+      "zenpower"
+    ];
+    extraModulePackages = with config.boot.kernelPackages; [
+      zenpower
+    ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    # CachyOS kernel relies on chaotic.scx
+    #kernelPackages = pkgs.linuxPackages_cachyos;
+    kernelParams = [
+      "amd_pstate=active"
+      # Hides text prior to plymouth boot logo
+      #"quiet"
+      #"splash"
+    ];
 
+    loader = {
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
       grub = {
         enable = false;
         configurationLimit = 5;
@@ -214,7 +242,6 @@ in {
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -223,8 +250,26 @@ in {
         editor = false;
         memtest86.enable = true;
       };
+      timeout = 1;
     };
+
+    plymouth = {
+      enable = false;
+      theme = "rog_2";
+      themePackages = [
+        # Overriding installs the one theme instead of all 80, reducing the required size
+        # Theme previews: https://github.com/adi1090x/plymouth-themes
+        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
+      ];
+    };
+
+    supportedFilesystems = [ "btrfs" ];
   };
+
+  /*chaotic.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };*/
 
 
   ##########################################################
@@ -265,6 +310,16 @@ in {
       ];
     };
 
+    "/nix" = {
+      device = "/dev/disk/by-partlabel/root";
+      fsType = "btrfs";
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
+    };
+
     "/media/steam" = {
       device = "/dev/nvme1n1p1";
       fsType = "ext4";
@@ -286,16 +341,6 @@ in {
         "x-systemd.device-timeout=5s"
         "x-systemd.idle-timeout=600"
         "x-systemd.mount-timeout=5s"
-      ];
-    };
-
-    "/nix" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=nix"
       ];
     };
   };
