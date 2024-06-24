@@ -9,7 +9,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     #hyprland.url = "github:hyprwm/Hyprland";
-    jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
@@ -33,14 +36,13 @@
     nixpkgs,
     nixpkgs-stable,
     ...
-  } @ inputs: let
+  } @ inputs:
+  let
     system = "x86_64-linux";
-    nixosSystem = nixpkgs.lib.nixosSystem;
     stable = import nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
     };
-
     vars = {
       user = "jays";
       name = "Jason";
@@ -61,9 +63,9 @@
       inputs.spicetify-nix.nixosModules.spicetify
     ];
   in {
-    # Available through 'nixos-rebuild --flake .#your-hostname'
+    # 'nixos-rebuild switch --flake .#your-hostname'
     nixosConfigurations = {
-      Dekki = nixosSystem {
+      Dekki = nixpkgs.lib.nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
@@ -76,7 +78,7 @@
         ];
       };
 
-      FW13 = nixosSystem {
+      FW13 = nixpkgs.lib.nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
@@ -89,7 +91,7 @@
         ];
       };
 
-      Ridge = nixosSystem {
+      Ridge = nixpkgs.lib.nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
@@ -99,11 +101,10 @@
         modules = standardModules ++ [
           ./hosts/Ridge
           inputs.chaotic.nixosModules.default
-          inputs.jovian.nixosModules.jovian
         ];
       };
 
-      T450s = nixosSystem {
+      T450s = nixpkgs.lib.nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {
@@ -116,7 +117,7 @@
         ];
       };
 
-      VM = nixosSystem {
+      VM = nixpkgs.lib.nixosSystem {
         inherit system;
         inherit (nixpkgs) lib;
         specialArgs = {

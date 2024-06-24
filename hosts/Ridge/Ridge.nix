@@ -20,6 +20,7 @@ in {
   # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
   "1password".enable = true;
+  gaming.enable = true;
   lact.enable = true;
   syncthing.enable = true;
 
@@ -29,9 +30,6 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Gaming
-      heroic                  # Game launcher for: Epic, GOG, Prime
-
     # Hardware
       polychromatic           # Razer lighting GUI
 
@@ -41,7 +39,6 @@ in {
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
-      zenmonitor              # CPU stats
 
     # Multimedia
       mpv                     # Media player
@@ -53,28 +50,20 @@ in {
     ];
   };
 
-  jovian = {
-    steam = {
-      enable = true;
-      # Start in Steam UI
-      autoStart = false;
-      # Switch to desktop - Use 'gamescope-wayland' for no desktop
-      desktopSession = "gnome";
-      # Declare steam variables
-      environment = { };
-      user = "${vars.user}";
-    };
-  };
-
   programs = {
-    /*gamemode = {
-      #enable = true;
-      settings.general.inhibit_screensaver = 0;
-    }; */
+    gamemode.enable = lib.mkForce false;
+    #gamemode.settings.custom = lib.mkForce { };
 
-    /*gamescope = {
-      #enable = true;
-      args = [
+    gamescope = {
+      enable = true;
+      /*args = [
+        "-W ${resolution.width}"
+        "-H ${resolution.height}"
+        "-r ${resolution.refreshRate}"
+        "-o ${resolution.refreshRate}"  # Unfocused limit
+        "-F fsr"
+        "-f"
+
         "--adaptive-sync"
         #"--borderless"
         "--expose-wayland"
@@ -88,28 +77,16 @@ in {
         "--nested-width ${resolution.width}"
         #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
         "--rt"
-      ];
-    };*/
-
-    steam = {
-      #extest.enable = true;
-      extraCompatPackages = [ pkgs.proton-ge-bin ];
-      #gamescopeSession.enable = true;
-      #localNetworkGameTransfers.openFirewall = true;
-      #remotePlay.openFirewall = true;
-      /*package = pkgs.steam.override {
-        extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-          then [ package ] ++ extraPackages
-          else [ package32 ] ++ extraPackages32
-        );
-
-        extraProfile = let
-          gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
-        in ''
-          export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
-        '';
-      };*/
+      ];*/
+      #capSysNice = true;
+      #env = { };
+      #package = pkgs.gamescope-wsi
     };
+
+    # Wayland xinput
+    #steam.extest.enable = true;
+    # Not needed with regular gamescope.enable?
+    #steam.gamescopeSession.enable = true;
   };
 
   services = {
@@ -118,8 +95,13 @@ in {
       user = "${vars.user}";
     };
 
-    # Disable GDM if jovian.steam.autoStart is enabled
-    xserver.displayManager.gdm.enable = lib.mkForce (!config.jovian.steam.autoStart);
+    # Disable gnome so gamescope starts instead
+    #xserver.desktopManager.gnome.enable = lib.mkForce false;
+    # Is this needed with gnome disabled?
+    #xserver.displayManager.defaultSession = "gamescope-wayland";
+    # GDM should stay enabled?
+    #xserver.displayManager.gdm.enable = lib.mkForce false;
+    xserver.videoDrivers = [ "amdgpu" ];
   };
 
   system.autoUpgrade = {
@@ -142,55 +124,14 @@ in {
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
-    /*programs.mangohud = {
-      enable = false;
-      enableSessionWide = false;
-      settings = {
-        # lspci -D | grep -i vga
-        pci_dev = "0:0a:00.0";
-        position = "top-left";
-        toggle_hud = "Shift_R+F12";
-
-        round_corners = 10;
-        background_alpha = "0.4";
-        #background_color = "000000";
-        #font_size = 24;
-        #text_color = "FFFFFF";
-        table_columns = 6;
-
-        cpu_text = "CPU";
-        cpu_stats = true;
-        cpu_load_change = true;
-        cpu_load_value = "50,90";
-        cpu_load_color = "FFFFFF,FFAA7F,CC0000";
-        cpu_temp = true;
-        cpu_power = true;
-
-        gpu_text = "GPU";
-        gpu_stats = true;
-        gpu_load_change = true;
-        gpu_load_value = "50,90";
-        gpu_load_color = "FFFFFF,FFAA7F,CC0000";
-        gpu_temp = true;
-        gpu_power = true;
-        gpu_voltage = true;
-        gpu_fan = true;
-
-        fsr = true;
-        hdr = true;
-        gl_vsync = "-1";
-        vsync = "0";
-
-        fps = true;
-        fps_limit = resolution.refreshRate;
-        fps_limit_method = "late";
-        #gamemode = true;
-        #mangoapp_steam = true;
-        ram = true;
-        time = true;
-        vulkan_driver = true;
-      };
-    };*/
+    programs.mangohud.settings = {
+      fps_limit = resolution.refreshRate;
+      gpu_voltage = true;
+      gpu_fan = true;
+      # lspci -D | grep -i vga
+      pci_dev = "0:0a:00.0";
+      table_columns = lib.mkForce 6;
+    };
 
     # OpenRGB autostart
     xdg.configFile."autostart/OpenRGB.desktop".text = ''
@@ -214,12 +155,6 @@ in {
   ##########################################################
   # Hardware
   ##########################################################
-  chaotic.scx = {
-    enable = true;
-    scheduler = "scx_lavd";
-    #scheduler = "scx_rusty";
-  };
-
   hardware = {
     #bluetooth.powerOnBoot = lib.mkForce true;
 
@@ -252,14 +187,14 @@ in {
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        amdvlk
+        #amdvlk
         libvdpau-va-gl
         rocmPackages.clr
         rocmPackages.clr.icd
         vaapiVdpau
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
-        amdvlk
+        #amdvlk
         libvdpau-va-gl
         vaapiVdpau
       ];
@@ -348,9 +283,6 @@ in {
       systemd.enable = true;
     };
 
-    # Increase stability/performance of games
-    kernel.sysctl."vm.max_map_count" = lib.mkForce 2147483642;
-
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
     blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
@@ -360,11 +292,13 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [
       zenpower
     ];
+    # CachyOS kernel relies on chaotic.scx
     kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       "amdgpu.ppfeaturemask=0xffffffff"
+      # Hides text prior to plymouth boot logo
       "quiet"
     ];
 
@@ -378,18 +312,11 @@ in {
         configurationLimit = 5;
         device = "nodev";
         efiSupport = true;
+        enableCryptodisk = false;
         memtest86.enable = true;
         theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
-      };
-      systemd-boot = {
-        enable = false;
-        configurationLimit = 5;
-        # Console resolution
-        consoleMode = "auto";
-        editor = false;
-        memtest86.enable = true;
       };
       timeout = 1;
     };
@@ -405,6 +332,11 @@ in {
     };
 
     supportedFilesystems = [ "btrfs" ];
+  };
+
+  chaotic.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
   };
 
 
