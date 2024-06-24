@@ -12,9 +12,10 @@
       heroic                            # Game launcher - Epic, GOG, Prime
       #playonlinux                      # GUI for Windows programs
       (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-        extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-          then extraPackages
-          else extraPackages32
+        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit then
+          extraPackages
+        else
+          extraPackages32
         );
         extraPkgs = pkgs: with pkgs; [
           dxvk
@@ -30,25 +31,14 @@
       programs.mangohud = {
         enable = true;
         enableSessionWide = false;
-
         settings = {
-          position = "top-left";
-          toggle_hud = "Shift_R+F12";
+          ### Performance ###
+          fps_limit_method = "late";
+          vsync = "0";
+          gl_vsync = "-1";
 
-          round_corners = 10;
-          background_alpha = "0.4";
-          #background_color = "000000";
-          #font_size = 24;
-          #text_color = "FFFFFF";
-          table_columns = 4;
-
-          cpu_text = "CPU";
-          cpu_stats = true;
-          cpu_load_change = true;
-          cpu_load_value = "50,90";
-          cpu_load_color = "FFFFFF,FFAA7F,CC0000";
-          cpu_temp = true;
-          cpu_power = true;
+          ### Visual ###
+          time_no_label = true;
 
           gpu_text = "GPU";
           gpu_stats = true;
@@ -58,18 +48,36 @@
           gpu_temp = true;
           gpu_power = true;
 
-          fsr = true;
-          hdr = true;
-          gl_vsync = "-1";
-          vsync = "0";
+          cpu_text = "CPU";
+          cpu_stats = true;
+          cpu_load_change = true;
+          cpu_load_value = "50,90";
+          cpu_load_color = "FFFFFF,FFAA7F,CC0000";
+          cpu_temp = true;
+          cpu_power = true;
+
+          vram = true;
+          ram = true;
 
           fps = true;
-          fps_limit_method = "late";
-          gamemode = true;
-          mangoapp_steam = true;
-          ram = true;
-          time = true;
           vulkan_driver = true;
+          # Display GameMode status
+          gamemode = true;
+
+          # Display Gamescope options status
+          fsr = true;
+          hdr = true;
+
+          # Display above Steam UI
+          mangoapp_steam = true;
+
+          position = "top-left";
+          round_corners = 10;
+          table_columns = 4;
+          background_alpha = "0.4";
+
+          ### Interaction ###
+          toggle_hud = "Shift_R+F12";
         };
       };
     };
@@ -90,14 +98,9 @@
         };
       };
 
-      #gamescope.package = pkgs.gamescope-wsi;
-
       steam = {
         enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
-
-        # Steam compositor
-        gamescopeSession.enable = true;
 
         # Firewall related
         dedicatedServer.openFirewall = false;
@@ -105,11 +108,6 @@
         remotePlay.openFirewall = true;
         
         package = pkgs.steam.override {
-          extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-            then [ package ] ++ extraPackages
-            else [ package32 ] ++ extraPackages32
-          );
-
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
@@ -124,8 +122,10 @@
             xorg.libXScrnSaver
           ];
 
-          extraProfile = let gmLib = "${lib.getLib(pkgs.gamemode)}/lib"; in ''
-            export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
+          extraProfile = let
+            gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
+          in ''
+            export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD"
           '';
         };
       };
