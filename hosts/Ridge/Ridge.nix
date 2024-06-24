@@ -1,46 +1,10 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
-  # GPU Undervolting
-  gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
-    #!/usr/bin/env bash
-    # Find persistant GPU path: readlink -f /sys/class/drm/card#/device
-    GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
-
-    # GPU min clock - default min is 500
-    echo "Setting GPU min clock"
-    echo s 0 2100 | tee "$GPU"/pp_od_clk_voltage
-    # GPU max clock - default max is 2664
-    echo "Setting GPU max clock"
-    echo s 1 2200 | tee "$GPU"/pp_od_clk_voltage
-    # Voltage offset - default mV is 1200
-    echo "Setting voltage offset"
-    echo vo -150 | tee "$GPU"/pp_od_clk_voltage
-    # VRAM max clock - default max is 1124 - not adjusting
-    #echo "Setting VRAM clock"
-    #echo m 1 1124 | tee "$GPU"/pp_od_clk_voltage
-    # Apply values
-    echo "Applying undervolt settings"
-    echo c | tee "$GPU"/pp_od_clk_voltage
-
-    # Power usage limit - default wattage is 284 (first 3 numbers are watts)
-    echo "Setting power usage limit"
-    echo 300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
-
-    # Performance level: auto, low, high, manual
-    echo "Setting performance level"
-    echo manual | tee "$GPU"/power_dpm_force_performance_level
-    # Power level mode: cat pp_power_profile_mode
-    echo "Setting power level mode to 3D Fullscreen"
-    echo 1 | tee "$GPU"/pp_power_profile_mode
-    # GPU power states: cat pp_dpm_sclk
-    echo "Enabling all GPU power states"
-    echo 2 | tee "$GPU"/pp_dpm_sclk
-    # VRAM power states: cat pp_dpm_mclk
-    echo "Enabling all VRAM power states"
-    echo 3 | tee "$GPU"/pp_dpm_mclk
-  '';
-
-  refreshRate = "144";
+  resolution = {
+    width = "2560";
+    height = "1440";
+    refreshRate = "144";
+  };
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -100,26 +64,31 @@ in {
       user = "${vars.user}";
     };
     steamos = {
-      useSteamOSConfig = true;
+      #useSteamOSConfig = true;
       enableMesaPatches = true;
     };
   };
 
   programs = {
+    gamemode = {
+      #enable = true;
+      settings.general.inhibit_screensaver = 0;
+    };
+
     gamescope = {
-      enable = true;
+      #enable = true;
       args = [
         "--adaptive-sync"
         #"--borderless"
         "--expose-wayland"
         "--filter fsr"
         "--fullscreen"
-        "--framerate-limit ${refreshRate}"
+        "--framerate-limit ${resolution.refreshRate}"
         "--hdr-enabled"
         #"--mangoapp"  # Toggling doesn't work with this
-        "--nested-height 1440"
-        "--nested-refresh ${refreshRate}"
-        "--nested-width 2560"
+        "--nested-height ${resolution.height}"
+        "--nested-refresh ${resolution.refreshRate}"
+        "--nested-width ${resolution.width}"
         #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
         "--rt"
       ];
@@ -130,12 +99,24 @@ in {
       extraCompatPackages = [ pkgs.proton-ge-bin ];
       localNetworkGameTransfers.openFirewall = true;
       remotePlay.openFirewall = true;
+      package = pkgs.steam.override {
+        extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+          then [ package ] ++ extraPackages
+          else [ package32 ] ++ extraPackages32
+        );
+
+        /*extraProfile = let
+          gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
+        in ''
+          export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
+        '';*/
+      };
     };
   };
 
   services = {
     displayManager.autoLogin = {
-      enable = lib.mkForce false;
+      enable = lib.mkForce true;
       user = "${vars.user}";
     };
 
@@ -164,7 +145,7 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = {
     programs.mangohud = {
-      enable = true;
+      enable = false;
       enableSessionWide = false;
       settings = {
         # lspci -D | grep -i vga
@@ -203,7 +184,7 @@ in {
         vsync = "0";
 
         fps = true;
-        fps_limit = refreshRate;
+        fps_limit = resolution.refreshRate;
         fps_limit_method = "late";
         #gamemode = true;
         #mangoapp_steam = true;
@@ -295,8 +276,47 @@ in {
 
   services.hardware.openrgb.enable = true;
 
-  # Create a service to auto undervolt GPU
-  systemd.services.gpu_uv = {
+  # Create a service to undervolt GPU
+  systemd.services.gpu_uv = let
+    gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
+      #!/usr/bin/env bash
+      # Find persistant GPU path: readlink -f /sys/class/drm/card#/device
+      GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
+
+      # GPU min clock - default min is 500
+      echo "Setting GPU min clock"
+      echo s 0 2100 | tee "$GPU"/pp_od_clk_voltage
+      # GPU max clock - default max is 2664
+      echo "Setting GPU max clock"
+      echo s 1 2200 | tee "$GPU"/pp_od_clk_voltage
+      # Voltage offset - default mV is 1200
+      echo "Setting voltage offset"
+      echo vo -150 | tee "$GPU"/pp_od_clk_voltage
+      # VRAM max clock - default max is 1124 - not adjusting
+      #echo "Setting VRAM clock"
+      #echo m 1 1124 | tee "$GPU"/pp_od_clk_voltage
+      # Apply values
+      echo "Applying undervolt settings"
+      echo c | tee "$GPU"/pp_od_clk_voltage
+
+      # Power usage limit - default wattage is 284 (first 3 numbers are watts)
+      echo "Setting power usage limit"
+      echo 300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
+
+      # Performance level: auto, low, high, manual
+      echo "Setting performance level"
+      echo manual | tee "$GPU"/power_dpm_force_performance_level
+      # Power level mode: cat pp_power_profile_mode
+      echo "Setting power level mode to 3D Fullscreen"
+      echo 1 | tee "$GPU"/pp_power_profile_mode
+      # GPU power states: cat pp_dpm_sclk
+      echo "Enabling all GPU power states"
+      echo 2 | tee "$GPU"/pp_dpm_sclk
+      # VRAM power states: cat pp_dpm_mclk
+      echo "Enabling all VRAM power states"
+      echo 3 | tee "$GPU"/pp_dpm_mclk
+    '';
+  in {
     after = [ "multi-user.target" "rc-local.service" "systemd-user-sessions.service" ];
     description = "Set AMDGPU Undervolt";
     wantedBy = [ "multi-user.target" ];
