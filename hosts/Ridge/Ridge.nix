@@ -39,6 +39,8 @@ let
     echo "Enabling all VRAM power states"
     echo 3 | tee "$GPU"/pp_dpm_mclk
   '';
+
+  refreshRate = "144";
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -54,7 +56,6 @@ in {
   # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
   "1password".enable = true;
-  gaming.enable = true;
   lact.enable = true;
   syncthing.enable = true;
 
@@ -64,8 +65,10 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
+    # Gaming
+      heroic                  # Game launcher for: Epic, GOG, Prime
+
     # Hardware
-      corectrl                # CPU/GPU control
       polychromatic           # Razer lighting GUI
 
     # Messaging
@@ -86,34 +89,48 @@ in {
     ];
   };
 
-  /*
-  jovian.steam = {
-    # Steam Deck UI
-    enable = true;
-    # Start in Steam UI
-    autoStart = false;
-    # Switch to desktop - Use 'gamescope-wayland' for no desktop
-    desktopSession = "gnome";
-    user = "${vars.user}";
+  jovian = {
+    hardware.has.amd.gpu = true;
+    steam = {
+      enable = true;
+      # Start in Steam UI
+      autoStart = false;
+      # Switch to desktop - Use 'gamescope-wayland' for no desktop
+      desktopSession = "gnome";
+      user = "${vars.user}";
+    };
+    steamos = {
+      useSteamOSConfig = true;
+      enableMesaPatches = true;
+    };
   };
-  */
 
   programs = {
-    gamescope.args = [
-      "--adaptive-sync"
-      #"--borderless"
-      "--expose-wayland"
-      "--filter fsr"
-      "--fullscreen"
-      "--framerate-limit 144"
-      "--hdr-enabled"
-      #"--mangoapp"  # Toggling doesn't work with this
-      "--nested-height 1440"
-      "--nested-refresh 144"
-      "--nested-width 2560"
-      #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
-      "--rt"
-    ];
+    gamescope = {
+      enable = true;
+      args = [
+        "--adaptive-sync"
+        #"--borderless"
+        "--expose-wayland"
+        "--filter fsr"
+        "--fullscreen"
+        "--framerate-limit ${refreshRate}"
+        "--hdr-enabled"
+        #"--mangoapp"  # Toggling doesn't work with this
+        "--nested-height 1440"
+        "--nested-refresh ${refreshRate}"
+        "--nested-width 2560"
+        #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
+        "--rt"
+      ];
+    };
+
+    steam = {
+      enable = true;
+      extraCompatPackages = [ pkgs.proton-ge-bin ];
+      localNetworkGameTransfers.openFirewall = true;
+      remotePlay.openFirewall = true;
+    };
   };
 
   services = {
@@ -122,8 +139,8 @@ in {
       user = "${vars.user}";
     };
 
-    # Enable GDM if jovian.steam.autoStart is disabled
-    #xserver.displayManager.gdm.enable = lib.mkForce (!config.jovian.steam.autoStart);
+    # Disable GDM if jovian.steam.autoStart is enabled
+    xserver.displayManager.gdm.enable = lib.mkForce (!config.jovian.steam.autoStart);
   };
 
   system.autoUpgrade = {
@@ -146,14 +163,68 @@ in {
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
-    programs.mangohud.settings = {
-      # lspci -D | grep -i vga
-      pci_dev = "0:0a:00.0";
-      fps_limit = 144;
-      gpu_fan = true;
-      gpu_voltage = true;
-      table_columns = lib.mkForce 6;
+    programs.mangohud = {
+      enable = true;
+      enableSessionWide = false;
+      settings = {
+        # lspci -D | grep -i vga
+        pci_dev = "0:0a:00.0";
+        position = "top-left";
+        toggle_hud = "Shift_R+F12";
+
+        round_corners = 10;
+        background_alpha = "0.4";
+        #background_color = "000000";
+        #font_size = 24;
+        #text_color = "FFFFFF";
+        table_columns = 6;
+
+        cpu_text = "CPU";
+        cpu_stats = true;
+        cpu_load_change = true;
+        cpu_load_value = "50,90";
+        cpu_load_color = "FFFFFF,FFAA7F,CC0000";
+        cpu_temp = true;
+        cpu_power = true;
+
+        gpu_text = "GPU";
+        gpu_stats = true;
+        gpu_load_change = true;
+        gpu_load_value = "50,90";
+        gpu_load_color = "FFFFFF,FFAA7F,CC0000";
+        gpu_temp = true;
+        gpu_power = true;
+        gpu_voltage = true;
+        gpu_fan = true;
+
+        fsr = true;
+        hdr = true;
+        gl_vsync = "-1";
+        vsync = "0";
+
+        fps = true;
+        fps_limit = refreshRate;
+        fps_limit_method = "late";
+        #gamemode = true;
+        #mangoapp_steam = true;
+        ram = true;
+        time = true;
+        vulkan_driver = true;
+      };
     };
+
+    # OpenRGB autostart
+    xdg.configFile."autostart/OpenRGB.desktop".text = ''
+      [Desktop Entry]
+      Categories=Utility;
+      Comment=OpenRGB 0.9, for controlling RGB lighting.
+      Exec=${pkgs.openrgb}/bin/.openrgb-wrapped --startminimized
+      Icon=OpenRGB
+      Name=OpenRGB
+      StartupNotify=true
+      Terminal=false
+      Type=Application
+    '';
   };
 
   users.users.${vars.user}.openssh.authorizedKeys.keys = [
@@ -178,17 +249,17 @@ in {
         INTERVAL=10
         DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
         DEVNAME=hwmon1=amdgpu hwmon2=nct6798 hwmon3=zenpower
-        FCTEMPS=hwmon2/pwm2=hwmon1/temp1_input hwmon2/pwm1=hwmon3/temp1_input
-        FCFANS=hwmon2/pwm2=hwmon2/fan2_input hwmon2/pwm1=hwmon2/fan1_input
-        MINTEMP=hwmon2/pwm2=40 hwmon2/pwm1=40
-        MAXTEMP=hwmon2/pwm2=80 hwmon2/pwm1=80
+        FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon3/temp2_input
+        FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
+        MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
+        MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
         # Always spin @ MINPWM until MINTEMP
-        MINSTART=hwmon2/pwm2=0 hwmon2/pwm1=0
-        MINSTOP=hwmon2/pwm2=64 hwmon2/pwm1=64
+        MINSTART=hwmon2/pwm1=0 hwmon2/pwm2=0
+        MINSTOP=hwmon2/pwm1=64 hwmon2/pwm2=64
         # Fans @ 25% until 40 degress
-        MINPWM=hwmon2/pwm2=64 hwmon2/pwm1=64
+        MINPWM=hwmon2/pwm1=64 hwmon2/pwm2=64
         # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-        MAXPWM=hwmon2/pwm2=140 hwmon2/pwm1=217
+        MAXPWM=hwmon2/pwm1=140 hwmon2/pwm2=217
       '';
     };
 
@@ -243,15 +314,18 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = false;
-      theme = "rog_2";
-      themePackages = [
-        # Overriding installs the one theme instead of all 80, reducing the required size
-        # Theme previews: https://github.com/adi1090x/plymouth-themes
-        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
+    initrd = {
+      availableKernelModules = [ ];
+      kernelModules = [
+        "amdgpu"
+        "nfs"
       ];
+      # Required for Plymouth (password prompt)
+      systemd.enable = true;
     };
+
+    # Increase stability/performance of games
+    kernel.sysctl."vm.max_map_count" = lib.mkForce 2147483642;
 
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
     blacklistedKernelModules = [ "k10temp" ];
@@ -270,26 +344,12 @@ in {
       #"quiet"
       #"splash"
     ];
-    supportedFilesystems = [ "btrfs" ];
-
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [
-        "amdgpu"
-        "nfs"
-      ];
-      # Required for Plymouth (password prompt)
-      systemd.enable = true;
-    };
 
     loader = {
-      timeout = 1;
-
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
       grub = {
         enable = false;
         configurationLimit = 5;
@@ -301,7 +361,6 @@ in {
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -310,7 +369,20 @@ in {
         editor = false;
         memtest86.enable = true;
       };
+      timeout = 1;
     };
+
+    plymouth = {
+      enable = false;
+      theme = "rog_2";
+      themePackages = [
+        # Overriding installs the one theme instead of all 80, reducing the required size
+        # Theme previews: https://github.com/adi1090x/plymouth-themes
+        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
+      ];
+    };
+
+    supportedFilesystems = [ "btrfs" ];
   };
 
 
@@ -352,6 +424,16 @@ in {
       ];
     };
 
+    "/nix" = {
+      device = "/dev/disk/by-partlabel/root";
+      fsType = "btrfs";
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
+    };
+
     "/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
@@ -361,16 +443,6 @@ in {
         "x-systemd.device-timeout=5s"
         "x-systemd.idle-timeout=600"
         "x-systemd.mount-timeout=5s"
-      ];
-    };
-
-    "/nix" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=nix"
       ];
     };
   };
