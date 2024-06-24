@@ -54,28 +54,25 @@ in {
   };
 
   jovian = {
-    hardware.has.amd.gpu = true;
     steam = {
       enable = true;
       # Start in Steam UI
       autoStart = false;
       # Switch to desktop - Use 'gamescope-wayland' for no desktop
       desktopSession = "gnome";
+      # Declare steam variables
+      environment = { };
       user = "${vars.user}";
-    };
-    steamos = {
-      #useSteamOSConfig = true;
-      enableMesaPatches = true;
     };
   };
 
   programs = {
-    gamemode = {
+    /*gamemode = {
       #enable = true;
       settings.general.inhibit_screensaver = 0;
-    };
+    }; */
 
-    gamescope = {
+    /*gamescope = {
       #enable = true;
       args = [
         "--adaptive-sync"
@@ -92,25 +89,26 @@ in {
         #"--prefer-vk-device \"1002:73a5\""  # lspci -nn | grep -i vga
         "--rt"
       ];
-    };
+    };*/
 
     steam = {
-      enable = true;
+      #extest.enable = true;
       extraCompatPackages = [ pkgs.proton-ge-bin ];
-      localNetworkGameTransfers.openFirewall = true;
-      remotePlay.openFirewall = true;
-      package = pkgs.steam.override {
+      #gamescopeSession.enable = true;
+      #localNetworkGameTransfers.openFirewall = true;
+      #remotePlay.openFirewall = true;
+      /*package = pkgs.steam.override {
         extraLibraries = pkgs: ( with config.hardware.graphics; if pkgs.hostPlatform.is64bit
           then [ package ] ++ extraPackages
           else [ package32 ] ++ extraPackages32
         );
 
-        /*extraProfile = let
+        extraProfile = let
           gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
         in ''
           export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD";
-        '';*/
-      };
+        '';
+      };*/
     };
   };
 
@@ -144,7 +142,7 @@ in {
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
-    programs.mangohud = {
+    /*programs.mangohud = {
       enable = false;
       enableSessionWide = false;
       settings = {
@@ -192,7 +190,7 @@ in {
         time = true;
         vulkan_driver = true;
       };
-    };
+    };*/
 
     # OpenRGB autostart
     xdg.configFile."autostart/OpenRGB.desktop".text = ''
@@ -216,6 +214,12 @@ in {
   ##########################################################
   # Hardware
   ##########################################################
+  chaotic.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+    #scheduler = "scx_rusty";
+  };
+
   hardware = {
     #bluetooth.powerOnBoot = lib.mkForce true;
 
@@ -356,13 +360,12 @@ in {
     extraModulePackages = with config.boot.kernelPackages; [
       zenpower
     ];
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       "amdgpu.ppfeaturemask=0xffffffff"
-      #"quiet"
-      #"splash"
+      "quiet"
     ];
 
     loader = {
@@ -371,18 +374,17 @@ in {
         efiSysMountPoint = "/boot";
       };
       grub = {
-        enable = false;
+        enable = true;
         configurationLimit = 5;
         device = "nodev";
         efiSupport = true;
-        enableCryptodisk = false;
         memtest86.enable = true;
         theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
       systemd-boot = {
-        enable = true;
+        enable = false;
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
@@ -393,7 +395,7 @@ in {
     };
 
     plymouth = {
-      enable = false;
+      enable = true;
       theme = "rog_2";
       themePackages = [
         # Overriding installs the one theme instead of all 80, reducing the required size
