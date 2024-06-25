@@ -12,17 +12,17 @@ in {
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  gnome.enable = true;
+  #gnome.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
   bluetooth.enable = true;
 
   # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
-  "1password".enable = true;
+  #"1password".enable = true;
   gaming.enable = true;
-  lact.enable = true;
-  syncthing.enable = true;
+  #lact.enable = true;
+  #syncthing.enable = true;
 
 
   ##########################################################
@@ -31,22 +31,22 @@ in {
   environment = {
     systemPackages = with pkgs; [
     # Hardware
-      polychromatic           # Razer lighting GUI
+      #polychromatic           # Razer lighting GUI
 
     # Messaging
-      discord                 # Discord
+      #discord                 # Discord
 
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
 
     # Multimedia
-      mpv                     # Media player
-      plex-media-player       # Plex player
-      spotify                 # Music
+      #mpv                     # Media player
+      #plex-media-player       # Plex player
+      #spotify                 # Music
 
     # Notes
-      obsidian                # Markdown notes
+      #obsidian                # Markdown notes
     ];
   };
 
@@ -78,11 +78,16 @@ in {
       enable = lib.mkForce true;
       user = "${vars.user}";
     };
+    xserver = {
+      enable = true;
+      displayManager.gdm.enable = true;
+      videoDrivers = [ "amdgpu" ];
+    };
+  };
 
-    # Disable gnome so gamescope starts instead
-    #xserver.desktopManager.gnome.enable = lib.mkForce false;
-    #xserver.displayManager.defaultSession = "gamescope-wayland";
-    xserver.videoDrivers = [ "amdgpu" ];
+  systemd.services = {
+    "autovt@tty1".enable = false;
+    "getty@tty1".enable = false;
   };
 
   system.autoUpgrade = {
@@ -113,19 +118,6 @@ in {
       pci_dev = "0:0a:00.0";
       table_columns = lib.mkForce 6;
     };
-
-    # OpenRGB autostart
-    xdg.configFile."autostart/OpenRGB.desktop".text = ''
-      [Desktop Entry]
-      Categories=Utility;
-      Comment=OpenRGB 0.9, for controlling RGB lighting.
-      Exec=${pkgs.openrgb}/bin/.openrgb-wrapped --startminimized
-      Icon=OpenRGB
-      Name=OpenRGB
-      StartupNotify=true
-      Terminal=false
-      Type=Application
-    '';
   };
 
   users.users.${vars.user}.openssh.authorizedKeys.keys = [
@@ -181,10 +173,8 @@ in {
       ];
     };
 
-    openrazer = {
-      enable = true;
-      users = [ "${vars.user}" ];
-    };
+    #openrazer.enable = true;
+    #openrazer.users = [ "${vars.user}" ];
 
     xone.enable = true;
   };
@@ -194,7 +184,7 @@ in {
     systemctl restart gpu_uv.service
   '';
 
-  services.hardware.openrgb.enable = true;
+  #services.hardware.openrgb.enable = true;
 
   # Create a service to undervolt GPU
   systemd.services.gpu_uv = let
