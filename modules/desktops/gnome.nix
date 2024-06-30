@@ -385,11 +385,11 @@ in {
         bluetooth-quick-connect
         blur-my-shell
         clipboard-indicator
-        dash-to-dock
+        #dash-to-dock
+        hot-edge
         just-perfection
         lock-keys
         night-theme-switcher
-        #pip-on-top
         power-profile-switcher
         vitals
         weather-or-not

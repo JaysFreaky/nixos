@@ -5,7 +5,7 @@
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  gnome.enable = true;
+  #gnome.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
   #bluetooth.enable = true;
@@ -18,13 +18,11 @@
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment = {
-    systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
-    ];
-  };
+  ];
 
   jovian = {
     decky-loader.enable = true;
@@ -41,21 +39,17 @@
     };
   };
 
-  # Disable GDM with jovian.steam.autoStart enabled
-  services.xserver.displayManager.gdm.enable = lib.mkForce false;
-
 
   ##########################################################
   # Home Manager Options
   ##########################################################
-  home-manager.users.${vars.user} = { config, lib, ... }: {
+  home-manager.users.${vars.user} = { config, lib, ... }: rec {
     dconf.settings = {
       # Enable on-screen keyboard
-      "org/gnome/desktop/a11y/applications" = {
-        screen-keyboard-enabled = true;
-      };
+      "org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true;
+      "org/gnome/shell".enabled-extensions = (map (extension: extension.extensionUuid) home.packages);
       # Dash-to-Dock settings for a better touch screen experience
-      "org/gnome/shell/extensions/dash-to-dock" = lib.mkForce {
+      "org/gnome/shell/extensions/dash-to-dock" = {
         background-opacity = 0.80000000000000004;
         custom-theme-shrink = true;
         dash-max-icon-size = 48;
@@ -73,6 +67,10 @@
         show-trash = false;
       };
     };
+
+    home.packages = with pkgs.gnomeExtensions; [
+      dash-to-dock
+    ];
   };
 
 
@@ -85,6 +83,7 @@
       enable32Bit = true;
       extraPackages = with pkgs; [
         #amdvlk
+        #rocmPackages.clr
         #rocmPackages.clr.icd
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
