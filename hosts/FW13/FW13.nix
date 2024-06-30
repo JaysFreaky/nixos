@@ -184,15 +184,16 @@ in {
       enable32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
+        libva1
+        libva-vdpau-driver
         libvdpau-va-gl
         rocmPackages.clr
         rocmPackages.clr.icd
-        vaapiVdpau
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
         amdvlk
+        libva-vdpau-driver
         libvdpau-va-gl
-        vaapiVdpau
       ];
     };
 
@@ -351,9 +352,8 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  # 6.7 introduced a wifi disconnection bug - still occurring in 6.8.2?
-  # I haven't experienced this yet - maybe present in wpa_supplicant and not iwd?
-  # On resume, run: sudo rmmod mt7921e && sudo modprobe mt7921e
+  # 6.7 introduced a wifi disconnection bug; still occurring as of 6.9.5 - upon hibernation resume, run:
+  # sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e
   # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
     enableIPv6 = false;
