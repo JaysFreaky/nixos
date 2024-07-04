@@ -348,6 +348,7 @@
 
   /** THEME ADJUSTMENTS ***/
   # userChrome.css/userContent.css
+    "svg.context-properties.content.enabled" = true;
     "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
   "browser.compactmode.show" = true;
   "browser.display.focus_ring_on_anything" = true;

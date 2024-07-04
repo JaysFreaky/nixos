@@ -66,8 +66,7 @@ in {
           onepassword-password-manager
           simplelogin
           sponsorblock
-          #ublock-origin
-          ublock-origin-lite
+          ublock-origin
         ];
 
         search = {
