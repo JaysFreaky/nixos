@@ -1,31 +1,11 @@
 { config, host, inputs, lib, pkgs, vars, ... }:
 let
-  # Custom plymouth package
+  # Custom plymouth theme
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
 
   # Patch kernel modules
   fw-ec-lpc = pkgs.callPackage ./ec { kernel = config.boot.kernelPackages.kernel; };
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
-
-  # GPU performance adjustment - power_dpm_force_performance_level is auto by default
-  gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
-    #!/usr/bin/env bash
-
-    # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
-    GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
-
-    # Default level
-    DPM_PERF_LEVEL=low
-    # Evaluate argument passed by udev
-    if [ $1 -eq 1 ] ; then
-      DPM_PERF_LEVEL=high
-    else
-      DPM_PERF_LEVEL=low
-    fi
-
-    # Set performance level
-    echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
-  '';
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
@@ -232,8 +212,24 @@ in {
     # Temperature management
     thermald.enable = true;
 
-    # GPU mode changes when plugged into power
-    udev.extraRules = ''
+    # GPU perfarmance adjusts when plugged into power - power_dpm_force_performance_level is auto by default
+    udev.extraRules = let gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
+      #!/usr/bin/env bash
+      # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
+      GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
+
+      # Default level
+      DPM_PERF_LEVEL=low
+      # Evaluate argument passed by udev
+      if [ $1 -eq 1 ] ; then
+        DPM_PERF_LEVEL=high
+      else
+        DPM_PERF_LEVEL=low
+      fi
+
+      # Set performance level
+      echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
+    ''; in ''
       SUBSYSTEM=="power_supply" RUN+="${gpuPower}/bin/dpm_level.sh %E{POWER_SUPPLY_ONLINE}"
     '';
     
