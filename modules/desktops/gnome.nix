@@ -29,37 +29,36 @@ in {
     environment = {
       # System-Wide Packages
       systemPackages = with pkgs; [
-        bibata-cursors                # For GDM login screen
-        gnome.dconf-editor            # GUI dconf editor
-        gnome.gnome-tweaks            # Gnome tweaks
-        gnome.nautilus-python         # Allow custom nautilus scripts/open-any-terminal
-        gnome-extension-manager       # Gnome extensions
-        libappindicator               # Allow tray icons to be displayed in GNOME
-        libsecret                     # Secret storage used by gnome-keyring / KDE-wallet
-        nautilus-open-any-terminal    # Open custom terminals in nautilus
-        neovide                       # GUI launcher for neovim
+        bibata-cursors              # For GDM login screen
+        dconf-editor                # GUI dconf editor
+        gnome-tweaks                # Gnome tweaks
+        nautilus-python             # Allow custom nautilus scripts/open-any-terminal
+        gnome-extension-manager     # Gnome extensions
+        libappindicator             # Allow tray icons to be displayed in GNOME
+        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+        nautilus-open-any-terminal  # Open custom terminals in nautilus
+        neovide                     # GUI launcher for neovim
       ];
-      # Removed Packages
-      gnome.excludePackages = (with pkgs; [
-        #gnome-photos               # Image viewer
-        gnome-tour                  # Setup walkthrough
-        ]) ++ (with pkgs.gnome; [
+
+      gnome.excludePackages = with pkgs; [
         cheese                      # "fun" webcam app
         epiphany                    # Web browser
         #evince                     # Document viewer
         geary                       # Email client
         #gedit                      # Text editor
-        gnome-characters            # Character map
-        gnome-contacts              # Contact app
-        gnome-initial-setup         # First time setup
+        gnome.gnome-characters      # Character map
+        gnome.gnome-contacts        # Contact app
+        gnome.gnome-initial-setup   # First time setup
+        gnome.gnome-music           # Music
         #gnome-maps                 # Maps
-        gnome-music                 # Music
+        #gnome-photos               # Image viewer
         #gnome-terminal             # Console
+        gnome-tour                  # Setup walkthrough
         simple-scan                 # Scanning app
         #snapshot                   # Webcam
         totem                       # Video player
         yelp                        # Help
-      ]);
+      ];
     };
 
     programs = {
@@ -87,7 +86,7 @@ in {
 
     services = {
       # Manages keys/passwords in gnome-keyring
-      dbus.packages = [ pkgs.gnome.seahorse ];
+      dbus.packages = [ pkgs.seahorse ];
 
       # Auto login can be enabled because LUKS is setup
       # However, this will prevent the keyring from unlocking
