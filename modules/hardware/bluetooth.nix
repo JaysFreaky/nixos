@@ -8,14 +8,11 @@
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = false;
-
       settings = {
         General = {
+          ControllerMode = "dual";
           # A2DP support
           Enable = "Source,Sink,Media,Socket";
-          AutoEnable = true;
-          ControllerMode = "bredr";
-
           # Battery level display
           Experimental = true;
         };
