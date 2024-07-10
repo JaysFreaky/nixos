@@ -254,17 +254,29 @@ in {
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = true;
-      theme = "framework";
-      themePackages = [ framework-plymouth ];
+    initrd = {
+      availableKernelModules = [ "cryptd" ];
+      kernelModules = [ "amdgpu" ];
+      luks.devices = {
+        "cryptkey" = { device = "/dev/disk/by-partlabel/key"; };
+        "cryptroot" = {
+          # SSD trim
+          allowDiscards = true;
+          # Faster SSD performance
+          bypassWorkqueues = true;
+          device = "/dev/disk/by-partlabel/root";
+          keyFile = "/dev/mapper/cryptkey";
+          keyFileSize = 8192;
+        };
+      };
+      # Required for Plymouth (password prompt)
+      systemd.enable = true;
     };
 
     # Allow 5GHz wifi
     extraModprobeConfig = ''
       options cfg80211 ieee80211_regdom="US"
     '';
-
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
     blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
@@ -278,7 +290,6 @@ in {
       (fw-ec-lpc.overrideAttrs (_: { patches = [ ./ec/ec_lpc.patch ]; }))
       (fw-usbpd-charger.overrideAttrs (_: { patches = [ ./usbpd/usbpd_charger.patch ]; }))
     ];
-
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       # Mask gpe0B ACPI interrupts
@@ -291,37 +302,11 @@ in {
       "quiet"
     ];
    
-    supportedFilesystems = [ "btrfs" ];
-
-    initrd = {
-      availableKernelModules = [ "cryptd" ];
-      kernelModules = [ "amdgpu" ];
-      # Required for Plymouth (password prompt)
-      systemd.enable = true;
-
-      luks.devices = {
-        "cryptkey" = { device = "/dev/disk/by-partlabel/key"; };
-
-        "cryptroot" = {
-          # SSD trim
-          allowDiscards = true;
-          # Faster SSD performance
-          bypassWorkqueues = true;
-          device = "/dev/disk/by-partlabel/root";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
-      };
-    };
-
     loader = {
-      timeout = 1;
-
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
       grub = {
         enable = false;
         configurationLimit = 5;
@@ -329,10 +314,10 @@ in {
         efiSupport = true;
         enableCryptodisk = true;
         memtest86.enable = true;
+        theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -341,7 +326,16 @@ in {
         editor = false;
         memtest86.enable = true;
       };
+      timeout = 1;
     };
+
+    plymouth = {
+      enable = true;
+      theme = "framework";
+      themePackages = [ framework-plymouth ];
+    };
+
+    supportedFilesystems = [ "btrfs" ];
   };
 
 

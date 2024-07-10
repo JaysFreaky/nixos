@@ -30,23 +30,9 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Hardware
-      #polychromatic           # Razer lighting GUI
-
-    # Messaging
-      #discord                 # Discord
-
     # Monitoring
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
-
-    # Multimedia
-      #mpv                     # Media player
-      #plex-media-player       # Plex player
-      #spotify                 # Music
-
-    # Notes
-      #obsidian                # Markdown notes
     ];
   };
 
@@ -161,20 +147,18 @@ in {
       enable32Bit = true;
       extraPackages = with pkgs; [
         amdvlk
+        libva1
+        libva-vdpau-driver
         libvdpau-va-gl
         rocmPackages.clr
         rocmPackages.clr.icd
-        vaapiVdpau
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
         amdvlk
+        libva-vdpau-driver
         libvdpau-va-gl
-        vaapiVdpau
       ];
     };
-
-    #openrazer.enable = true;
-    #openrazer.users = [ "${vars.user}" ];
 
     xone.enable = true;
   };

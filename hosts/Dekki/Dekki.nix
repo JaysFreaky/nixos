@@ -5,7 +5,7 @@
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  #gnome.enable = true;
+  gnome.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
   #bluetooth.enable = true;
@@ -38,6 +38,8 @@
       user = "${vars.user}";
     };
   };
+
+  services.xserver.displayManager.gdm.enable = lib.mkForce false;
 
 
   ##########################################################
