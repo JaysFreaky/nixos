@@ -13,7 +13,7 @@ in {
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  gnome.enable = true;
+  #gnome.enable = true;
   #hyprland.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
@@ -23,7 +23,6 @@ in {
   # Whichever terminal is defined in flake.nix is auto-enabled
   "1password".enable = true;
   gaming.enable = true;
-  lact.enable = true;
   syncthing.enable = true;
 
 
@@ -36,19 +35,18 @@ in {
       polychromatic           # Razer lighting GUI
 
     # Messaging
-      discord                 # Discord
+      #discord                 # Discord
 
     # Monitoring
-      amdgpu_top              # GPU stats
-      nvtopPackages.amd       # GPU stats
+      nvtopPackages.nvidia    # GPU stats
 
     # Multimedia
-      mpv                     # Media player
-      plex-media-player       # Plex player
-      spotify                 # Music
+      #mpv                     # Media player
+      #plex-media-player       # Plex player
+      #spotify                 # Music
 
     # Notes
-      obsidian                # Markdown notes
+      #obsidian                # Markdown notes
     ];
   };
 
@@ -146,14 +144,17 @@ in {
     # Control CPU / case fans
     fancontrol = let 
       gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      gpuDrv = "nvidia";
       fanHW = "devices/platform/nct6775.656";
+      fanDrv ="nct6798";
       cpuHW = "devices/pci0000:00/0000:00:18.3";
+      cpuDrv = "zenpower";
     in {
       enable = true;
       config = ''
         INTERVAL=10
         DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
-        DEVNAME=hwmon1=amdgpu hwmon2=nct6798 hwmon3=zenpower
+        DEVNAME=hwmon1=${gpuDrv} hwmon2=${fanDrv} hwmon3=${cpuDrv}
         FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon3/temp2_input
         FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
         MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
@@ -172,17 +173,22 @@ in {
       enable = true;
       enable32Bit = true;
       extraPackages = with pkgs; [
-        amdvlk
+        libva1
+        libva-vdpau-driver
         libvdpau-va-gl
-        rocmPackages.clr
-        rocmPackages.clr.icd
-        vaapiVdpau
+        nvidia-vaapi-driver
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
-        amdvlk
+        libva-vdpau-driver
         libvdpau-va-gl
-        vaapiVdpau
       ];
+    };
+
+    nvidia = {
+      modesetting.enable = true;
+      nvidiaSettings = true;
+      # Beta ships 555, which fixes Wayland issues
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
 
     openrazer = {
@@ -191,8 +197,11 @@ in {
     };
   };
 
-  services.hardware.openrgb.enable = true;
+  services = {
+    hardware.openrgb.enable = true;
 
+    xserver.videoDrivers = [ "nvidia" ];
+  };
 
   ##########################################################
   # Boot / Encryption
@@ -202,6 +211,10 @@ in {
       availableKernelModules = [ ];
       kernelModules = [
         "nfs"
+        "nvidia"
+        "nvidia_drm"
+        "nvidia_modeset"
+        "nvidia_uvm"
       ];
       # Required for Plymouth (password prompt)
       systemd.enable = true;
@@ -210,7 +223,7 @@ in {
     # Zenpower uses same PCI device as k10temp, so disabling k10temp
     blacklistedKernelModules = [ "k10temp" ];
     kernelModules = [
-      "nct6775"
+      #"nct6775"
       "zenpower"
     ];
     extraModulePackages = with config.boot.kernelPackages; [
@@ -221,6 +234,7 @@ in {
     #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
+      "nvidia-drm.modeset=1"
       # Hides text prior to plymouth boot logo
       #"quiet"
       #"splash"
@@ -320,19 +334,7 @@ in {
       ];
     };
 
-    "/media/steam" = {
-      device = "/dev/nvme1n1p1";
-      fsType = "ext4";
-      options = [
-        "noatime"
-        "x-systemd.automount"
-        "x-systemd.device-timeout=5s"
-        #"x-systemd.idle-timeout=600"
-        "x-systemd.mount-timeout=5s"
-      ];
-    };
-
-    "/nas" = {
+    "/mnt/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
       options = [
