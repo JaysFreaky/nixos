@@ -73,6 +73,7 @@ in {
       nix-tree                    # Browse nix store
       nvme-cli                    # Manage NVMe
       pciutils                    # Manage PCI | 'lspci'
+      shellcheck                  # Script formating checker
       spf-flake.superfile         # CLI file manager
       #vars.terminal              # Terminal installed via variable
       tldr                        # Helper
@@ -201,6 +202,9 @@ in {
       ];
       hashedPasswordFile = "/etc/users/${vars.user}";
       isNormalUser = true;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
+      ];
     };
   };
 

@@ -106,10 +106,6 @@ in {
     };
   };
 
-  users.users.${vars.user}.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
-  ];
-
 
   ##########################################################
   # Hardware
