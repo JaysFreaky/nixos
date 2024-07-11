@@ -1,6 +1,7 @@
 { config, pkgs, vars, ... }:
 let
   inherit (config.nur.repos.rycee) firefox-addons;
+  bpcVersion = "3.7.4.0";
 in {
   home-manager.users.${vars.user} = {
     programs.firefox = {
@@ -57,7 +58,11 @@ in {
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
         extensions = with firefox-addons; [
-          bypass-paywalls-clean        # Repo cloned to GH, but releases can be deleted
+          (bypass-paywalls-clean.override {   # Previous releases can be deleted, so overriding with latest version
+            version = bpcVersion;
+            url = "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass_paywalls_clean-${bpcVersion}.xpi";
+            sha256 = "sha256-PEZc4z8R1t5e3m8E5q5GWH1I+MRb48At2NM5rbrOLFA=";
+          })
           canvasblocker
           darkreader
           enhancer-for-youtube
