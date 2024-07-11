@@ -6,6 +6,7 @@
   ##########################################################
   # Desktop - gnome, hyprland
   gnome.enable = true;
+  #hyprland.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader
 
@@ -51,20 +52,6 @@
   # Boot / Encryption
   ##########################################################
   boot = {
-    plymouth = {
-      enable = false;
-      theme = "nixos-bgrt";
-      themePackages = [ pkgs.nixos-bgrt-plymouth ];
-    };
-
-    kernelModules = [ ];
-    extraModulePackages = [ ];
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "quiet"
-    ];
-    supportedFilesystems = [ "btrfs" ];
-
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [ "nfs" ];
@@ -72,12 +59,19 @@
       systemd.enable = true;
     };
 
+    kernelModules = [ ];
+    extraModulePackages = [ ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "quiet"
+      "splash"
+    ];
+
     loader = {
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
       grub = {
         enable = false;
         configurationLimit = 5;
@@ -88,7 +82,6 @@
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -97,7 +90,16 @@
         editor = false;
         memtest86.enable = true;
       };
+      timeout = 1;
     };
+
+    plymouth = {
+      enable = false;
+      theme = "nixos-bgrt";
+      themePackages = [ pkgs.nixos-bgrt-plymouth ];
+    };
+
+    supportedFilesystems = [ "btrfs" ];
   };
 
 
@@ -139,7 +141,17 @@
       ];
     };
 
-    "/nas" = {
+    "/nix" = {
+      device = "/dev/disk/by-partlabel/root";
+      fsType = "btrfs";
+      options = [
+        "compress=zstd"
+        "noatime"
+        "subvol=nix"
+      ];
+    };
+
+    "/mnt/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
       options = [
@@ -148,16 +160,6 @@
         "x-systemd.device-timeout=5s"
         "x-systemd.idle-timeout=600"
         "x-systemd.mount-timeout=5s"
-      ];
-    };
-
-    "/nix" = {
-      device = "/dev/disk/by-partlabel/root";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=nix"
       ];
     };
   };
