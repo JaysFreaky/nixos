@@ -364,7 +364,7 @@ if [ "$ENCRYPT" == 'YES' ]; then
   gum spin --show-output --title "Closing cryptroot..." -- cryptsetup close /dev/mapper/cryptroot
   gum spin --show-output --title "Closing cryptkey..." -- cryptsetup close /dev/mapper/cryptkey
   printf '\n'
-  gum style --foreground="$PINK" "Remember to copy LUKS headers from '/home/"$NIX_USER"/luksBackup/' to another device."
+  gum style --foreground="$PINK" "Remember to copy LUKS headers from '/home/""$NIX_USER""/luksBackup/' to another device."
 fi;
 printf '\n'
 gum style --foreground="$GREEN" "Installation complete! Please reboot when ready."
