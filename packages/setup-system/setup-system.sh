@@ -272,7 +272,7 @@ if [ "$ENCRYPT" == 'YES' ]; then
   gum spin --show-output --title "Creating luksBackup directory..." -- mkdir -p /mnt/home/"$NIX_USER"/luksBackup
   gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/key --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptkey_header.img
   gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/root --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptroot_header.img
-  gum style --foreground="$PINK" "LUKS headers exported to '/mnt/home/"$NIX_USER"/luksBackup'"
+  gum style --foreground="$PINK" "LUKS headers exported to '/mnt/home/""$NIX_USER""/luksBackup'"
   find /mnt/home/"$NIX_USER"/luksBackup/ -name "*.img"
 fi;
 
