@@ -14,7 +14,7 @@ export GUM_INPUT_PROMPT_FOREGROUND="$BLUE"
 export GUM_SPIN_SPINNER="points"
 export GUM_SPIN_SPINNER_FOREGROUND="$PURPLE"
 
-if [[ $EUID -gt 0 ]]; then
+if [[ $EUID != 0 ]]; then
   gum style --foreground="$YELLOW" "Error! This script requires root privileges. Please re-run as root."
   exit 1
 fi
@@ -50,7 +50,7 @@ while true; do
     gum style --foreground="$YELLOW" "A disk must be selected!" && printf '\n'
   else
     gum confirm "Are you sure you want to use $DISK?" --default=false && break || printf '\n'
-  fi;
+  fi
 done
 printf '\n'
 
@@ -62,7 +62,7 @@ while true; do
     gum style --foreground="$YELLOW" "A swap type must be selected!" && printf '\n'
   else
     break
-  fi;
+  fi
 done
 printf '\n'
 
@@ -73,20 +73,20 @@ while true; do
     gum style --foreground="$YELLOW" "Username cannot be blank!" && printf '\n'
   else
     break
-  fi;
+  fi
 done
 
 # Prompt for user password
 while true; do
   NIX_PASS=$(gum input --password --placeholder="password" --prompt="What password would you like to assign to $NIX_USER? ")
   NIX_PASS2=$(gum input --password --placeholder="password" --prompt="Re-enter user password for verification: ")
-  if [[ -z "$NIX_PASS" || -z "$NIX_PASS2" ]]; then
+  if [ -z "$NIX_PASS" ] || [ -z "$NIX_PASS2" ]; then
     gum confirm "Are you sure you don't want to set a user password?" --default=false && break
-  elif [[ "$NIX_PASS" = "$NIX_PASS2" ]]; then
+  elif [ "$NIX_PASS" = "$NIX_PASS2" ]; then
     break
   else
     gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
-  fi;
+  fi
 done
 
 # Prompt for GRUB password
@@ -97,20 +97,20 @@ printf '\n'
 while true; do
   GRUB_PASS=$(gum input --password --placeholder="password" --prompt="What password would you like to assign to the GRUB bootloader? ")
   GRUB_PASS2=$(gum input --password --placeholder="password" --prompt="Re-enter GRUB password for verification: ")
-  if [[ -z "$GRUB_PASS" || -z "$GRUB_PASS2" ]]; then
+  if [ -z "$GRUB_PASS" ] || [ -z "$GRUB_PASS2" ]; then
     gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
-  elif [[ "$GRUB_PASS" = "$GRUB_PASS2" ]]; then
+  elif [ "$GRUB_PASS" = "$GRUB_PASS2" ]; then
     break
   else
     gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
-  fi;
+  fi
 done
 
 # Prompt for encryption
 gum confirm "Would you like to enable encryption?" && ENCRYPT="YES" || ENCRYPT="NO"
 
 # If using encryption, prompt for passwords
-if [ "$ENCRYPT" == 'YES' ]; then
+if [ "$ENCRYPT" = 'YES' ]; then
   # Prompt for cryptkey password
   gum style --background="$PINK" --foreground="$WHITE" "The first of two partition encryption passwords will now be setup."
   gum style --foreground="$WHITE" "First, cryptkey, will be used at every boot to unlock the system partitions."
@@ -118,13 +118,13 @@ if [ "$ENCRYPT" == 'YES' ]; then
   while true; do
     CRYPTKEY_PASS=$(gum input --password --placeholder="cryptkey" --prompt="What will your cryptkey password be? ")
     CRYPTKEY_PASS2=$(gum input --password --placeholder="cryptkey" --prompt="Re-enter cryptkey password for verification: ")
-    if [[ -z "$CRYPTKEY_PASS" || -z "$CRYPTKEY_PASS2" ]]; then
+    if [ -z "$CRYPTKEY_PASS" ] || [ -z "$CRYPTKEY_PASS2" ]; then
       gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
-    elif [[ "$CRYPTKEY_PASS" = "$CRYPTKEY_PASS2" ]]; then
+    elif [ "$CRYPTKEY_PASS" = "$CRYPTKEY_PASS2" ]; then
       break
     else
       gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
-    fi;
+    fi
   done
 
   # Prompt for cryptroot password
@@ -144,15 +144,15 @@ if [ "$ENCRYPT" == 'YES' ]; then
   while true; do
     CRYPTROOT_PASS=$(gum input --password --placeholder="cryptroot" --prompt="What will your cryptroot password be? ")
     CRYPTROOT_PASS2=$(gum input --password --placeholder="cryptroot" --prompt="Re-enter cryptroot password for verification: ")
-    if [[ -z "$CRYPTROOT_PASS" || -z "$CRYPTROOT_PASS2" ]]; then
+    if [ -z "$CRYPTROOT_PASS" ] || [ -z "$CRYPTROOT_PASS2" ]; then
       gum style --foreground="$YELLOW" "Password cannot be blank!" && printf '\n'
-    elif [[ "$CRYPTROOT_PASS" = "$CRYPTROOT_PASS2" ]]; then
+    elif [ "$CRYPTROOT_PASS" = "$CRYPTROOT_PASS2" ]; then
       break
     else
       gum style --foreground="$YELLOW" "Passwords do not match! Please try again!" && printf '\n'
-    fi;
+    fi
   done
-fi;
+fi
 
 # Prompt to start formatting
 gum confirm "Are you ready to proceed with formatting?" --default=false || (echo "Quitting..." && exit 1)
@@ -171,7 +171,7 @@ gum spin --show-output --title "Creating boot partition..." -- parted --align=op
 gum spin --show-output --title "Formatting boot partition..." -- mkfs.vfat -F 32 /dev/disk/by-partlabel/boot
 
 # Create 32MiB key partition; first 16MiB are LUKS header data
-if [ "$ENCRYPT" == 'YES' ]; then
+if [ "$ENCRYPT" = 'YES' ]; then
   # 1024MiB boot + 32MiB LUKS key = 1056MiB
   gum spin --show-output --title "Creating LUKS key partition..." -- parted --align=opt --script "$DISK" mkpart "key" 1024MiB 1056MiB
   BOOT_SIZE=1056
@@ -179,10 +179,10 @@ if [ "$ENCRYPT" == 'YES' ]; then
 else
   BOOT_SIZE=1024
   SWAP_PART=2
-fi;
+fi
 
 # Create swap and root partition(s), then leave remaining 10% of disk for SSD health
-if [ "$SWAP_TYPE" == 'Partition' ]; then
+if [ "$SWAP_TYPE" = 'Partition' ]; then
   SWAP_SIZE=$((RAM_SIZE * 1024 + BOOT_SIZE))
   gum spin --show-output --title "Creating swap & root partitions..." -- parted --align=opt --script "$DISK" \
     mkpart "swap" linux-swap "$BOOT_SIZE"MiB "$SWAP_SIZE"MiB \
@@ -193,7 +193,8 @@ else
 fi
 
 ##########################################################
-if [ "$ENCRYPT" == 'YES' ]; then
+# Setup LUKS encryption and disk path variables
+if [ "$ENCRYPT" = 'YES' ]; then
   # Encrypt key partition - 16MiB remaining; max keysize is 8192KiB (8MiB)
   gum spin --show-output --title "Encrypting key partition..." -- echo -n "$CRYPTKEY_PASS" | cryptsetup --batch-mode luksFormat /dev/disk/by-partlabel/key
   # Maps partition to /dev/mapper/cryptkey
@@ -203,7 +204,7 @@ if [ "$ENCRYPT" == 'YES' ]; then
   gum spin --show-output --title "Setting 600 permissions on keyfile..." -- chmod 600 /dev/mapper/cryptkey
 
   # Encrypt (optional) swap partition
-  if [ "$SWAP_TYPE" == 'Partition' ]; then
+  if [ "$SWAP_TYPE" = 'Partition' ]; then
     gum spin --show-output --title "Encrypting swap partition using key partition..." -- cryptsetup --batch-mode luksFormat /dev/disk/by-partlabel/swap --key-file /dev/mapper/cryptkey --keyfile-size 8192
     gum spin --show-output --title "Unlocking swap partition..." -- cryptsetup --batch-mode luksOpen /dev/disk/by-partlabel/swap cryptswap --key-file /dev/mapper/cryptkey --keyfile-size 8192
   fi
@@ -213,18 +214,15 @@ if [ "$ENCRYPT" == 'YES' ]; then
   gum spin --show-output --title "Adding key partition as keyfile to root partition..." -- echo -n  "$CRYPTROOT_PASS" | cryptsetup --batch-mode luksAddKey /dev/disk/by-partlabel/root /dev/mapper/cryptkey --new-keyfile-size 8192
   gum spin --show-output --title "Unlocking root partition..." -- cryptsetup --batch-mode luksOpen /dev/disk/by-partlabel/root cryptroot --key-file /dev/mapper/cryptkey --keyfile-size 8192
   printf '\n'
-
-  # Set path variables
-  ROOT_PATH="/dev/mapper/cryptroot"
   SWAP_PATH="/dev/mapper/cryptswap"
+  ROOT_PATH="/dev/mapper/cryptroot"
 else
-  ROOT_PATH="/dev/disk/by-partlabel/root"
   SWAP_PATH="/dev/disk/by-partlabel/swap"
-fi;
+  ROOT_PATH="/dev/disk/by-partlabel/root"
+fi
 
 # Format root partition
-gum spin --show-output --title "Formatting root partition..." -- sleep 1
-gum spin -- mkfs.btrfs --label "NixOS" "$ROOT_PATH"
+gum spin --show-output --title "Formatting root partition..." -- mkfs.btrfs --force --label "NixOS" "$ROOT_PATH"
 
 # Create subvolumes
 mkdir -p /mnt
@@ -233,7 +231,7 @@ gum spin --show-output --title "Creating root subvolume..." -- btrfs subvolume c
 gum spin --show-output --title "Creating subvolumes..." -- btrfs subvolume create \
   /mnt/home \
   /mnt/nix
-if [ "$SWAP_TYPE" == 'File' ]; then
+if [ "$SWAP_TYPE" = 'File' ]; then
   gum spin --show-output --title "Creating swap subvolume..." -- btrfs subvolume create /mnt/swap
   # Bug where offset doesn't get calculated correctly on first file
   btrfs filesystem mkswapfile --size "$RAM_SIZE"G --uuid clear /mnt/swap/swapfile > /dev/null 2>&1
@@ -253,7 +251,7 @@ gum spin --show-output --title "Mounting /home..." -- mount -o subvol=home,compr
 gum spin --show-output --title "Mounting /nix..." -- mount -o subvol=nix,compress=zstd,noatime "$ROOT_PATH" /mnt/nix
 
 # Mount swap file/partition
-if [ "$SWAP_TYPE" == 'File' ]; then
+if [ "$SWAP_TYPE" = 'File' ]; then
   mkdir -p /mnt/swap
   # BTRFS subvolumes currently inherit options from "/"; mkswapfile sets +C attribute (disables copy-on-write) | 'lsattr' can verify +C attribute was added
   gum spin --show-output --title "Mounting /swap..." -- mount -o subvol=swap,compress=no,noatime "$ROOT_PATH" /mnt/swap
@@ -261,28 +259,26 @@ if [ "$SWAP_TYPE" == 'File' ]; then
   SWAP_UUID=$(findmnt -no UUID -T /mnt/swap/swapfile)
   SWAP_OFFSET=$(btrfs inspect-internal map-swapfile -r /mnt/swap/swapfile)
   gum spin --show-output --title "Setting swapfile to on..." -- swapon /mnt/swap/swapfile
-elif [ "$SWAP_TYPE" == 'Partition' ]; then
+elif [ "$SWAP_TYPE" = 'Partition' ]; then
   gum spin --show-output --title "Setting swap partition as swap..." -- mkswap "$SWAP_PATH"
   gum spin --show-output --title "Setting swap partition to on..." -- swapon "$SWAP_PATH"
 fi
 
 ##########################################################
 # Export key/root LUKS header files for backup, if encryption enabled
-if [ "$ENCRYPT" == 'YES' ]; then
+if [ "$ENCRYPT" = 'YES' ]; then
   gum spin --show-output --title "Creating luksBackup directory..." -- mkdir -p /mnt/home/"$NIX_USER"/luksBackup
   gum spin --show-output --title "Exporting key partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/key --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptkey_header.img
   gum spin --show-output --title "Exporting root partition header..." -- cryptsetup --batch-mode luksHeaderBackup /dev/disk/by-partlabel/root --header-backup-file /mnt/home/"$NIX_USER"/luksBackup/cryptroot_header.img
   gum style --foreground="$PINK" "LUKS headers exported to '/mnt/home/""$NIX_USER""/luksBackup'"
   find /mnt/home/"$NIX_USER"/luksBackup/ -name "*.img"
-fi;
+fi
 
-# Set user password
+# Set passwords
+mkdir -p /mnt/etc/users
 gum spin --show-output --title "Creating password file for $NIX_USER..." -- echo -n "$NIX_PASS" | mkpasswd --method=SHA-512 --stdin > /mnt/etc/users/"$NIX_USER"
-gum spin --show-output --title "Setting 600 permissions on user password file..." -- chmod 600 /mnt/etc/users/"$NIX_USER"
-
-# Set GRUB password
-gum spin --show-output --title "Creating password file for GRUB..." -- echo -e "$GRUB_PASS\n$GRUB_PASS" | grub-mkpasswd-pbkdf2 | awk '/grub.pbkdf/{print$NF}' > /mnt/etc/users/grub
-gum spin --show-output --title "Setting 600 permissions on GRUB password file..." -- chmod 600 /mnt/etc/users/grub
+gum spin --show-output --title "Creating password file for GRUB..." -- echo -e "$GRUB_PASS\n$GRUB_PASS" | grub-mkpasswd-pbkdf2 | cut -d' ' -f7 > /mnt/etc/users/grub
+gum spin --show-output --title "Setting 600 permissions on password files..." -- chmod -R 600 /mnt/etc/users/
 
 # Clone repo locally
 gum spin --show-output --title "Cloning flake repo..." -- git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
@@ -290,11 +286,11 @@ cd /mnt/etc/nixos
 gum spin --show-output --title "Switching repo to SSH..." -- git remote set-url nixos git@github.com:JaysFreaky/nixos.git
 gum spin --show-output --title "Setting temporary git config..." -- git config --global user.email "95696624+JaysFreaky@users.noreply.github.com" && git config --global user.name "JaysFreaky"
 printf '\n'
-gum style --foreground="$GREEN" "Formatting / pre-installation setup complete!"
+gum style --foreground="$GREEN" "Formatting complete! Proceeding with host selection..."
 printf '\n'
 
 # Prompt for system hostname from flake
-gum style --foreground="$WHITE" "Once this system's hostname has been chosen, installation will begin."
+gum style --foreground="$WHITE" "Once the system hostname has been chosen, installation will begin."
 mapfile -t HOSTS < <(grep "hostName" ./flake.nix | cut -d '"' -f2)
 if (( ${#HOSTS[@]} == 0 )); then
   gum style --foreground="$YELLOW" "No hostnames were declared in the flake! Quitting..." >&2
@@ -307,7 +303,7 @@ while true; do
     gum style --foreground="$YELLOW" "A hostname must be selected!" && printf '\n'
   else
     gum confirm "Are you sure you want to use '$NIX_HOST'?" --default=false && break || printf '\n'
-  fi;
+  fi
 done
 printf '\n'
 
@@ -316,7 +312,7 @@ if [ -f /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix ]; then
   gum spin --show-output --title "Removing previous swap.nix..." -- rm /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix
 fi
 # Create swap.nix file in host's directory
-if [ "$SWAP_TYPE" == 'File' ]; then
+if [ "$SWAP_TYPE" = 'File' ]; then
   {
     echo '{ config, ... }: {'
     echo '  boot.kernelParams = [ "resume_offset='"$SWAP_OFFSET"'" ];'
@@ -325,12 +321,12 @@ if [ "$SWAP_TYPE" == 'File' ]; then
     echo '  swapDevices = [ { device = "/swap/swapfile"; } ];'
     echo '}'
   } > /mnt/etc/nixos/hosts/"$NIX_HOST"/swap.nix
-elif [ "$SWAP_TYPE" == 'Partition' ]; then
+elif [ "$SWAP_TYPE" = 'Partition' ]; then
   {
     echo '{ config, ... }: {'
-    if [ "$ENCRYPT" == 'YES' ]; then
+    if [ "$ENCRYPT" = 'YES' ]; then
       echo '  boot.initrd.luks.devices."cryptswap" = { device = "/dev/disk/by-partlabel/swap"; keyFile = "/dev/mapper/cryptkey"; keyFileSize = 8192; };'
-    fi;
+    fi
     echo '  boot.resumeDevice = "'"$SWAP_PATH"'";'
     echo '  swapDevices = [ { device = "'"$SWAP_PATH"'"; } ];'
     echo '}'
@@ -351,20 +347,20 @@ printf '\n'
 # Pre-reboot tasks
 cd /
 gum spin --show-output --title "Syncing disk..." -- sync
-if [ "$SWAP_TYPE" == 'File' ]; then
+if [ "$SWAP_TYPE" = 'File' ]; then
   gum spin --show-output --title "Setting swapfile to off..." -- swapoff /mnt/swap/swapfile
-elif [ "$SWAP_TYPE" == 'Partition' ]; then
+elif [ "$SWAP_TYPE" = 'Partition' ]; then
   gum spin --show-output --title "Setting swap to off..." -- swapoff "$SWAP_PATH"
-  if [ "$ENCRYPT" == 'YES' ]; then
+  if [ "$ENCRYPT" = 'YES' ]; then
     gum spin --show-output --title "Closing cryptswap..." -- cryptsetup close /dev/mapper/cryptswap
-  fi;
+  fi
 fi
 gum spin --show-output --title "Unmounting /mnt..." -- umount -R /mnt
-if [ "$ENCRYPT" == 'YES' ]; then
+if [ "$ENCRYPT" = 'YES' ]; then
   gum spin --show-output --title "Closing cryptroot..." -- cryptsetup close /dev/mapper/cryptroot
   gum spin --show-output --title "Closing cryptkey..." -- cryptsetup close /dev/mapper/cryptkey
   printf '\n'
   gum style --foreground="$PINK" "Remember to copy LUKS headers from '/home/""$NIX_USER""/luksBackup/' to another device."
-fi;
+fi
 printf '\n'
 gum style --foreground="$GREEN" "Installation complete! Please reboot when ready."
