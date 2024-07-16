@@ -31,9 +31,6 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Codecs
-      ffmpeg
-
     # Email
       protonmail-bridge-gui   # GUI bridge for Thunderbird
       thunderbird             # Email client
@@ -61,6 +58,9 @@ in {
     # Notes
       obsidian                # Markdown notes
 
+    # Productivity
+      libreoffice
+      
     # VPN
       protonvpn-gui           # VPN client
     ];

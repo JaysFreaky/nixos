@@ -6,6 +6,11 @@ let
     sha256 = "sha256-PEZc4z8R1t5e3m8E5q5GWH1I+MRb48At2NM5rbrOLFA=";
   };
 in {
+  environment.systemPackages = with pkgs; [
+    # Hardware video acceleration
+    ffmpeg
+  ];
+
   home-manager.users.${vars.user} = {
     programs.firefox = {
       enable = true;
