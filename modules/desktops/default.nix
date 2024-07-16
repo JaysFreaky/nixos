@@ -1,4 +1,4 @@
 [
   ./gnome.nix
-  #./hyprland
+  ./hyprland
 ]

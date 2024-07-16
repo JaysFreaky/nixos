@@ -1,26 +1,45 @@
-{ host, lib, pkgs, vars, ... }: {
+{ config, host, lib, pkgs, vars, ... }: let
+  resolution = {
+    width = "1920";
+    height = "1080";
+    refreshRate = "60";
+    scale = "1.25";
+  };
+in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
   # Custom Options
   ##########################################################
   # Desktop - gnome, hyprland
-  gnome.enable = true;
-  #hyprland.enable = true;
+  #gnome.enable = true;
+  hyprland.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
+  nvidia.enable = false;
 
   # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
+  "1password".enable = true;
 
 
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
+    sessionVariables = lib.mkMerge [
+      ({
+        # Session
+      })
+      (lib.mkIf (config.hyprland.enable) {
+        # Scaling
+        GDK_SCALE = "${resolution.scale}";
+        QT_AUTO_SCREEN_SCALE_FACTOR = "${resolution.scale}";
+      })
+    ];
     systemPackages = with pkgs; [
-    # Category
-      #appName
+      # Category
+        cowsay
     ];
   };
 
@@ -28,6 +47,15 @@
   ##########################################################
   # Home Manager Options
   ##########################################################
+  home-manager.users.${vars.user} = {
+    wayland.windowManager.hyprland.settings = lib.mkIf (config.hyprland.enable) {
+      # hyprctl monitors all
+      # name, widthxheight@rate, position, scale
+      monitor = [
+        "eDP-1, ${resolution.width}x${resolution.height}@${resolution.refreshRate}, 0x0, ${resolution.scale}"
+      ];
+    };
+  };
 
 
   ##########################################################
@@ -37,7 +65,7 @@
     graphics = {
       enable = true;
       enable32Bit = true;
-      extraPackages = with pkgs; [
+      extraPackages = [
         # Imported through nixos-hardware/lenovo/T450s from nixos-hardware/common/gpu/intel
       ];
       extraPackages32 = with pkgs.driversi686Linux; [

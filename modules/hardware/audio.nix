@@ -8,7 +8,7 @@
     (mkIf (config.audio.enable) {
       environment.systemPackages = with pkgs; [
         #pavucontrol    # Pulse audio control
-        #pwvucontrol    # Pipewire audio control
+        pwvucontrol    # Pipewire audio control
       ];
 
       # Required for pipewire to work
@@ -29,11 +29,9 @@
       };
     })
 
-/*
     (mkIf (config.hyprland.enable) {
       sound.mediaKeys.enable = true;
     })
-*/
   ];
 
 }
