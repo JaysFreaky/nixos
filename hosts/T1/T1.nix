@@ -1,5 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }:
-let
+{ config, host, inputs, lib, pkgs, vars, ... }: let
   resolution = {
     width = "2560";
     height = "1440";
@@ -31,28 +30,28 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Hardware
-      polychromatic           # Razer lighting GUI
+      # Hardware
+        polychromatic           # Razer lighting GUI
 
-    # Messaging
-      #discord                 # Discord
+      # Messaging
+        #discord                 # Discord
 
-    # Monitoring
-      nvtopPackages.nvidia    # GPU stats
+      # Monitoring
+        nvtopPackages.nvidia    # GPU stats
 
-    # Multimedia
-      #mpv                     # Media player
-      #plex-media-player       # Plex player
-      #spotify                 # Music
+      # Multimedia
+        #mpv                     # Media player
+        #plex-media-player       # Plex player
+        #spotify                 # Music
 
-    # Notes
-      #obsidian                # Markdown notes
+      # Notes
+        #obsidian                # Markdown notes
     ];
   };
 
   programs = {
     # PWM fan control
-    coolercontrol.enable = true;
+    coolercontrol.enable = false;
 
     gamescope = {
       enable = true;
@@ -139,14 +138,15 @@ in {
 
     # Control CPU / case fans
     fancontrol = let 
-      gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      #gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      gpuHW = "";
       gpuDrv = "nvidia";
       fanHW = "devices/platform/nct6775.656";
       fanDrv ="nct6798";
       cpuHW = "devices/pci0000:00/0000:00:18.3";
       cpuDrv = "zenpower";
     in {
-      enable = true;
+      enable = false;
       config = ''
         INTERVAL=10
         DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
@@ -230,9 +230,9 @@ in {
     #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
-      "nvidia-drm.modeset=1"
+      "nvidia_drm.modeset=1"
       # Hides text prior to plymouth boot logo
-      #"quiet"
+        #"quiet"
       #"splash"
     ];
 
