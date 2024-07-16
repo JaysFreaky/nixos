@@ -185,6 +185,7 @@ in {
       nvidiaSettings = true;
       # Beta ships 555, which fixes Wayland issues
       package = config.boot.kernelPackages.nvidiaPackages.beta;
+      #powerManagement = true;
     };
 
     openrazer = {
@@ -230,7 +231,12 @@ in {
     #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
-      "nvidia_drm.modeset=1"
+      # Nvidia - Suspend
+        #"nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      # Nvidia - Framebuffer
+        "nvidia_drm.fbdev=1"
+      # Nvidia - DKMS
+        "nvidia_drm.modeset=1"
       # Hides text prior to plymouth boot logo
         #"quiet"
       #"splash"
