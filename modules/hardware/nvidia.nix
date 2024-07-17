@@ -46,7 +46,7 @@
       environment = {
         sessionVariables = {
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          # Could possibily cause Firefox to crash - remove if so
+          # GBM could possibily cause Firefox to crash - remove if so
             GBM_BACKEND = "nvidia_drm";
 
           __GL_GSYNC_ALLOWED = 1;

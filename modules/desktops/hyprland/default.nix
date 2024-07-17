@@ -1,4 +1,4 @@
-{ config, inputs, lib, pkgs, vars, ... }: with lib; let
+{ config, host, inputs, lib, pkgs, vars, ... }: with lib; let
   #hyprland-pkg = inputs.hyprland.packages.${pkgs.system}; 
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
@@ -30,8 +30,8 @@ in {
           XDG_SESSION_TYPE = "wayland";
 
         # Scaling
-          #GDK_SCALE = "1";
-          #QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+          GDK_SCALE = host.resScale;
+          QT_AUTO_SCREEN_SCALE_FACTOR = host.resScale;
         
         # Toolkit Backend
           GDK_BACKEND = "wayland,x11";

@@ -1,11 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }: let
-  resolution = {
-    width = "2560";
-    height = "1440";
-    refreshRate = "144";
-    scale = "1.25";
-  };
-in {
+{ config, host, inputs, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
@@ -15,8 +8,9 @@ in {
   #gnome.enable = true;
   #hyprland.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
   bluetooth.enable = true;
+  nvidia.enable = true;
 
   # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
   # Whichever terminal is defined in flake.nix is auto-enabled
@@ -36,9 +30,6 @@ in {
       # Messaging
         #discord                 # Discord
 
-      # Monitoring
-        nvtopPackages.nvidia    # GPU stats
-
       # Multimedia
         #mpv                     # Media player
         #plex-media-player       # Plex player
@@ -56,17 +47,19 @@ in {
     gamescope = {
       enable = true;
       args = [
-        "-W ${resolution.width}"
-        "-H ${resolution.height}"
-        "-r ${resolution.refreshRate}"
-        "-o ${resolution.refreshRate}"        # Unfocused
-        "-F fsr"
+        "-W host.resWidth"
+        "-H host.resHeight"
+        "-r host.resRefresh"    # Focused
+        "-o host.resRefresh"    # Unfocused
+        "-F nis"                # Nvidia
         "--expose-wayland"
         "--rt"
         #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
         "--hdr-enabled"
-        "--framerate-limit ${resolution.refreshRate}"
+        "--framerate-limit host.resRefresh"
         "--fullscreen"
+        #"--borderless"
+        "--adaptive-sync"
       ];
       capSysNice = true;
       #env = { };
@@ -98,7 +91,7 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = {
     programs.mangohud.settings = {
-      fps_limit = resolution.refreshRate;
+      fps_limit = host.resRefresh;
       gpu_voltage = true;
       gpu_fan = true;
       # lspci -D | grep -i vga
@@ -106,14 +99,14 @@ in {
       table_columns = lib.mkForce 6;
     };
 
-  /*wayland.windowManager.hyprland.settings = {
+    wayland.windowManager.hyprland.settings = lib.mkIf (config.hyprland.enable) {
       # hyprctl monitors all
-      # name,resolution@htz,position,scale
+      # name, widthxheight@rate, position, scale
       monitor = [
         ",preferred,auto,auto"
-        #"eDP-1,2560x1440@144,0x0,${resolution.scale}"
+        #"eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}"
       ];
-    }; */
+    };
 
     # OpenRGB autostart
     xdg.configFile."autostart/OpenRGB.desktop".text = ''
@@ -172,20 +165,11 @@ in {
         libva1
         libva-vdpau-driver
         libvdpau-va-gl
-        nvidia-vaapi-driver
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
         libva-vdpau-driver
         libvdpau-va-gl
       ];
-    };
-
-    nvidia = {
-      modesetting.enable = true;
-      nvidiaSettings = true;
-      # Beta ships 555, which fixes Wayland issues
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
-      #powerManagement = true;
     };
 
     openrazer = {
@@ -194,11 +178,7 @@ in {
     };
   };
 
-  services = {
-    hardware.openrgb.enable = true;
-
-    xserver.videoDrivers = [ "nvidia" ];
-  };
+  services.hardware.openrgb.enable = true;
 
   ##########################################################
   # Boot / Encryption
@@ -208,10 +188,6 @@ in {
       availableKernelModules = [ ];
       kernelModules = [
         "nfs"
-        "nvidia"
-        "nvidia_drm"
-        "nvidia_modeset"
-        "nvidia_uvm"
       ];
       # Required for Plymouth (password prompt)
       systemd.enable = true;
@@ -231,12 +207,6 @@ in {
     #kernelPackages = pkgs.linuxPackages_cachyos;
     kernelParams = [
       "amd_pstate=active"
-      # Nvidia - Suspend
-        #"nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-      # Nvidia - Framebuffer
-        "nvidia_drm.fbdev=1"
-      # Nvidia - DKMS
-        "nvidia_drm.modeset=1"
       # Hides text prior to plymouth boot logo
         #"quiet"
       #"splash"
@@ -282,10 +252,10 @@ in {
     supportedFilesystems = [ "btrfs" ];
   };
 
-  /*chaotic.scx = {
-    enable = true;
+  chaotic.scx = {
+    enable = false;
     scheduler = "scx_lavd";
-  };*/
+  };
 
 
   ##########################################################

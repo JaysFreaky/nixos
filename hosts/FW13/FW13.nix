@@ -68,19 +68,16 @@ in {
 
   programs = {
     gamescope.args = [
-      #"--adaptive-sync"
-      #"--borderless"
-      #"--expose-wayland"
-      #"--filter fsr"
-      "--fullscreen"
-      "--framerate-limit 60"
-      #"--hdr-enabled"
-      #"--mangoapp"  # Toggling doesn't work with this
-      "--nested-height 1504"
-      "--nested-refresh 60"
-      "--nested-width 2256"
-      #"--prefer-vk-device \"1002:15bf\""
+      "-W host.resWidth"
+      "-H host.resHeight"
+      "-r host.resRefresh"    # Focused
+      "-o host.resRefresh"    # Unfocused
+      "--expose-wayland"
       "--rt"
+      #"--prefer-vk-device \"1002:15bf\""   # lspci -nn | grep -i vga
+      "--framerate-limit host.resRefresh"
+      "--fullscreen"
+      #"--borderless"
     ];
 
     spicetify = let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
@@ -124,7 +121,7 @@ in {
     programs.mangohud.settings = {
       # lspci -D | grep -i vga
       pci_dev = "0:c1:00.0";
-      fps_limit = 60;
+      fps_limit = host.resRefresh;
     };
 
     # https://github.com/ceiphr/ee-framework-presets

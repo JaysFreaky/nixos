@@ -85,9 +85,9 @@
           inherit inputs stable vars;
           host = {
             hostName = "FW13";
-            resWidth = 2256;
-            resHeight = 1504;
-            resRefresh = 60;
+            resWidth = "2256";
+            resHeight = "1504";
+            resRefresh = "60";
             resScale = "1.5";
           };
         };
@@ -104,9 +104,9 @@
           inherit inputs stable vars;
           host = {
             hostName = "Ridge";
-            resWidth = 2560;
-            resHeight = 1440;
-            resRefresh = 144;
+            resWidth = "2560";
+            resHeight = "1440";
+            resRefresh = "144";
             resScale = "1.25";
           };
         };
@@ -123,9 +123,9 @@
           inherit inputs stable vars;
           host = {
             hostName = "T1";
-            resWidth = 2560;
-            resHeight = 1440;
-            resRefresh = 144;
+            resWidth = "2560";
+            resHeight = "1440";
+            resRefresh = "144";
             resScale = "1.25";
           };
         };
@@ -142,9 +142,9 @@
           inherit inputs stable vars;
           host = {
             hostName = "T450s";
-            resWidth = 1920;
-            resHeight = 1080;
-            resRefresh = 60;
+            resWidth = "1920";
+            resHeight = "1080";
+            resRefresh = "60";
             resScale = "1.25";
           };
         };

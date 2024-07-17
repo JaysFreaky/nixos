@@ -1,11 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }:
-let
-  resolution = {
-    width = "2560";
-    height = "1440";
-    refreshRate = "144";
-  };
-in {
+{ config, host, inputs, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
@@ -39,17 +32,19 @@ in {
   programs.gamescope = {
     enable = true;
     args = [
-      "-W ${resolution.width}"
-      "-H ${resolution.height}"
-      "-r ${resolution.refreshRate}"
-      "-o ${resolution.refreshRate}"        # Unfocused
+      "-W host.resWidth"
+      "-H host.resHeight"
+      "-r host.resRefresh"    # Focused
+      "-o host.resRefresh"    # Unfocused
       "-F fsr"
       "--expose-wayland"
       "--rt"
       #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
       "--hdr-enabled"
-      "--framerate-limit ${resolution.refreshRate}"
+      "--framerate-limit host.resRefresh"
       "--fullscreen"
+      #"--borderless"
+      "--adaptive-sync"
     ];
     capSysNice = true;
     #env = { };
@@ -97,7 +92,7 @@ in {
   ##########################################################
   home-manager.users.${vars.user} = {
     programs.mangohud.settings = {
-      fps_limit = resolution.refreshRate;
+      fps_limit = host.resRefresh;
       gpu_voltage = true;
       gpu_fan = true;
       # lspci -D | grep -i vga
