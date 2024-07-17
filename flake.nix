@@ -83,7 +83,13 @@
         inherit (nixpkgs) lib;
         specialArgs = {
           inherit inputs stable vars;
-          host.hostName = "FW13";
+          host = {
+            hostName = "FW13";
+            resWidth = 2256;
+            resHeight = 1504;
+            resRefresh = 60;
+            resScale = "1.5";
+          };
         };
         modules = standardModules ++ [
           ./hosts/FW13
@@ -96,10 +102,35 @@
         inherit (nixpkgs) lib;
         specialArgs = {
           inherit inputs stable vars;
-          host.hostName = "Ridge";
+          host = {
+            hostName = "Ridge";
+            resWidth = 2560;
+            resHeight = 1440;
+            resRefresh = 144;
+            resScale = "1.25";
+          };
         };
         modules = standardModules ++ [
           ./hosts/Ridge
+          inputs.chaotic.nixosModules.default
+        ];
+      };
+
+      T1 = nixpkgs.lib.nixosSystem {
+        inherit system;
+        inherit (nixpkgs) lib;
+        specialArgs = {
+          inherit inputs stable vars;
+          host = {
+            hostName = "T1";
+            resWidth = 2560;
+            resHeight = 1440;
+            resRefresh = 144;
+            resScale = "1.25";
+          };
+        };
+        modules = standardModules ++ [
+          ./hosts/T1
           inputs.chaotic.nixosModules.default
         ];
       };
@@ -109,7 +140,13 @@
         inherit (nixpkgs) lib;
         specialArgs = {
           inherit inputs stable vars;
-          host.hostName = "T450s";
+          host = {
+            hostName = "T450s";
+            resWidth = 1920;
+            resHeight = 1080;
+            resRefresh = 60;
+            resScale = "1.25";
+          };
         };
         modules = standardModules ++ [
           ./hosts/T450s
