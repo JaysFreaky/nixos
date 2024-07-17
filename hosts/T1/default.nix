@@ -1,6 +1,6 @@
 {
   imports = [
-    ./Ridge.nix
+    ./T1.nix
     ./hardware-configuration.nix
   ];
 }
