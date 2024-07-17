@@ -4,34 +4,28 @@
     type = types.bool;
   };
 
-  config = mkMerge [
-    (mkIf (config.audio.enable) {
-      environment.systemPackages = with pkgs; [
-        #pavucontrol    # Pulse audio control
-        pwvucontrol    # Pipewire audio control
-      ];
+  config = mkIf (config.audio.enable) {
+    environment.systemPackages = with pkgs; [
+      #pavucontrol    # Pulse audio control
+      pwvucontrol    # Pipewire audio control
+    ];
 
-      # Required for pipewire to work
-      hardware.pulseaudio.enable = false;
+    # Required for pipewire to work
+    hardware.pulseaudio.enable = false;
 
-      # Real-time audio enablement
-      security.rtkit.enable = true;
+    # Real-time audio enablement
+    security.rtkit.enable = true;
 
-      services.pipewire = {
+    services.pipewire = {
+      enable = true;
+      jack.enable = true;
+      pulse.enable = true;
+      wireplumber.enable = true;
+      alsa = {
         enable = true;
-        jack.enable = true;
-        pulse.enable = true;
-        wireplumber.enable = true;
-        alsa = {
-          enable = true;
-          support32Bit = true;
-        };
+        support32Bit = true;
       };
-    })
-
-    (mkIf (config.hyprland.enable) {
-      sound.mediaKeys.enable = true;
-    })
-  ];
+    };
+  };
 
 }
