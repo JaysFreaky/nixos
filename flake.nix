@@ -2,7 +2,22 @@
   description = "NixOS Systems Flake";
 
   inputs = {
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    # Follows-only
+    flake-compat.url = "github:edolstra/flake-compat";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+    systems.url = "github:nix-systems/default-linux";
+
+    # Regular
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      inputs.home-manager.follows = "home-manager";
+      inputs.jovian.follows = "jovian";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.systems.follows = "systems";
+    };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -17,16 +32,25 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
     nur.url = "github:nix-community/NUR";
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.home-manager.follows = "home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
+      inputs.flake-compat.follows = "flake-compat";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     superfile = {
       url = "github:yorukot/superfile";
+      inputs.flake-compat.follows = "flake-compat";
+      inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wezterm = {
       url = "github:wez/wezterm?dir=nix";
+      inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -48,7 +72,7 @@
       name = "Jason";
       configPath = "/etc/nixos";
       editor = "nvim";
-      # alacritty or kitty
+      # kitty or Alacritty
       terminal = "kitty";
     };
 
@@ -57,6 +81,10 @@
       inputs.home-manager.nixosModules.home-manager {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
+        home-manager.sharedModules = [
+          #inputs.hyprland.homeManagerModules.default
+          #inputs.plasma-manager.homeManagerModules.plasma-manager
+        ];
       }
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nur.nixosModules.nur
