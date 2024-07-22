@@ -10,7 +10,7 @@
     };
     systems.url = "github:nix-systems/default-linux";
 
-    # Regular
+    # Inputs
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs.home-manager.follows = "home-manager";
@@ -83,7 +83,7 @@
         home-manager.useUserPackages = true;
         home-manager.sharedModules = [
           #inputs.hyprland.homeManagerModules.default
-          #inputs.plasma-manager.homeManagerModules.plasma-manager
+          inputs.plasma-manager.homeManagerModules.plasma-manager
         ];
       }
       inputs.nix-flatpak.nixosModules.nix-flatpak

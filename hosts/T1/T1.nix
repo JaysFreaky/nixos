@@ -4,9 +4,9 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
-  #gnome.enable = true;
+  # Desktop - gnome, hyprland, kde
   #hyprland.enable = true;
+  kde.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
   bluetooth.enable = true;

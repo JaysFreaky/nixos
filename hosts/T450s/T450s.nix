@@ -6,7 +6,8 @@
   ##########################################################
   # Desktop - gnome, hyprland
   #gnome.enable = true;
-  hyprland.enable = true;
+  #hyprland.enable = true;
+  kde.enable = true;
 
   # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
 
@@ -40,10 +41,21 @@
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
-    wayland.windowManager.hyprland.settings = lib.mkIf (config.hyprland.enable) {
-      # hyprctl monitors all
-      # name, widthxheight@rate, position, scale
-      monitor = [ "eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}" ];
+    programs.plasma = lib.mkIf (config.kde.enable) {
+      configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {
+        "ClickMethod" = 2;
+        "NaturalScroll" = true;
+        "PointerAccelerationProfile" = 1;
+        "TapDragLock" = true;
+      };
+    };
+
+    wayland.windowManager.hyprland = lib.mkIf (config.hyprland.enable) {
+      settings = {
+        # hyprctl monitors all
+        # name, widthxheight@rate, position, scale
+        monitor = [ "eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}" ];
+      };
     };
   };
 
