@@ -2,6 +2,7 @@
   ./1password.nix
   ./alacritty
   ./bash.nix
+  ./fastfetch.nix
   ./firefox
   ./flatpak.nix
   ./gaming.nix
