@@ -1,10 +1,10 @@
 { config, pkgs, vars, ... }:
 let
-  inherit (config.nur.repos.rycee) firefox-addons;
   bpc = {
-    version = "3.7.4.0";
-    sha256 = "sha256-PEZc4z8R1t5e3m8E5q5GWH1I+MRb48At2NM5rbrOLFA=";
+    version = "3.7.6.0";
+    sha256 = "sha256-3IaEI4vHNc6UllLW15RrNmTfwrbgUOFHcum13+PDdX0=";
   };
+  firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
 in {
   environment.systemPackages = with pkgs; [
     # Hardware video acceleration

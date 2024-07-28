@@ -139,7 +139,12 @@ in {
     };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    config.allowUnfree = true;
+    overlays = [
+      inputs.nur.overlay
+    ];
+  };
 
   programs.dconf.enable = true;
 
