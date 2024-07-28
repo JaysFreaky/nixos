@@ -2,9 +2,7 @@
 let
   # Custom plymouth theme
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
-
-  # Patch kernel modules
-  fw-ec-lpc = pkgs.callPackage ./ec { kernel = config.boot.kernelPackages.kernel; };
+  # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
 in {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
@@ -284,7 +282,6 @@ in {
       framework-laptop-kmod
       zenpower
     ]) ++ [
-      (fw-ec-lpc.overrideAttrs (_: { patches = [ ./ec/ec_lpc.patch ]; }))
       (fw-usbpd-charger.overrideAttrs (_: { patches = [ ./usbpd/usbpd_charger.patch ]; }))
     ];
     kernelPackages = pkgs.linuxPackages_latest;
@@ -339,8 +336,8 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  # 6.7 introduced a wifi disconnection bug; still occurring as of 6.9.5 - upon hibernation resume, run:
-  # sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e
+  # 6.7 introduced a wifi disconnect hibernation bug; seems resolved in 6.10, but will continue testing
+    # Upon resume, run: sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e
   # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
     enableIPv6 = false;
