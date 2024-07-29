@@ -1,8 +1,8 @@
 { config, pkgs, vars, ... }:
 let
   bpc = {
-    version = "3.7.6.0";
-    sha256 = "sha256-3IaEI4vHNc6UllLW15RrNmTfwrbgUOFHcum13+PDdX0=";
+    version = "3.7.7.0";
+    sha256 = "sha256-ZFa+bY5AFAxsynUxYwYJO7lZNyU8ldTW2z4TuhDvdIo=";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
 in {
