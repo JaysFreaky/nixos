@@ -41,7 +41,7 @@
   ##########################################################
   # Home Manager Options
   ##########################################################
-  home-manager.users.${vars.user} = let hyprApps = config.hyprApps; in {
+  home-manager.users.${vars.user} = {
     programs = {
       plasma = lib.mkIf (config.kde.enable) {
         configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {
@@ -52,74 +52,75 @@
         };
       };
 
-      waybar.settings.mainBar = lib.mkIf (config.hyprland.enable) {
-        # CPU Temperature
-        "temperature#cpu" = {
-          hwmon-path-abs = "/sys/devices/platform/coretemp.0/hwmon"; #hwmon6
-          input-filename = "temp1_input";
-          interval = 5;
-          format = "  {temperatureC}°C";
-          on-click = "${hyprApps.terminal} ${hyprApps.btop}";
-          tooltip = true;
-          tooltip-format = "{temperatureF}°Freedom Units";
-        };
-
-        # GPU Temperature
-        "temperature#gpu" = {
-          hwmon-path-abs = "/sys/devices/";
-          input-filename = "temp2_input";
-          interval = 5;
-          format = "󰢮  {temperatureC}°C";
-          on-click = "${hyprApps.terminal} ${hyprApps.nvtop}";
-          tooltip = true;
-          tooltip-format = "{temperatureF}°Freedom Units";
-        };
-
-        # Battery 1
-        "battery#bat0" = {
-          bat = "BAT0";
-          adapter = "AC";
-          interval = 5;
-          states = {
-            warning = 25;
-            critical = 10;
+      waybar.settings = lib.mkIf (config.hyprland.enable) {
+        mainBar = let hyprApps = config.hyprApps; in {
+          # CPU Temperature
+          "temperature#cpu" = {
+            hwmon-path-abs = "/sys/devices/platform/coretemp.0/hwmon"; #hwmon6
+            input-filename = "temp1_input";
+            interval = 5;
+            format = "  {temperatureC}°C";
+            on-click = "${hyprApps.terminal} ${hyprApps.btop}";
+            tooltip = true;
+            tooltip-format = "{temperatureF}°Freedom Units";
           };
-          format = "{icon} {capacity}%";
-          format-time = "{H}h:{M}m";
-          format-icons = [ " " " " " " " " " " ];
-          format-charging = "{capacity}%";
-          format-plugged = " {capacity}%";
-          tooltip = true;
-          tooltip-format = "{time}";
-        };
 
-        # Battery 2
-        "battery#bat1" = {
-          bat = "BAT1";
-          adapter = "AC";
-          interval = 5;
-          states = {
-            warning = 25;
-            critical = 10;
+          # GPU Temperature
+          "temperature#gpu" = {
+            hwmon-path-abs = "/sys/devices/";
+            input-filename = "temp2_input";
+            interval = 5;
+            format = "󰢮  {temperatureC}°C";
+            on-click = "${hyprApps.terminal} ${hyprApps.nvtop}";
+            tooltip = true;
+            tooltip-format = "{temperatureF}°Freedom Units";
           };
-          format = "{icon} {capacity}%";
-          format-time = "{H}h:{M}m";
-          format-icons = [ " " " " " " " " " " ];
-          format-charging = "{capacity}%";
-          format-plugged = " {capacity}%";
-          tooltip = true;
-          tooltip-format = "{time}";
+
+          # Battery 1
+          "battery#bat0" = {
+            bat = "BAT0";
+            adapter = "AC";
+            interval = 5;
+            states = {
+              warning = 25;
+              critical = 10;
+            };
+            format = "{icon} {capacity}%";
+            format-time = "{H}h:{M}m";
+            format-icons = [ " " " " " " " " " " ];
+            format-charging = "{capacity}%";
+            format-plugged = " {capacity}%";
+            tooltip = true;
+            tooltip-format = "{time}";
+          };
+
+          # Battery 2
+          "battery#bat1" = {
+            bat = "BAT1";
+            adapter = "AC";
+            interval = 5;
+            states = {
+              warning = 25;
+              critical = 10;
+            };
+            format = "{icon} {capacity}%";
+            format-time = "{H}h:{M}m";
+            format-icons = [ " " " " " " " " " " ];
+            format-charging = "{capacity}%";
+            format-plugged = " {capacity}%";
+            tooltip = true;
+            tooltip-format = "{time}";
+          };
         };
       };
     };
 
     wayland.windowManager.hyprland = lib.mkIf (config.hyprland.enable) {
-      # hyprctl monitors all
-      # name, widthxheight@rate, position, scale
       settings = {
+        # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
         monitor = [ "eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}" ];
         
-        bind = [
+        bind = let hyprApps = config.hyprApps; in [
           # Function key binds
           ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
           ", XF86AudioLowerVolume, exec, ${hyprApps.pw-volume} change -5%"

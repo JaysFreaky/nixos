@@ -1,6 +1,5 @@
 { config, host, inputs, lib, pkgs, vars, ... }: with lib; let
   #hyprland-pkg = inputs.hyprland.packages.${pkgs.system}; 
-  hyprApps = config.hyprApps;
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     regreet = "${wallpaper.dir}/blobs-l.png";
@@ -264,7 +263,9 @@ in {
       greetd = {
         enable = true;
         package = pkgs.greetd.tuigreet;
-        settings = rec {
+        settings = let
+          hyprApps = config.hyprApps;
+        in rec {
           # Auto login
           default_session = initial_session;
           initial_session = {

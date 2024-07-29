@@ -1,13 +1,15 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   #hyprland-pkg = inputs.hyprland.packages.${pkgs.system}; 
-  hyprApps = config.hyprApps;
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     day = "${wallpaper.dir}/blobs-l.png";
     night = "${wallpaper.dir}/blobs-d.png";
   };
 in {
-    home-manager.users.${vars.user} = { lib, ... }: {
+  config = lib.mkIf (config.hyprland.enable) {
+    home-manager.users.${vars.user} = { lib, ... }: let
+      hyprApps = config.hyprApps;
+    in {
       wayland.windowManager.hyprland = {
         enable = true;
         #package = hyprland-pkg.hyprland;
@@ -310,4 +312,5 @@ in {
       };
     };
 
+  };
 }
