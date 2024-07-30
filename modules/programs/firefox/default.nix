@@ -1,5 +1,8 @@
 { config, pkgs, vars, ... }:
 let
+  addons = pkgs.callPackage ./addons.nix {
+    inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
+  };
   bpc = {
     version = "3.7.7.0";
     sha256 = "sha256-ZFa+bY5AFAxsynUxYwYJO7lZNyU8ldTW2z4TuhDvdIo=";
@@ -80,7 +83,9 @@ in {
           simplelogin
           sponsorblock
           ublock-origin
-        ];
+        ] ++ (with addons; [
+          ttv-lol-pro
+        ]);
 
         search = {
           default = "Startpage";
@@ -114,7 +119,7 @@ in {
               definedAliases = [ "@np" ];
               icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               urls = [{
-                template = "https://search.nixos.org/packages";
+                template = "https://search.nixos.org/packages?channel=unstable";
                 params = [
                   { name = "type"; value = "packages"; }
                   { name = "query"; value = "{searchTerms}"; }
@@ -126,7 +131,7 @@ in {
               definedAliases = [ "@no" ];
               icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               urls = [{
-                template = "https://search.nixos.org/options";
+                template = "https://search.nixos.org/options?channel=unstable";
                 params = [
                   { name = "type"; value = "options"; }
                   { name = "query"; value = "{searchTerms}"; }
