@@ -4,14 +4,14 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
+  # Desktop - gnome, hyprland, kde
   gnome.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
   #bluetooth.enable = true;
 
-  # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
-  # Whichever terminal is defined in flake.nix is auto-enabled
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
   #gaming.enable = true;
 
 
@@ -99,11 +99,6 @@
   # Boot / Encryption
   ##########################################################
   boot = {
-    kernelModules = [ ];
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [ "quiet" "splash" ];
-    supportedFilesystems = [ "btrfs" ];
-
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [ ];
@@ -111,14 +106,18 @@
       systemd.enable = true;
     };
 
-    loader = {
-      timeout = 1;
+    kernelModules = [ ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "quiet"
+      "splash"
+    ];
 
+    loader = {
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
       grub = {
         enable = false;
         configurationLimit = 5;
@@ -130,7 +129,6 @@
         useOSProber = true;
         users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -139,7 +137,10 @@
         editor = false;
         memtest86.enable = true;
       };
+      timeout = 1;
     };
+
+    supportedFilesystems = [ "btrfs" ];
   };
 
 
@@ -166,12 +167,10 @@
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -180,7 +179,6 @@
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";

@@ -4,16 +4,16 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
+  # Desktop - gnome, hyprland, kde
   #gnome.enable = true;
   hyprland.enable = true;
   #kde.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
-  bluetooth.enable = false;
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
+  #bluetooth.enable = true;
 
-  # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
-  # Whichever terminal is defined in flake.nix is auto-enabled
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
   "1password".enable = true;
 
 
@@ -23,7 +23,7 @@
   environment = {
     sessionVariables = lib.mkMerge [
       ({
-        # Session
+        # Standard variables
       })
       (lib.mkIf (config.hyprland.enable) {
         # Scaling
@@ -143,18 +143,15 @@
   ##########################################################
   # Hardware
   ##########################################################
-  hardware = {
-    graphics = {
-      enable = true;
-      enable32Bit = true;
-      extraPackages = [
-        # Imported through nixos-hardware/lenovo/T450s from nixos-hardware/common/gpu/intel
-      ];
-      extraPackages32 = with pkgs.driversi686Linux; [
-        intel-media-driver
-        intel-vaapi-driver
-      ];
-    };
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    # extraPackages imported from nixos-hardware/lenovo/T450s through nixos-hardware/common/gpu/intel
+    extraPackages = [ ];
+    extraPackages32 = with pkgs.driversi686Linux; [
+      intel-media-driver
+      intel-vaapi-driver
+    ];
   };
 
 
@@ -181,16 +178,6 @@
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
-      };
-      grub = {
-        enable = false;
-        configurationLimit = 5;
-        devices = [ "nodev" ];
-        efiSupport = true;
-        enableCryptodisk = false;
-        memtest86.enable = true;
-        useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
       };
       systemd-boot = {
         enable = true;
@@ -236,12 +223,10 @@
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -250,7 +235,6 @@
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -260,7 +244,6 @@
         "subvol=nix"
       ];
     };
-
     "/mnt/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";

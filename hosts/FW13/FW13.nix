@@ -10,14 +10,15 @@ in {
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
+  # Desktop - gnome, hyprland, kde
   gnome.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
+  amdgpu.enable = true;
   bluetooth.enable = true;
 
   # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
-  # Whichever terminal is defined in flake.nix is auto-enabled
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
   "1password".enable = true;
   gaming.enable = true;
   syncthing.enable = true;
@@ -44,8 +45,6 @@ in {
       discord                 # Discord
 
     # Monitoring
-      amdgpu_top              # GPU stats
-      nvtopPackages.amd       # GPU stats
       powertop                # Power stats
       zenmonitor              # CPU stats
 
@@ -150,23 +149,19 @@ in {
   # Hardware
   ##########################################################
   hardware = {
+    bluetooth.powerOnBoot = lib.mkForce false;
+
     enableAllFirmware = true;
     # Firmware updates for amdgpu/wifi
     firmware = [ pkgs.linux-firmware ];
 
     graphics = {
-      enable = true;
-      enable32Bit = true;
       extraPackages = with pkgs; [
-        amdvlk
         libva1
         libva-vdpau-driver
         libvdpau-va-gl
-        rocmPackages.clr
-        rocmPackages.clr.icd
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
-        amdvlk
         libva-vdpau-driver
         libvdpau-va-gl
       ];
@@ -251,7 +246,7 @@ in {
   boot = {
     initrd = {
       availableKernelModules = [ "cryptd" ];
-      kernelModules = [ "amdgpu" ];
+      kernelModules = [ ];
       luks.devices = {
         "cryptkey" = { device = "/dev/disk/by-partlabel/key"; };
         "cryptroot" = {
@@ -373,12 +368,10 @@ in {
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";
@@ -387,7 +380,6 @@ in {
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/mapper/cryptroot";
       fsType = "btrfs";

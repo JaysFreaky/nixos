@@ -7,7 +7,7 @@
   config = mkIf (config.bluetooth.enable) {
     hardware.bluetooth = {
       enable = true;
-      powerOnBoot = false;
+      powerOnBoot = true;
       settings = {
         General = {
           ControllerMode = "dual";

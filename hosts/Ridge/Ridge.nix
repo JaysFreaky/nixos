@@ -4,30 +4,23 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
+  # Desktop - gnome, hyprland, kde
   #gnome.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
+  amdgpu.enable = true;
   bluetooth.enable = true;
 
-  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
-  # Whichever terminal is defined in flake.nix is auto-enabled
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
   #"1password".enable = true;
   gaming.enable = true;
-  #lact.enable = true;
-  #syncthing.enable = true;
 
 
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment = {
-    systemPackages = with pkgs; [
-    # Monitoring
-      amdgpu_top              # GPU stats
-      nvtopPackages.amd       # GPU stats
-    ];
-  };
+  environment.systemPackages = with pkgs; [ ];
 
   programs.gamescope = {
     enable = true;
@@ -62,7 +55,6 @@
     xserver = {
       enable = true;
       displayManager.gdm.enable = true;
-      videoDrivers = [ "amdgpu" ];
     };
   };
 
@@ -106,8 +98,6 @@
   # Hardware
   ##########################################################
   hardware = {
-    #bluetooth.powerOnBoot = lib.mkForce true;
-
     # Control CPU / case fans
     fancontrol = let 
       gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
@@ -134,18 +124,12 @@
     };
 
     graphics = {
-      enable = true;
-      enable32Bit = true;
       extraPackages = with pkgs; [
-        amdvlk
         libva1
         libva-vdpau-driver
         libvdpau-va-gl
-        rocmPackages.clr
-        rocmPackages.clr.icd
       ];
       extraPackages32 = with pkgs.driversi686Linux; [
-        amdvlk
         libva-vdpau-driver
         libvdpau-va-gl
       ];
@@ -222,7 +206,6 @@
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [
-        "amdgpu"
         "nfs"
       ];
       # Required for Plymouth (password prompt)
@@ -309,12 +292,10 @@
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -323,7 +304,6 @@
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -333,7 +313,6 @@
         "subvol=nix"
       ];
     };
-
     "/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";

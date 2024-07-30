@@ -4,26 +4,20 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland
+  # Desktop - gnome, hyprland, kde
   gnome.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
   audio.enable = false;
 
-  # Programs / Features - alacritty, flatpak, gaming, kitty, syncthing
-  # Whichever terminal is defined in flake.nix is auto-enabled
-  #flatpak.enable = true;
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
 
 
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment = {
-    systemPackages = with pkgs; [
-    # Category
-      #appName
-    ];
-  };
+  environment.systemPackages = with pkgs; [ ];
 
   services.displayManager.autoLogin = {
     enable = lib.mkForce true;
@@ -39,19 +33,17 @@
   ##########################################################
   # Hardware
   ##########################################################
-  hardware = {
-    graphics = {
-      enable = true;
-      enable32Bit = true;
-      extraPackages = with pkgs; [
-        intel-media-driver
-        intel-vaapi-driver
-        vaapiIntel
-      ];
-      extraPackages32 = with pkgs.driversi686Linux; [
-        intel-media-driver
-      ];
-    };
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      intel-media-driver
+      intel-vaapi-driver
+      vaapiIntel
+    ];
+    extraPackages32 = with pkgs.driversi686Linux; [
+      intel-media-driver
+    ];
   };
 
 
@@ -59,15 +51,6 @@
   # Boot / Encryption
   ##########################################################
   boot = {
-    kernelModules = [ ];
-    extraModulePackages = [ ];
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "quiet"
-      "splash"
-    ];
-    supportedFilesystems = [ "btrfs" ];
-
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [ ];
@@ -75,23 +58,19 @@
       systemd.enable = true;
     };
 
+    kernelModules = [ ];
+    extraModulePackages = [ ];
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      "quiet"
+      "splash"
+    ];
+
     loader = {
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-
-      grub = {
-        enable = false;
-        configurationLimit = 5;
-        device = "nodev";
-        efiSupport = true;
-        enableCryptodisk = false;
-        memtest86.enable = true;
-        useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
-      };
-
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
@@ -101,6 +80,8 @@
         memtest86.enable = true;
       };
     };
+
+    supportedFilesystems = [ "btrfs" ];
   };
 
 
@@ -127,12 +108,10 @@
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -141,7 +120,6 @@
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";

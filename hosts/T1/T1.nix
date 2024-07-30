@@ -8,12 +8,12 @@
   #hyprland.enable = true;
   kde.enable = true;
 
-  # Hardware - audio (on by default), bluetooth, fp_reader, nvidia
+  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
   bluetooth.enable = true;
   nvidia.enable = true;
 
-  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, lact, syncthing
-  # Whichever terminal is defined in flake.nix is auto-enabled
+  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
   "1password".enable = true;
   gaming.enable = true;
   syncthing.enable = true;
@@ -22,23 +22,20 @@
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment = {
-    systemPackages = with pkgs; [
-      # Hardware
-        polychromatic           # Razer lighting GUI
+  environment.systemPackages = with pkgs; [
+    # Hardware
+      polychromatic           # Razer lighting GUI
 
-      # Messaging
-        #discord                 # Discord
+    # Messaging
+      #discord                 # Discord
 
-      # Multimedia
-        #mpv                     # Media player
-        #plex-media-player       # Plex player
-        #spotify                 # Music
+    # Multimedia
+      #mpv                     # Media player
+      #plex-media-player       # Plex player
 
-      # Notes
-        #obsidian                # Markdown notes
-    ];
-  };
+    # Notes
+      #obsidian                # Markdown notes
+  ];
 
   programs = {
     # PWM fan control
@@ -67,6 +64,18 @@
         enableExecutable = true;
         enableWsi = true;
       };
+    };
+
+    spicetify = let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
+      enable = true;
+      theme = spicePkgs.themes.text;
+      colorScheme = "TokyoNightStorm";
+      enabledExtensions = with spicePkgs.extensions; [
+        fullAlbumDate
+        hidePodcasts
+        savePlaylists
+        wikify
+      ];
     };
   };
 
@@ -127,8 +136,6 @@
   # Hardware
   ##########################################################
   hardware = {
-    bluetooth.powerOnBoot = lib.mkForce true;
-
     # Control CPU / case fans
     fancontrol = let 
       #gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
@@ -159,8 +166,6 @@
     };
 
     graphics = {
-      enable = true;
-      enable32Bit = true;
       extraPackages = with pkgs; [
         libva1
         libva-vdpau-driver
@@ -208,7 +213,7 @@
     kernelParams = [
       "amd_pstate=active"
       # Hides text prior to plymouth boot logo
-        #"quiet"
+      #"quiet"
       #"splash"
     ];
 
@@ -245,7 +250,7 @@
       themePackages = [
         # Overriding installs the one theme instead of all 80, reducing the required size
         # Theme previews: https://github.com/adi1090x/plymouth-themes
-        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
+        (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "loader" ]; })
       ];
     };
 
@@ -281,12 +286,10 @@
         "subvol=root"
       ];
     };
-
     "/boot" = {
       device = "/dev/disk/by-partlabel/boot";
       fsType = "vfat";
     };
-
     "/home" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -295,7 +298,6 @@
         "subvol=home"
       ];
     };
-
     "/nix" = {
       device = "/dev/disk/by-partlabel/root";
       fsType = "btrfs";
@@ -305,7 +307,6 @@
         "subvol=nix"
       ];
     };
-
     "/mnt/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
