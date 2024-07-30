@@ -16,6 +16,7 @@
       ];
 
       hardware = {
+        graphics.enable = true;
         nvidia = {
           # kernelParams: "nvidia-drm.modeset=1"
           modesetting.enable = true;
