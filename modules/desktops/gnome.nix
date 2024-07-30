@@ -192,6 +192,12 @@ in {
           move-to-workspace-2 = [ "<Shift><Super>2" ];
           move-to-workspace-3 = [ "<Shift><Super>3" ];
           move-to-workspace-4 = [ "<Shift><Super>4" ];
+          move-to-workspace-5 = [ "<Shift><Super>5" ];
+          move-to-workspace-6 = [ "<Shift><Super>6" ];
+          move-to-workspace-7 = [ "<Shift><Super>7" ];
+          move-to-workspace-8 = [ "<Shift><Super>8" ];
+          move-to-workspace-9 = [ "<Shift><Super>9" ];
+          move-to-workspace-10 = [ "<Shift><Super>0" ];
           switch-applications = [ "<Super>Tab" "<Alt>Tab" ];
           switch-applications-backward = [ "<Shift><Super>Tab" "<Shift><Alt>Tab" ];
           switch-group = [ "<Super>Above_Tab" "<Alt>Above_Tab" ];
@@ -202,20 +208,28 @@ in {
           switch-to-workspace-2 = [ "<Super>2" ];
           switch-to-workspace-3 = [ "<Super>3" ];
           switch-to-workspace-4 = [ "<Super>4" ];
+          switch-to-workspace-5 = [ "<Super>5" ];
+          switch-to-workspace-6 = [ "<Super>6" ];
+          switch-to-workspace-7 = [ "<Super>7" ];
+          switch-to-workspace-8 = [ "<Super>8" ];
+          switch-to-workspace-9 = [ "<Super>9" ];
+          switch-to-workspace-10 = [ "<Super>0" ];
           switch-to-workspace-last = [ "<Super>End" ];
           switch-to-workspace-left = [ "<Super>Page_Up" "<Super><Alt>Left" "<Control><Alt>Left" ];
           switch-to-workspace-right = [ "<Super>Page_Down" "<Super><Alt>Right" "<Control><Alt>Right" ];
-          toggle-fullscreen = [ "<Shift><Super>f" ];
+          toggle-fullscreen = [ "<Super>f" ];
           #unmaximize = [];
         };
         "org/gnome/desktop/wm/preferences" = {
           button-layout = "appmenu:minimize,maximize,close";
           focus-mode = "sloppy";
           mouse-button-modifier = "<Alt>";
+          #num-workspaces = 4;
           workspace-names = [];
         };
         "org/gnome/mutter" = {
           center-new-windows = true;
+          dynamic-workspaces = true;
           edge-tiling = true;
           # Adds scaling/vrr options under Settings->Display
           experimental-features = [ "scale-monitor-framebuffer" "variable-refresh-rate" ];
