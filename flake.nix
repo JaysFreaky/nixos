@@ -8,15 +8,21 @@
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
     };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     systems.url = "github:nix-systems/default-linux";
 
     # Inputs
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      inputs.home-manager.follows = "home-manager";
-      inputs.jovian.follows = "jovian";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
+      inputs = {
+        home-manager.follows = "home-manager";
+        jovian.follows = "jovian";
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
     };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
@@ -27,30 +33,49 @@
       url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.1";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+        pre-commit-hooks-nix.follows = "";
+        rust-overlay.follows = "rust-overlay";
+      };
+    };
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
     nur.url = "github:nix-community/NUR";
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
-      inputs.home-manager.follows = "home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     superfile = {
       url = "github:yorukot/superfile";
-      inputs.flake-compat.follows = "flake-compat";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     wezterm = {
       url = "github:wez/wezterm?dir=nix";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+        rust-overlay.follows = "rust-overlay";
+      };
     };
   };
 
@@ -125,6 +150,7 @@
         modules = standardModules ++ [
           ./hosts/FW13
           inputs.hardware.nixosModules.framework-13-7040-amd
+          inputs.lanzaboote.nixosModules.lanzaboote
         ];
       };
 
