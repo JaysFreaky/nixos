@@ -23,7 +23,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -89,7 +88,6 @@
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.sharedModules = [
-          #inputs.hyprland.homeManagerModules.default
           inputs.plasma-manager.homeManagerModules.plasma-manager
         ];
       }

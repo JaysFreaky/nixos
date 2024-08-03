@@ -1,5 +1,4 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  #hyprland-pkg = inputs.hyprland.packages.${pkgs.system}; 
+{ config, lib, pkgs, vars, ... }: let
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     day = "${wallpaper.dir}/blobs-l.png";
@@ -12,7 +11,6 @@ in {
     in {
       wayland.windowManager.hyprland = {
         enable = true;
-        #package = hyprland-pkg.hyprland;
         systemd.variables = [ "--all" ];
         xwayland.enable = true;
 

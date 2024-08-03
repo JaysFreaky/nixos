@@ -1,5 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }: with lib; let
-  #hyprland-pkg = inputs.hyprland.packages.${pkgs.system}; 
+{ config, host, lib, pkgs, vars, ... }: with lib; let
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     regreet = "${wallpaper.dir}/blobs-l.png";
@@ -215,7 +214,6 @@ in {
     programs = {
       hyprland = {
         enable = true;
-        #package = hyprland-pkg.hyprland;
         # X11 compatability
         xwayland.enable = true;
       };
