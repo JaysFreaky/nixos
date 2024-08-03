@@ -63,6 +63,13 @@
   } @ inputs:
   let
     system = "x86_64-linux";
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+      overlays = [
+        inputs.nur.overlay
+      ];
+    };
     stable = import nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
@@ -94,8 +101,7 @@
     # 'nixos-rebuild switch --flake .#your-hostname'
     nixosConfigurations = {
       Dekki = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host.hostName = "Dekki";
@@ -107,8 +113,7 @@
       };
 
       FW13 = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host = {
@@ -126,8 +131,7 @@
       };
 
       Ridge = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host = {
@@ -145,8 +149,7 @@
       };
 
       T1 = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host = {
@@ -164,8 +167,7 @@
       };
 
       T450s = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host = {
@@ -183,8 +185,7 @@
       };
 
       VM = nixpkgs.lib.nixosSystem {
-        inherit system;
-        inherit (nixpkgs) lib;
+        inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
           host.hostName = "VM";
