@@ -40,6 +40,7 @@ in {
       fw-ectool               # ectool
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       lshw                    # Firmware
+      sbctl                   # Secure boot key manager
 
     # Messaging
       discord                 # Discord
@@ -290,30 +291,25 @@ in {
       # Hides any text before showing plymouth boot logo
       "quiet"
     ];
-   
+
+    # https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md
+    lanzaboote = {
+      enable = true;
+      pkiBundle = "/etc/secureboot";
+    };
+
     loader = {
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot";
       };
-      grub = {
-        enable = false;
-        configurationLimit = 5;
-        device = "nodev";
-        efiSupport = true;
-        enableCryptodisk = true;
-        memtest86.enable = true;
-        theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
-        useOSProber = true;
-        users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
-      };
       systemd-boot = {
-        enable = true;
+        enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
         configurationLimit = 5;
         # Console resolution
         consoleMode = "auto";
         editor = false;
-        memtest86.enable = true;
+        memtest86.enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
       };
       timeout = 1;
     };
