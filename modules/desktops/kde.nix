@@ -183,13 +183,17 @@ in {
                       };
                       icon = "view-media-track";
                     };
-                    preferredSource = "spotify";
-                    showPlaybackControls = true;
+                    preferredSource = "any";
+                    musicControls = {
+                      showPlaybackControls = true;
+                      volumeStep = 5;
+                    };
                     songText = {
                       displayInSeparateLines = true;
                       maximumWidth = 150;
                       scrolling = {
-                        behavior = "alwaysScroll";
+                        enable = true;
+                        behavior = "scrollOnHover";
                         speed = 3;
                       };
                     };
