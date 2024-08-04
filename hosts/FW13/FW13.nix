@@ -175,6 +175,7 @@ in {
   # Auto-tune on startup
   powerManagement = {
     enable = true;
+    cpuFreqGovernor = "powersave";
     # Auto-tuning - to use powertop bin, pkg must be declared above
     powertop.enable = true;
   };
@@ -275,6 +276,7 @@ in {
       "zenpower"
     ];
     extraModulePackages = (with config.boot.kernelPackages; [
+      cpupower
       framework-laptop-kmod
       zenpower
     ]) ++ [
@@ -327,9 +329,6 @@ in {
   ##########################################################
   # Network
   ##########################################################
-  # 6.7 introduced a wifi disconnect hibernation bug; seems resolved in 6.10, but will continue testing
-    # Upon resume, run: sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e
-  # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
   networking = {
     enableIPv6 = false;
     hostName = host.hostName;
@@ -349,6 +348,10 @@ in {
       };
     };
   };
+
+  # 6.7 introduced a wifi disconnect hibernation bug; seems resolved in 6.10, but will continue testing
+    # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
+  #powerManagement.resumeCommands = ''sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e'';
 
 
   ##########################################################
