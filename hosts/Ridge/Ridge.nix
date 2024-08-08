@@ -20,21 +20,14 @@
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment.systemPackages = with pkgs; [ ];
+  #environment.systemPackages = with pkgs; [ ];
 
+  # lspci -nn | grep -i vga
   programs.gamescope = {
     enable = true;
     args = [
-      "-W host.resWidth"
-      "-H host.resHeight"
-      "-r host.resRefresh"    # Focused
-      "-o host.resRefresh"    # Unfocused
-      "-F fsr"
-      "--expose-wayland"
-      "--rt"
-      #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
+      #"--prefer-vk-device \"1002:73a5\""
       "--hdr-enabled"
-      "--framerate-limit host.resRefresh"
       "--fullscreen"
       #"--borderless"
       "--adaptive-sync"
@@ -83,11 +76,10 @@
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
+    # lspci -D | grep -i vga
     programs.mangohud.settings = {
-      fps_limit = host.resRefresh;
       gpu_voltage = true;
       gpu_fan = true;
-      # lspci -D | grep -i vga
       pci_dev = "0:0a:00.0";
       table_columns = lib.mkForce 6;
     };
@@ -313,7 +305,7 @@
         "subvol=nix"
       ];
     };
-    "/nas" = {
+    "/mnt/nas" = {
       device = "10.0.10.10:/mnt/user";
       fsType = "nfs";
       options = [

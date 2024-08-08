@@ -41,19 +41,12 @@
     # PWM fan control
     coolercontrol.enable = false;
 
+    # lspci -nn | grep -i vga
     gamescope = {
       enable = true;
       args = [
-        "-W host.resWidth"
-        "-H host.resHeight"
-        "-r host.resRefresh"    # Focused
-        "-o host.resRefresh"    # Unfocused
-        "-F nis"                # Nvidia
-        "--expose-wayland"
-        "--rt"
-        #"--prefer-vk-device \"1002:73a5\""   # lspci -nn | grep -i vga
+        #"--prefer-vk-device \"1002:73a5\""
         "--hdr-enabled"
-        "--framerate-limit host.resRefresh"
         "--fullscreen"
         #"--borderless"
         "--adaptive-sync"
@@ -99,11 +92,10 @@
   # Home Manager Options
   ##########################################################
   home-manager.users.${vars.user} = {
+    # lspci -D | grep -i vga
     programs.mangohud.settings = {
-      fps_limit = host.resRefresh;
       gpu_voltage = true;
       gpu_fan = true;
-      # lspci -D | grep -i vga
       #pci_dev = "0:0a:00.0";
       table_columns = lib.mkForce 6;
     };

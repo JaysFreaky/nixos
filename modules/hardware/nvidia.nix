@@ -28,6 +28,8 @@
         };
       };
 
+      programs.gamescope.args = [ "-F nis" ];
+
       # Enabling these enables hardware.nvidia
       services.xserver = {
         enable = true;

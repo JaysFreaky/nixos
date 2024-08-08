@@ -1,5 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }:
-let
+{ config, host, inputs, lib, pkgs, vars, ... }: let
   # Custom plymouth theme
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
   # Patch kernel to log usbpd instead of warn
@@ -28,52 +27,44 @@ in {
   ##########################################################
   # System-Specific Packages / Variables
   ##########################################################
-  environment = {
-    systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     # Email
-      protonmail-bridge-gui   # GUI bridge for Thunderbird
-      thunderbird             # Email client
+    protonmail-bridge-gui   # GUI bridge for Thunderbird
+    thunderbird             # Email client
 
     # Framework Hardware
-      dmidecode               # Firmware | 'dmidecode -s bios-version'
-      framework-tool          # Swiss army knife for FWs
-      fw-ectool               # ectool
-      iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
-      lshw                    # Firmware
-      sbctl                   # Secure boot key manager
+    dmidecode               # Firmware | 'dmidecode -s bios-version'
+    framework-tool          # Swiss army knife for FWs
+    fw-ectool               # Embedded controller | 'ectool'
+    iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
+    lshw                    # Firmware
+    sbctl                   # Secure boot key manager
 
     # Messaging
-      discord                 # Discord
+    discord                 # Discord
 
     # Monitoring
-      powertop                # Power stats
-      zenmonitor              # CPU stats
+    powertop                # Power stats
+    zenmonitor              # CPU stats
 
     # Multimedia
-      mpv                     # Media player
-      plex-media-player       # Plex player
+    mpv                     # Media player
+    plex-media-player       # Plex player
 
     # Notes
-      obsidian                # Markdown notes
+    obsidian                # Markdown notes
 
     # Productivity
-      libreoffice
-      
+    libreoffice
+
     # VPN
-      protonvpn-gui           # VPN client
-    ];
-  };
+    protonvpn-gui           # VPN client
+  ];
 
   programs = {
+    # lspci -nn | grep -i vga
     gamescope.args = [
-      "-W host.resWidth"
-      "-H host.resHeight"
-      "-r host.resRefresh"    # Focused
-      "-o host.resRefresh"    # Unfocused
-      "--expose-wayland"
-      "--rt"
-      #"--prefer-vk-device \"1002:15bf\""   # lspci -nn | grep -i vga
-      "--framerate-limit host.resRefresh"
+      #"--prefer-vk-device \"1002:15bf\""
       "--fullscreen"
       #"--borderless"
     ];
@@ -95,7 +86,7 @@ in {
   ##########################################################
   # Home Manager Options
   ##########################################################
-  home-manager.users.${vars.user} = { config, lib, ... }: {
+  home-manager.users.${vars.user} = { config, ... }: {
     dconf.settings = {
       "org/gnome/shell" = {
         enabled-extensions = [
@@ -116,11 +107,8 @@ in {
       battery-health-charging
     ];
 
-    programs.mangohud.settings = {
-      # lspci -D | grep -i vga
-      pci_dev = "0:c1:00.0";
-      fps_limit = host.resRefresh;
-    };
+    # lspci -D | grep -i vga
+    programs.mangohud.settings.pci_dev = "0:c1:00.0";
 
     # https://github.com/ceiphr/ee-framework-presets
     services.easyeffects = {
@@ -128,19 +116,16 @@ in {
       preset = "philonmetal";
     };
 
+    # Workaround for easyeeffects preset not auto loading
+      # https://github.com/nix-community/home-manager/issues/5185
+    systemd.user.services.easyeffects = let
+      eeApp = lib.getExe (config.services.easyeffects.package);
+      eePreset = (config.services.easyeffects.preset);
+    in {
+      Service.ExecStartPost = [ "${eeApp} --load-preset ${eePreset}" ];
+    };
+
     xdg.configFile = {
-      # Minimize on-start not yet integrated
-      #"autostart/protonvpn-app.desktop".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/applications/protonvpn-app.desktop";
-      "autostart/easyeffects-service.desktop".text = ''
-        [Desktop Entry]
-        Name=Easy Effects
-        Comment=Easy Effects Service
-        Exec=easyeffects --gapplication-service
-        Icon=com.github.wwmm.easyeffects
-        StartupNotify=false
-        Terminal=false
-        Type=Application
-      '';
       "autostart/ProtonMailBridge.desktop".text = ''
         [Desktop Entry]
         Exec="/run/current-system/sw/bin/protonmail-bridge-gui" "--no-window"
@@ -393,6 +378,17 @@ in {
         "compress=zstd"
         "noatime"
         "subvol=nix"
+      ];
+    };
+    "/mnt/nas" = {
+      device = "10.0.10.10:/mnt/user";
+      fsType = "nfs";
+      options = [
+        "noauto"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        "x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
       ];
     };
   };

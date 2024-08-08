@@ -33,6 +33,8 @@
       graphics.enable32Bit = true;
     };
 
+    programs.gamescope.args = [ "-F fsr" ];
+
     services.xserver.enable = true;
 
     # LACT daemon service
