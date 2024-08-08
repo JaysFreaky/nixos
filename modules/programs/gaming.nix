@@ -30,11 +30,11 @@
     home-manager.users.${vars.user} = {
       # Custom .desktop file with host's scaling applied
       home.file = let
-        steamApp = getExe pkgs.steam;
+        steamPkg = (config.programs.steam.package);
       in {
         ".local/share/applications/steam.desktop" = {
           executable = true;
-          text = replaceStrings [ "Exec=steam %U" ] [ "Exec=${steamApp} -forcedesktopscaling=${host.resScale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
+          text = replaceStrings [ "Exec=steam %U" ] [ "Exec=${getExe steamPkg} -forcedesktopscaling=${host.resScale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
         };
       };
 

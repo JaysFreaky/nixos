@@ -119,10 +119,10 @@ in {
     # Workaround for easyeeffects preset not auto loading
       # https://github.com/nix-community/home-manager/issues/5185
     systemd.user.services.easyeffects = let
-      eeApp = lib.getExe (config.services.easyeffects.package);
+      eePkg = (config.services.easyeffects.package);
       eePreset = (config.services.easyeffects.preset);
     in {
-      Service.ExecStartPost = [ "${eeApp} --load-preset ${eePreset}" ];
+      Service.ExecStartPost = [ "${lib.getExe eePkg} --load-preset ${eePreset}" ];
     };
 
     xdg.configFile = {
