@@ -1,36 +1,27 @@
-{ config, lib, vars, ... }: with lib; {
+{ config, lib, pkgs, vars, ... }: with lib; {
   options."1password".enable = mkOption {
     default = false;
     type = types.bool;
   };
 
   config = mkIf (config."1password".enable) {
-    home-manager.users.${vars.user} = { config, ... }: {
-      # Autostart
-      #xdg.configFile."autostart/1password.desktop".source = config.lib.file.mkOutOfStoreSymlink "/run/current-system/sw/share/applications/1password.desktop";
-      xdg.configFile."autostart/1password.desktop".text = ''
-        [Desktop Entry]
-        Categories=Office;
-        Comment=Password manager and secure wallet
-        Exec=1password --silent %U
-        Icon=1password
-        MimeType=x-scheme-handler/onepassword;
-        Name=1Password
-        StartupWMClass=1Password
-        Terminal=false
-        Type=Application
-      '';
+    home-manager.users.${vars.user} = {
+      xdg.configFile = let
+        onePasswordApp = getExe pkgs._1password-gui;
+      in {
+        "autostart/1password.desktop".text = replaceStrings [ "Exec=1password %U" ] [ "Exec=${onePasswordApp} --silent %U" ] (lib.fileContents "${pkgs._1password-gui}/share/applications/1password.desktop");
+      };
     };
 
     programs = {
       # CLI
-      _1password.enable = true;
+      _1password.enable = false;
       # GUI
       _1password-gui = {
         enable = true;
         polkitPolicyOwners = [ "${vars.user}" ];
       };
     };
-  };
 
+  };
 }
