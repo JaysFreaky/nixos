@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vars, ... }: with lib; {
+{ config, host, lib, pkgs, vars, ... }: with lib; {
   options.gaming.enable = mkOption {
     default = false;
     type = types.bool;
@@ -22,17 +22,28 @@
           vkd3d
           winetricks
           # wineWow has both x86/64 - stable, staging, or wayland
-          wineWowPackages.staging
+          wineWowPackages.wayland
         ];
       })
     ];
 
     home-manager.users.${vars.user} = {
+      # Custom .desktop file with host's scaling applied
+      home.file = let
+        steamApp = getExe pkgs.steam;
+      in {
+        ".local/share/applications/steam.desktop" = {
+          executable = true;
+          text = replaceStrings [ "Exec=steam %U" ] [ "Exec=${steamApp} -forcedesktopscaling=${host.resScale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
+        };
+      };
+
       programs.mangohud = {
         enable = true;
         enableSessionWide = false;
         settings = {
           ### Performance ###
+          fps_limit = host.resRefresh;
           fps_limit_method = "late";
           vsync = "0";
           gl_vsync = "-1";
@@ -98,6 +109,16 @@
         };
       };
 
+      gamescope.args = [
+        "-W host.resWidth"
+        "-H host.resHeight"
+        "-r host.resRefresh"    # Focused
+        "-o host.resRefresh"    # Unfocused
+        "--expose-wayland"
+        "--rt"
+        "--framerate-limit host.resRefresh"
+      ];
+
       steam = {
         enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
@@ -126,7 +147,7 @@
             xorg.libXScrnSaver
           ];
           extraProfile = let
-            gmLib = "${lib.getLib(pkgs.gamemode)}/lib";
+            gmLib = "${getLib pkgs.gamemode}/lib";
           in ''
             export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD"
           '';
