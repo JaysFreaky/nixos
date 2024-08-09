@@ -45,8 +45,8 @@
           ### Performance ###
           fps_limit = host.resRefresh;
           fps_limit_method = "late";
-          vsync = "0";
-          gl_vsync = "-1";
+          vsync = 0;
+          gl_vsync = -1;
 
           ### Visual ###
           time_no_label = true;
@@ -55,7 +55,7 @@
           gpu_stats = true;
           gpu_load_change = true;
           gpu_load_value = "50,90";
-          gpu_load_color = "FFFFFF,FFAA7F,CC0000";
+          gpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
           gpu_temp = true;
           gpu_power = true;
 
@@ -63,7 +63,7 @@
           cpu_stats = true;
           cpu_load_change = true;
           cpu_load_value = "50,90";
-          cpu_load_color = "FFFFFF,FFAA7F,CC0000";
+          cpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
           cpu_temp = true;
           cpu_power = true;
 
@@ -85,7 +85,7 @@
           position = "top-left";
           round_corners = 10;
           table_columns = 4;
-          background_alpha = "0.4";
+          background_alpha = mkForce 0.4;
 
           ### Interaction ###
           toggle_hud = "Shift_R+F12";

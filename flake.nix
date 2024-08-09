@@ -2,19 +2,6 @@
   description = "NixOS Systems Flake";
 
   inputs = {
-    # Follows-only
-    flake-compat.url = "github:edolstra/flake-compat";
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
-    };
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    systems.url = "github:nix-systems/default-linux";
-
-    # Inputs
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs = {
@@ -61,6 +48,14 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    /*stylix = {
+      url = "github:danth/stylix";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };*/
     superfile = {
       url = "github:yorukot/superfile";
       inputs = {
@@ -77,6 +72,18 @@
         rust-overlay.follows = "rust-overlay";
       };
     };
+
+    # Follows-only
+    flake-compat.url = "github:edolstra/flake-compat";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs = {
@@ -103,7 +110,7 @@
       name = "Jason";
       configPath = "/etc/nixos";
       editor = "nvim";
-      # kitty or Alacritty
+      # Alacritty, kitty, or wezterm
       terminal = "kitty";
     };
 
@@ -119,6 +126,7 @@
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nur.nixosModules.nur
       inputs.spicetify-nix.nixosModules.spicetify
+      #inputs.stylix.nixosModules.stylix
     ];
   in {
     # 'nixos-rebuild switch --flake .#your-hostname'

@@ -13,10 +13,10 @@
           live_config_reload = true;
 
           font = {
-            size = 12;
+            size = mkDefault 12;
             normal = {
-              family = "JetBrainsMono Nerd Font";
-              style = "Regular";
+              family = mkDefault "JetBrainsMono Nerd Font Mono";
+              style = mkDefault "Regular";
             };
           };
 
@@ -25,7 +25,7 @@
 
           window = {
             blur = true;
-            opacity = 0.8;
+            opacity = mkDefault 0.8;
             startup_mode = "Maximized";
           };
         };

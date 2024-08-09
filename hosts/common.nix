@@ -1,5 +1,4 @@
-{ inputs, lib, pkgs, stable, vars, ... }:
-let
+{ inputs, lib, pkgs, stable, vars, ... }: let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   spf-flake = inputs.superfile.packages.${pkgs.system};
@@ -28,13 +27,6 @@ in {
   time.timeZone = "America/Chicago";
 
   environment = {
-    variables = {
-      EDITOR = "${vars.editor}";
-      TERMINAL = "${vars.terminal}";
-      # Set Firefox to use GPU for video codecs
-      MOZ_DRM_DEVICE = gpuCard;
-    };
-
     # List packages installed in system profile. To search, run:
     # $ nix search wget
     # To use a stable version, add 'stable.' to the beginning of the package:
@@ -85,11 +77,18 @@ in {
       wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
       xdg-utils                   # Environment integration
       xdragon                     # Terminal drag'n'drop
-      zellij                     # Tmux alternative
+      zellij                      # Tmux alternative
 
-    # Wallpaper
-      #variety                    # Wallpapers
+    # Theming
+      base16-schemes              # Presets
+      variety                     # Wallpapers
     ];
+    variables = {
+      EDITOR = "${vars.editor}";
+      TERMINAL = "${vars.terminal}";
+      # Set Firefox to use GPU for video codecs
+      MOZ_DRM_DEVICE = gpuCard;
+    };
   };
 
   fonts.packages = with pkgs; [
@@ -108,6 +107,7 @@ in {
 
   home-manager.users.${vars.user} = {
     home.stateVersion = "23.11";
+    #programs.home-manager.enable = true;
   };
 
   nix = {

@@ -8,13 +8,13 @@
     home-manager.users.${vars.user} = {
       programs.kitty = {
         enable = true;
-        font.name = "JetBrainsMono Nerd Font";
-        font.size = 12;
+        font.name = mkDefault "JetBrainsMono Nerd Font Mono";
+        font.size = mkDefault 12;
 
         settings = {
           # Blur not supported in GNOME
           background_blur = 10;
-          background_opacity = "0.80";
+          background_opacity = mkDefault "0.8";
           confirm_os_window_close = 0;
           copy_on_select = "clipboard";
           enable_audio_bell = "no";
