@@ -1,5 +1,4 @@
-{ config, lib, pkgs, vars, ... }: with lib;
-let
+{ config, lib, pkgs, vars, ... }: with lib; let
   logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
 
@@ -54,6 +53,7 @@ in {
         #gnome-photos               # Image viewer
         #gnome-terminal             # Console
         gnome-tour                  # Setup walkthrough
+        #loupe                      # Image viewer
         simple-scan                 # Scanning app
         #snapshot                   # Webcam
         totem                       # Video player
@@ -95,10 +95,12 @@ in {
         user = "${vars.user}";
       };
 
-      # Remove all games instead of individually above
-      gnome.games.enable = false;
+      gnome = {
+        # Remove all games instead of individually above
+        games.enable = false;
 
-      gnome.gnome-keyring.enable = true;
+        gnome-keyring.enable = true;
+      };
 
       libinput = {
         enable = true;
@@ -145,10 +147,6 @@ in {
     '';
  
     home-manager.users.${vars.user} = { config, lib, ... }: rec {
-      # Sets profile image
-      home.file.".face".source = profileImg;
-
-
       dconf.settings = {
         "ca/desrt/dconf-editor" = {
           show-warning = false;
@@ -392,25 +390,8 @@ in {
         };
       };
 
-      home.packages = with pkgs.gnomeExtensions; [
-        alphabetical-app-grid
-        appindicator
-        bluetooth-quick-connect
-        blur-my-shell
-        clipboard-indicator
-        #dash-to-dock
-        hot-edge
-        just-perfection
-        lock-keys
-        night-theme-switcher
-        power-profile-switcher
-        vitals
-        weather-or-not
-      ];
-
       gtk = {
         enable = true;
-
         cursorTheme = {
           # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
           name = "Bibata-Modern-Classic";
@@ -418,7 +399,6 @@ in {
           # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
           size = 24;
         };
-
         iconTheme = {
           # Variants: Papirus Papirus-Dark Papirus-Light
           name = "Papirus";
@@ -428,15 +408,29 @@ in {
           # teal violet white yaru yellow
           package = pkgs.papirus-icon-theme.override { color = "violet"; };
         };
-
-        #theme = {
-          #name = "";
-          #package = "";
-        #};
       };
 
-      # Generate an empty filo from right click menu
-      home.file."Templates/Empty file".text = "";
+      home.file = {
+        # Sets profile image
+        ".face".source = profileImg;
+        # Generate an empty file from right-click menu
+        "Templates/Empty file".text = "";
+      };
+
+      home.packages = with pkgs.gnomeExtensions; [
+        alphabetical-app-grid
+        appindicator
+        bluetooth-quick-connect
+        blur-my-shell
+        clipboard-indicator
+        hot-edge
+        just-perfection
+        lock-keys
+        night-theme-switcher
+        power-profile-switcher
+        vitals
+        weather-or-not
+      ];
 
       # Set terminal themes
       programs = {
@@ -461,6 +455,6 @@ in {
         };
       };
     };
-  };
 
+  };
 }
