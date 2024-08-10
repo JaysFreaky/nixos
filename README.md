@@ -1,9 +1,9 @@
 # NixOS Flake
-This is my flake for a multi-system NixOS installation. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the system's features. This means declaring nearly all settings via nix or dconfs to achieve reproducability.
+This is my flake for a multi-system NixOS installation. I've tried to craft it to be as secure as possible without being a complete inconvenience to the average user. I run GNOME on my laptop(s) because I feel like it is the most integrated way of fully utilizing the system's features; This means declaring nearly all settings via nix or dconfs to achieve reproducability.
 
 ---
 ## Installation
-While you can clone this repo and build on your system, I created a guided install script which prepares the system for NixOS:
+While you can clone this repo and build on your system, I created a guided install script which prepares the system(s) for NixOS:
 
 * Scans and prompts for disk selection to use for installation
 * Prompts for creating either a file or partition for swap, based on system RAM, or no swap at all
@@ -16,6 +16,7 @@ While you can clone this repo and build on your system, I created a guided insta
   * Creates a key partition and generates a random key for unlocking
   * Encrypts key, swap (if used), and root partitions
   * Backs up LUKS headers for key & root partitions
+* Formats root partition as BTRFS and sets up subvolumes
 * Clones this repo into the /etc/nixos config directory
 * Select an existing system hostname based off of entries in the flake
 * Generates and commits a swap.nix file to the local repo before install (if used)
@@ -27,32 +28,32 @@ Now for the fun part! To start the installation script from within the NixOS ins
 
 ---
 ## Breakdown
-The main flake.nix contains all your typical inputs/outputs, nixosConfigurations, some custom variables, as well as the setup package that is used for formatting/preparing/installing the system.
+The main flake.nix contains all your typical inputs/outputs, nixosConfigurations, custom variables, as well as packages.
 
 ### Hosts
 Inside /hosts:
 
 * common.nix is the base system configuration that is imported with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
-* Each system will then have its own directory with their configuration file(s) inside of it. If swap was setup during install, there will also be a swap.nix file generated inside the deployed system's directory.
+* Each system will then have its own directory with its configuration file(s) inside of it. If swap was deployed during install, there will also be a swap.nix file generated inside that system's directory.
 
 ### Modules
-This is where all modules imported via directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
+This is where all modules imported via their directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
 
 Inside /modules:
 
-* /desktops contain the individual desktop environments and their requirements (GNOME/Hyprland)
-* /hardware contains the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader)
+* /desktops contain the individual desktop environments and their requirements (GNOME/Hyprland/KDE)
+* /hardware contains the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader, dedicated GPU hardware)
 * /programs contain apps that can be enabled/disabled or the contents didn't seem like a good fit and/or are too long to go inside /hosts/common.nix
 
-I'm not very experienced with neovim yet, so I haven't bothered to translate (and not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files/directories via Home Manager's xdg.configFile.<name>.source feature.
-
+I'm not very experienced with neovim yet, so I haven't bothered to translate (and I'm not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files/directories via Home Manager's xdg.configFile.<name>.source feature.
+`
 ### Packages
-This is where the setup script lives. If there were any future scripts/packages I would want to call individually, they would go into their own respective directory.
+Packages that can be accessed externally are declared here, and live in their own respective directories.
 
 Inside /packages:
 
 * /framework-plymouth creates a derivation for a custom framework boot logo
-* /setup-system contains the package declaration and setup script used for initial install
+* /setup-system contains the package declaration and setup script used for initial system setup (formatting, preparing, and installation)
 
 ---
 ## Credits
