@@ -423,6 +423,7 @@ in {
         bluetooth-quick-connect
         blur-my-shell
         clipboard-indicator
+        hibernate-status-button
         hot-edge
         just-perfection
         lock-keys
@@ -436,6 +437,15 @@ in {
       programs = {
         alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
         kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
+      };
+
+      # Set Nautilus bookmarks
+      xdg.configFile = {
+        "gtk-3.0/bookmarks".text = ''
+          file:/// /
+          file:///etc/nixos nixos
+          file:///mnt/nas nas
+        '';
       };
 
       # Hide neovim from app grid
