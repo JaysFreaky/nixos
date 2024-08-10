@@ -330,6 +330,10 @@ in {
           scroll-action = "switch-workspace";
           show-trash = false;
         };
+        "org/gnome/shell/extensions/hibernate-status-button" = {
+          show-hybrid-sleep = false;
+          show-suspend-then-hibernate = false;
+        };
         "org/gnome/shell/extensions/just-perfection" = {
           # Top center
           notification-banner-position = 1;
