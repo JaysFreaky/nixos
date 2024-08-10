@@ -341,10 +341,6 @@ in {
     };
   };
 
-  # 6.7 introduced a wifi disconnect hibernation bug; seems resolved in 6.10, but will continue testing
-    # https://community.frame.work/t/framework-13-amd-issues-with-wireless-after-resume/44597
-  #powerManagement.resumeCommands = ''sudo rmmod mt7921e && sleep 5 && sudo modprobe mt7921e'';
-
 
   ##########################################################
   # Filesystems
