@@ -135,9 +135,9 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host.hostName = "Dekki";
         };
         modules = standardModules ++ [
+          { networking.hostName = "Dekki"; }
           ./hosts/Dekki
           inputs.jovian.nixosModules.jovian
         ];
@@ -148,7 +148,6 @@
         specialArgs = {
           inherit inputs stable vars;
           host = {
-            hostName = "FW13";
             resWidth = "2256";
             resHeight = "1504";
             resRefresh = "60";
@@ -156,6 +155,7 @@
           };
         };
         modules = standardModules ++ [
+          { networking.hostName = "FW13"; }
           ./hosts/FW13
           inputs.hardware.nixosModules.framework-13-7040-amd
           inputs.lanzaboote.nixosModules.lanzaboote
@@ -167,7 +167,6 @@
         specialArgs = {
           inherit inputs stable vars;
           host = {
-            hostName = "Ridge";
             resWidth = "2560";
             resHeight = "1440";
             resRefresh = "144";
@@ -175,6 +174,7 @@
           };
         };
         modules = standardModules ++ [
+          { networking.hostName = "Ridge"; }
           ./hosts/Ridge
           inputs.chaotic.nixosModules.default
         ];
@@ -185,7 +185,6 @@
         specialArgs = {
           inherit inputs stable vars;
           host = {
-            hostName = "T1";
             resWidth = "2560";
             resHeight = "1440";
             resRefresh = "144";
@@ -193,6 +192,7 @@
           };
         };
         modules = standardModules ++ [
+          { networking.hostName = "T1"; }
           ./hosts/T1
           inputs.chaotic.nixosModules.default
         ];
@@ -203,7 +203,6 @@
         specialArgs = {
           inherit inputs stable vars;
           host = {
-            hostName = "T450s";
             resWidth = "1920";
             resHeight = "1080";
             resRefresh = "60";
@@ -211,6 +210,7 @@
           };
         };
         modules = standardModules ++ [
+          { networking.hostName = "T450s"; }
           ./hosts/T450s
           inputs.hardware.nixosModules.lenovo-thinkpad-t450s
         ];
@@ -220,9 +220,9 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host.hostName = "VM";
         };
         modules = standardModules ++ [
+          { networking.hostName = "VM"; }
           ./hosts/VM
         ];
       };

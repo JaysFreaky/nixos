@@ -1,4 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }: let
+{ config, inputs, lib, pkgs, vars, ... }: let
   # Custom plymouth theme
   framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth {};
   # Patch kernel to log usbpd instead of warn
@@ -323,7 +323,6 @@ in {
   ##########################################################
   networking = {
     enableIPv6 = false;
-    hostName = host.hostName;
     # Interfaces not needed with NetworkManager enabled
     # USBC Ethernet right-rear port
     #interfaces.enp195s0f3u1c2.useDHCP = lib.mkDefault true;

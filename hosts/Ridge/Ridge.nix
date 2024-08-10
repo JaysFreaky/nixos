@@ -1,4 +1,4 @@
-{ config, host, inputs, lib, pkgs, vars, ... }: {
+{ config, inputs, lib, pkgs, vars, ... }: {
   imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
 
   ##########################################################
@@ -265,7 +265,6 @@
   # Network
   ##########################################################
   networking = {
-    hostName = host.hostName;
     # Interfaces not needed with NetworkManager enabled
     networkmanager.enable = true;
   };

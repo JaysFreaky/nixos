@@ -204,7 +204,6 @@
   # Network
   ##########################################################
   networking = {
-    hostName = host.hostName;
     # Interfaces not needed with NetworkManager enabled
     networkmanager.enable = true;
   };
