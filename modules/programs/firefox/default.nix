@@ -1,11 +1,10 @@
-{ config, pkgs, vars, ... }:
-let
+{ config, pkgs, vars, ... }: let
   addons = pkgs.callPackage ./addons.nix {
     inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
   };
   bpc = {
-    version = "3.7.7.0";
-    sha256 = "sha256-ZFa+bY5AFAxsynUxYwYJO7lZNyU8ldTW2z4TuhDvdIo=";
+    version = "3.7.9.0";
+    sha256 = "sha256-2qERhC6qVPbMnnTEG9zdEknZ02cF6LXF7U6hNI1i1Uw=";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
 in {
@@ -71,7 +70,8 @@ in {
         extensions = with firefox-addons; [
           (bypass-paywalls-clean.override {   # Previous releases can be deleted, so overriding with latest version
             version = bpc.version;
-            url = "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass_paywalls_clean-${bpc.version}.xpi";
+            #url = "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass_paywalls_clean-${bpc.version}.xpi";
+            url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${bpc.version}.xpi";
             sha256 = bpc.sha256;
           })
           canvasblocker
