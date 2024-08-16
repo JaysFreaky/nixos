@@ -7,7 +7,7 @@
   config = mkMerge [
     (mkIf (config.nvidia.enable) {
       boot.kernelParams = [
-        # Nvidia - Framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
+        # Enable dedicated framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
         "nvidia-drm.fbdev=1"
       ];
 
@@ -40,13 +40,11 @@
     (mkIf (config.hyprland.enable) {
       environment = {
         sessionVariables = {
+          __GL_GSYNC_ALLOWED = 1;
+          __GL_VRR_ALLOWED = 1;
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
           # GBM could possibily cause Firefox to crash - remove if so
           GBM_BACKEND = "nvidia_drm";
-
-          __GL_GSYNC_ALLOWED = 1;
-          __GL_VRR_ALLOWED = 1;
-
           # Hardware Accelaration - 'nvidia' or 'vdpau'
           LIBVA_DRIVER_NAME = "nvidia";
           NVD_BACKEND = "direct";
@@ -56,6 +54,13 @@
           egl-wayland
         ];
       };
+    })
+
+    (mkIf (config.kde.enable) {
+      boot.kernelParams = [
+        # Disable GSP Mode - Smoother Plasma Wayland experience
+        "nvidia.NVreg_EnableGpuFirmware=0"
+      ];
     })
   ];
 
