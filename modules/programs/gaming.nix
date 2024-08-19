@@ -5,17 +5,20 @@
   };
 
   config = mkIf (config.gaming.enable) {
-    # Increase stability/performance of games
-    boot.kernel.sysctl."vm.max_map_count" = mkForce 2147483642;
+    boot.kernel.sysctl = {
+      # Faster timeout so games can reuse their TCP ports
+      "net.ipv4.tcp_fin_timeout" = 5;
+      # Increase stability/performance of games
+      "vm.max_map_count" = mkForce 2147483642;
+    };
 
     environment.systemPackages = with pkgs; [
       heroic                            # Game launcher - Epic, GOG, Prime
       #playonlinux                      # GUI for Windows programs
       (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit then
-          extraPackages
-        else
-          extraPackages32
+        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+          then extraPackages
+          else extraPackages32
         );
         extraPkgs = pkgs: with pkgs; [
           dxvk
@@ -74,13 +77,12 @@
           vulkan_driver = true;
           # Display GameMode status
           gamemode = true;
-
           # Display Gamescope options status
           fsr = true;
           hdr = true;
 
           # Display above Steam UI
-          mangoapp_steam = true;
+          mangoapp_steam = false;
 
           position = "top-left";
           round_corners = 10;
@@ -94,45 +96,58 @@
     };
 
     programs = {
-      # Better gaming performance
       # Steam: Right-click game -> Properties -> Launch options: gamemoderun gamescope -- mangohud %command%
       # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
       gamemode = {
         enable = true;
+        enableRenice = true;
         settings = {
           custom = {
-            start = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
-            end = "${pkgs.libnotify}/bin/notify-send -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
+            start = "${getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
+            end = "${getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
           };
-          # Prevents errors when screensaver not installed
-          general.inhibit_screensaver = 0;
+          general = {
+            # Prevents errors when screensaver not installed
+            inhibit_screensaver = 0;
+            # Game process priority
+            renice = 10;
+            # Scheduler policy
+            softrealtime = "auto";
+          };
         };
       };
 
-      gamescope.args = [
-        "-W host.resWidth"
-        "-H host.resHeight"
-        "-r host.resRefresh"    # Focused
-        "-o host.resRefresh"    # Unfocused
-        "--expose-wayland"
-        "--rt"
-        "--framerate-limit host.resRefresh"
-      ];
+      gamescope = {
+        enable = true;
+        args = [
+          "-W host.resWidth"
+          "-H host.resHeight"
+          "-r host.resRefresh"    # Focused refresh
+          "-o 30"                 # Unfocused refresh
+          "--adaptive-sync"       # VRR (if available)
+          "--expose-wayland"
+          "--framerate-limit host.resRefresh"
+          "--rt"
+        ];
+        # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
+        #capSysNice = true;
+      };
 
       steam = {
         enable = true;
+        # Wayland xinput
+        #extest.enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
         gamescopeSession.enable = true;
 
-        # Wayland xinput
-        extest.enable = true;
-
-        # Firewall related
+        # Firewall options
         dedicatedServer.openFirewall = false;
         localNetworkGameTransfers.openFirewall = true;
         remotePlay.openFirewall = true;
-        
+
         package = pkgs.steam.override {
+          # Set extest here instead of through above options so gamemode alone doesn't overwrite it
+          extraEnv.LD_PRELOAD = "${getLib pkgs.gamemode}/lib/libgamemode.so:${pkgs.pkgsi686Linux.extest}/lib/libextest.so";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
@@ -146,14 +161,18 @@
             xorg.libXinerama
             xorg.libXScrnSaver
           ];
-          extraProfile = let
-            gmLib = "${getLib pkgs.gamemode}/lib";
-          in ''
-            export LD_PRELOAD="${gmLib}/libgamemode.so:$LD_PRELOAD"
-          '';
         };
       };
     };
+
+    # Gamemode renice fix
+    security.pam.loginLimits = [{
+      domain = "@gamemode";
+      type = "-";
+      item = "nice";
+      # Range from -20 to 19
+      value = -10;
+    }];
 
   };
 }

@@ -30,7 +30,6 @@
       "--hdr-enabled"
       "--fullscreen"
       #"--borderless"
-      "--adaptive-sync"
     ];
     capSysNice = true;
     #env = { };
