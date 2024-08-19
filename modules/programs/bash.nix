@@ -17,6 +17,7 @@
         "gs" = "git status";
         "ll" = "ls -la";
         "nixdiff" = "nixos-rebuild build && nix store diff-closures /run/current-system ./result";
+        "ns" = "nix search nixpkgs#\"$@\"";
         "spf" = "superfile";
       };
     };
