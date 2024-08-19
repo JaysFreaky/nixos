@@ -23,21 +23,12 @@
   #environment.systemPackages = with pkgs; [ ];
 
   # lspci -nn | grep -i vga
-  programs.gamescope = {
-    enable = true;
-    args = [
-      #"--prefer-vk-device \"1002:73a5\""
-      "--hdr-enabled"
-      "--fullscreen"
-      #"--borderless"
-    ];
-    capSysNice = true;
-    #env = { };
-    package = pkgs.gamescope.override {
-      enableExecutable = true;
-      enableWsi = true;
-    };
-  };
+  programs.gamescope.args = [
+    #"--prefer-vk-device \"1002:73a5\""
+    "--hdr-enabled"
+    "--fullscreen"
+    #"--borderless"
+  ];
 
   services = {
     displayManager.autoLogin = {

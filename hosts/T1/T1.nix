@@ -42,21 +42,12 @@
     coolercontrol.enable = false;
 
     # lspci -nn | grep -i vga
-    gamescope = {
-      enable = true;
-      args = [
-        #"--prefer-vk-device \"1002:73a5\""
-        "--hdr-enabled"
-        "--fullscreen"
-        #"--borderless"
-      ];
-      capSysNice = true;
-      #env = { };
-      package = pkgs.gamescope.override {
-        enableExecutable = true;
-        enableWsi = true;
-      };
-    };
+    gamescope.args = [
+      #"--prefer-vk-device \"1002:73a5\""
+      "--hdr-enabled"
+      "--fullscreen"
+      #"--borderless"
+    ];
 
     spicetify = let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
       enable = true;

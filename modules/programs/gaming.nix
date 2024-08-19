@@ -131,6 +131,7 @@
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
         #capSysNice = true;
+        #package = pkgs.gamescope.override { enableExecutable = true; enableWsi = true; };
       };
 
       steam = {
