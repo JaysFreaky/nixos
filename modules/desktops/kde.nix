@@ -142,7 +142,7 @@ in {
         plasma = {
           enable = true;
           # If true, resets all KDE settings not defined in this module @ boot/login
-          overrideConfig = true;
+          #overrideConfig = true;
 
           configFile = {
             # Disable file indexing
