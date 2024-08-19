@@ -275,10 +275,10 @@ in {
           ];
           disable-user-extensions = false;
           favorite-apps = [
-            "Alacritty.desktop"
-            "kitty.desktop"
+            "${vars.terminal}.desktop"
             "org.gnome.Nautilus.desktop"
             "firefox.desktop"
+            "floorp.desktop"
             "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"
@@ -452,10 +452,16 @@ in {
         '';
       };
 
-      # Hide neovim from app grid
-      xdg.desktopEntries.nvim = {
-        name = "Neovim wrapper";
-        noDisplay = true;
+      # Hide apps from app grid
+      xdg.desktopEntries = {
+        neovide = {
+          name = "Neovide";
+          noDisplay = true;
+        };
+        nvim = {
+          name = "Neovim wrapper";
+          noDisplay = true;
+        };
       };
 
       # Set default applications
