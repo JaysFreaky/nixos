@@ -1,5 +1,5 @@
 { config, pkgs, vars, ... }: let
-  addons = pkgs.callPackage ./addons.nix {
+  my-addons = pkgs.callPackage ./addons.nix {
     inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
   };
   bpc = {
@@ -14,7 +14,10 @@ in {
   ];
 
   home-manager.users.${vars.user} = {
-    programs.firefox = {
+    imports = [ ./floorp-hm.nix ];
+
+    #programs.firefox = {
+    programs.floorp = {
       enable = true;
 
       policies = {
@@ -41,14 +44,15 @@ in {
       };
 
       profiles.${vars.user} = {
+        containers = import ./containers.nix;
+        containersForce = true;
         id = 0;
         isDefault = true;
         name = "${vars.name}";
+        search = import ./search.nix { inherit pkgs; };
+        settings = import ./settings.nix { inherit config; };
         #userChrome = builtins.readFile ./userChrome.css;
         #userContent = builtins.readFile ./userContent.css;
-
-        containers = import ./containers.nix;
-        containersForce = true;
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
         extensions = with firefox-addons; [
@@ -66,13 +70,11 @@ in {
           onepassword-password-manager
           simplelogin
           sponsorblock
+          tabliss
           ublock-origin
-        ] ++ (with addons; [
+        ] ++ (with my-addons; [
           ttv-lol-pro
         ]);
-
-        search = import ./search.nix { inherit pkgs; };
-        settings = import ./settings.nix { inherit config; };
       };
 
       profiles.vanilla = {
@@ -80,10 +82,14 @@ in {
         name = "Vanilla";
       };
     };
-  };
 
-  xdg.mime.defaultApplications = {
-    "application/pdf" = [ "firefox.desktop" ];
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        #"application/pdf" = [ "firefox.desktop" ]
+        "application/pdf" = [ "floorp.desktop" ];
+      };
+    };
   };
 
 }

@@ -123,6 +123,7 @@
     "privacy.cpd.siteSettings" = true;
   # history items to clear
     "privacy.sanitize.pending" = ''[{"id":"newtab-container","itemsToClear":[],"options":{}},{"id":"shutdown","itemsToClear":["cache","cookies","offlineApps","history","formdata","downloads"],"options":{}}]'';
+    #"privacy.sanitize.pending" = "[{\"id\":\"shutdown\",\"itemsToClear\":[\"cache\",\"cookies\",\"offlineApps\"],\"options\":{}}]";
   # 0=everything, 1=last hour, 2=last 2 hours, 3=last 4 hours
   # 4=today, 5=last 5 minutes, 6=last 24 hours
     "privacy.sanitize.timeSpan" = 0;
@@ -130,6 +131,9 @@
   /** SHUTDOWN & SANITIZING ***/
   # respects cookie site exceptions
     "privacy.clearOnShutdown.offlineApps" = true;
+    "privacy.clearOnShutdown.downloads" = true;
+    "privacy.clearOnShutdown.formdata" = true;
+    #"privacy.clearOnShutdown.history" = true;
   # Settings->P&S->History->'Firefox will: Use custom settings for history'
     "privacy.history.custom" = true;
   # Settings->P&S->History->'Remember browsing and download history'
@@ -523,4 +527,26 @@
   /****************************************************************************
    * END: BETTERFOX                                                           *
   ****************************************************************************/
+
+  /****************************************************************************
+   * FLOORP SPECIFIC                                                          *
+  ****************************************************************************/
+  "browser.newtabpage.activity-stream.floorp.newtab.imagecredit.hide" = true;
+  "browser.newtabpage.activity-stream.floorp.newtab.releasenote.hide" = true;
+  "floorp.browser.sidebar.useIconProvider" = "duckduckgo";
+  "floorp.browser.sidebar2.data" = "{\"data\":{\"floorp__bmt\":{\"url\":\"floorp//bmt\",\"width\":600},\"floorp__bookmarks\":{\"url\":\"floorp//bookmarks\",\"width\":415},\"floorp__history\":{\"url\":\"floorp//history\",\"width\":415},\"floorp__downloads\":{\"url\":\"floorp//downloads\",\"width\":415},\"floorp__notes\":{\"url\":\"floorp//notes\",\"width\":550},\"w0\":{\"url\":\"https://translate.google.com\"},\"w202471813257\":{\"url\":\"https://mail.proton.me/\",\"userAgent\":true}},\"index\":[\"floorp__bmt\",\"floorp__bookmarks\",\"floorp__history\",\"floorp__downloads\",\"floorp__notes\",\"w0\",\"w202471813257\"]}";
+  "floorp.browser.sidebar2.global.webpanel.width" = 350;
+  "floorp.browser.tabbar.settings" = 2;
+  "floorp.browser.tabs.openNewTabPosition" = 1;
+  "floorp.browser.tabs.verticaltab" = true;
+  "floorp.browser.user.interface" = 1;
+  "floorp.browser.workspaces.enabled" = false;
+  "floorp.download.notification" = 3;
+  "floorp.downloading.red.color" = true;
+  "floorp.tabbar.style" = 2;
+  "floorp.verticaltab.hover.enabled" = true;
+  "floorp.verticaltab.show.newtab.button" = true;
+  "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
+  "services.sync.prefs.sync.floorp.browser.note.memos" = true;
+  "sidebar.position_start" = false;
 }

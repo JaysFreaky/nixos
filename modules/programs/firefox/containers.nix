@@ -9,10 +9,15 @@
     icon = "dollar";
     id = 2;
   };
-  "Shopping" = {
-    color = "yellow";
-    icon = "cart";
+  "Private" = {
+    color = "purple";
+    icon = "briefcase";
     id = 3;
+  };
+  "Shopping" = {
+    color = "pink";
+    icon = "cart";
+    id = 4;
   };
 
 }
