@@ -1,4 +1,4 @@
-{ config, host, lib, pkgs, vars, ... }: with lib; let
+{ config, host, inputs, lib, pkgs, vars, ... }: with lib; let
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
     name = "Bibata-Modern-Classic";
@@ -32,28 +32,36 @@ in {
       systemPackages = with pkgs; [
         cursor.package                  # For GDM login screen
         icon.package                    # Icon theme
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+        libsecret                       # Secret storage used by gnome-keyring / KDE-wallet
         neovide                         # GUI launcher for neovim
-      ];
-      plasma6.excludePackages = with pkgs.kdePackages; [
-        #app
-      ];
+        sddm-astronaut                  # SDDM theme
+        /*
+        (sddm-astronaut.override {      # SDDM theme w/ custom background
+          themeConfig = {
+            Background = "${wallpaper.sddm}";
+            CustomBackground = "true";
+          };
+        })
+        */
+      ] ++ (with kdePackages; [
+        sddm-kcm                        # SDDM configuration module
+      ]);
+      #plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
     services = {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        extraPackages = with pkgs; [
-          #elegant-sddm
-        ];
-        #package = pkgs.kdePackages.sddm;
-        #theme = "elegant-sddm";
-        wayland = {
-          enable = true;
-          # Default is weston - kwin or weston
-          #compositor = "kwin";
+        extraPackages = [ pkgs.qt6.qt5compat ];
+        settings = {
+          Theme = {
+            CursorSize = cursor.size;
+            CursorTheme = cursor.name;
+          };
         };
+        #theme = "sddm-astronaut-theme";
+        wayland.enable = true;
       };
 
       libinput = {
@@ -68,17 +76,16 @@ in {
       xserver = {
         enable = true;
         xkb.layout = "us";
-        excludePackages = with pkgs; [
-          xterm
-        ];
+        excludePackages = with pkgs; [ xterm ];
       };
     };
 
     home-manager.users.${vars.user} = { config, lib, ... }: {
+      imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
+
       # Sets profile image
       home.file = {
         ".face".source = profileImg;
-
         # KRunner web search providers
         ".local/share/kf6/searchproviders/hm.desktop".text = ''
           [Desktop Entry]
@@ -107,6 +114,15 @@ in {
           Query=https://search.nixos.org/packages?channel=unstable&query=\\{@}
           Type=Service
         '';
+        ".local/share/kf6/searchproviders/nw.desktop".text = ''
+          [Desktop Entry]
+          Charset=
+          Hidden=false
+          Keys=nw
+          Name=NixOS Wiki
+          Query=https://wiki.nixos.org/wiki/\\{@}
+          Type=Service
+        '';
         ".local/share/kf6/searchproviders/sp.desktop".text = ''
           [Desktop Entry]
           Charset=
@@ -120,23 +136,30 @@ in {
 
       programs = {
         # Set terminal themes
-        #alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
-        #kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
+        alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
+        kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
 
         plasma = {
           enable = true;
-          # If true, reset all KDE settings not defined in this module
-          #overrideConfig = true;
+          # If true, resets all KDE settings not defined in this module @ boot/login
+          overrideConfig = true;
 
           configFile = {
             # Disable file indexing
             "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
             # Do not remember file history
             "kactivitymanagerdrc"."Plugins"."org.kde.ActivityManager.ResourceScoringEnabled" = false;
+            # Cursor size & theme
+            "kcminputrc"."Mouse" = {
+              "cursorSize" = cursor.size;
+              "cursorTheme" = cursor.name;
+            };
+            # Icon theme
+            "kdeglobals"."Icons"."Theme" = icon.name;
             # Disable file search from KRunner
             "krunnerrc"."Plugins"."baloosearchEnabled" = false;
             "kscreenlockerrc" = {
-              # Screen locking timeout
+              # Screen locking timeout & plugin / provider
               "Daemon"."Timeout" = 10;
               "Greeter"."WallpaperPlugin" = "org.kde.potd";
               "Greeter/Wallpaper/org.kde.potd/General"."Provider" = "flickr";
@@ -151,11 +174,11 @@ in {
               };
               # Focus follows mouse instead of clicking
               "Windows"."FocusPolicy" = "FocusFollowsMouse";
+              # Set host scaling
               "Xwayland"."Scale" = host.resScale;
             };
-            # 24 hour time
-            #"plasma-localerc"."Formats"."LC_TIME" = "en_GB.UTF-8";
           };
+
           panels = [
             # Top panel
             {
@@ -237,21 +260,19 @@ in {
                 }
                 "org.kde.plasma.marginsseparator"
                 {
-                  systemTray = {
-                    items = {
-                      # We explicitly show bluetooth and battery
-                      shown = [
-                        "org.kde.plasma.bluetooth"
-                        "org.kde.plasma.volume"
-                        "org.kde.plasma.networkmanagement"
-                        "org.kde.plasma.battery"
-                      ];
-                      # And explicitly hide networkmanagement and volume
-                      hidden = [
-                        "org.kde.plasma.brightness"
-                        "org.kde.plasma.clipboard"
-                      ];
-                    };
+                  systemTray.items = {
+                    # We explicitly show bluetooth and battery
+                    shown = [
+                      "org.kde.plasma.bluetooth"
+                      "org.kde.plasma.volume"
+                      "org.kde.plasma.networkmanagement"
+                      "org.kde.plasma.battery"
+                    ];
+                    # And explicitly hide networkmanagement and volume
+                    hidden = [
+                      "org.kde.plasma.brightness"
+                      "org.kde.plasma.clipboard"
+                    ];
                   };
                 }
               ];
@@ -267,49 +288,111 @@ in {
               location = "bottom";
               widgets = [
                 {
-                  iconTasks = {
-                    launchers = [
-                      #"applications:kitty.desktop"
-                      #"applications:Alacritty.desktop"
-                      "applications:${vars.terminal}.desktop"
-                      "applications:org.kde.konsole.desktop"
-                      "applications:org.kde.dolphin.desktop"
-                      "applications:firefox.desktop"
-                      "applications:spotify.desktop"
-                      "applications:thunderbird.desktop"
-                      "applications:discord.desktop"
-                      "applications:steam.desktop"
-                      "applications:plexmediaplayer.desktop"
-                    ];
-                  };
+                  iconTasks.launchers = [
+                    "applications:${vars.terminal}.desktop"
+                    "applications:org.kde.dolphin.desktop"
+                    "applications:firefox.desktop"
+                    "applications:floorp.desktop"
+                    "applications:spotify.desktop"
+                    "applications:thunderbird.desktop"
+                    "applications:discord.desktop"
+                    "applications:steam.desktop"
+                    "applications:plexmediaplayer.desktop"
+                  ];
                 }
               ];
             }
           ];
+
           shortcuts = {
             "kwin" = {
-              "Switch to Desktop 1" = "Meta+1,,Switch to Desktop 1";
-              "Switch to Desktop 2" = "Meta+2,,Switch to Desktop 2";
-              "Switch to Desktop 3" = "Meta+3,,Switch to Desktop 3";
-              "Switch to Desktop 4" = "Meta+4,,Switch to Desktop 4";
-              "Window to Desktop 1" = "Meta+!,,Window to Desktop 1";
-              "Window to Desktop 2" = "Meta+@,,Window to Desktop 2";
-              "Window to Desktop 3" = "Meta+#,,Window to Desktop 3";
-              "Window to Desktop 4" = "Meta+$,,Window to Desktop 4";
-              "Window Close" = [ "Alt+F4" "Meta+Q,Alt+F4,Close Window" ];
+              "Overview" = "Meta+Tab";
+              "Switch to Desktop 1" = "Meta+1";
+              "Switch to Desktop 2" = "Meta+2";
+              "Switch to Desktop 3" = "Meta+3";
+              "Switch to Desktop 4" = "Meta+4";
+              "Switch to Desktop 5" = "Meta+5";
+              "Switch to Desktop 6" = "Meta+6";
+              "Switch to Desktop 7" = "Meta+7";
+              "Switch to Desktop 8" = "Meta+8";
+              "Switch to Desktop 9" = "Meta+9";
+              "Switch to Desktop 10" = "Meta+0";
+              "Window to Desktop 1" = "Meta+!";
+              "Window to Desktop 2" = "Meta+@";
+              "Window to Desktop 3" = "Meta+#";
+              "Window to Desktop 4" = "Meta+$";
+              "Window to Desktop 5" = "Meta+%";
+              "Window to Desktop 6" = "Meta+^";
+              "Window to Desktop 7" = "Meta+&";
+              "Window to Desktop 8" = "Meta+*";
+              "Window to Desktop 9" = "Meta+(";
+              "Window to Desktop 10" = "Meta+)";
+              "Window Close" = [ "Meta+Q" "Alt+F4" ];
+            };
+            "plasmashell" = {
+              "activate task manager entry 1" = [ ];
+              "activate task manager entry 2" = [ ];
+              "activate task manager entry 3" = [ ];
+              "activate task manager entry 4" = [ ];
+              "activate task manager entry 5" = [ ];
+              "activate task manager entry 6" = [ ];
+              "activate task manager entry 7" = [ ];
+              "activate task manager entry 8" = [ ];
+              "activate task manager entry 9" = [ ];
+              "activate task manager entry 10" = [ ];
+              "manage activities" = [ ];
             };
             "services/firefox.desktop"."_launch" = "Meta+W";
+            "services/floorp.desktop"."_launch" = "Meta+W";
             "services/kitty.desktop"."_launch" = "Meta+Return";
           };
 
-          workspace = {
-            cursor = {
-              theme = cursor.name;
-              size = cursor.size;
-            };
-            iconTheme = icon.name;
+          #workspace = {
+            #cursor = {
+              #theme = cursor.name;
+              #size = cursor.size;
+            #};
+            #iconTheme = icon.name;
             #wallpaper = wallpaper.day;
-          };
+          #};
+        };
+      };
+
+      services.darkman = let
+        themeName = "everforest";
+      in {
+        enable = true;
+        settings.usegeoclue = true;
+
+        darkModeScripts = {
+          darkMode = pkgs.writeShellScriptBin "darkMode.sh" ''
+            # Alacritty
+            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+            # Kitty
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+
+            # Plasma Global Theme
+            lookandfeeltool --apply "org.kde.breezedark.desktop"
+
+            #Wallpaper
+            #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
+          '';
+        };
+        lightModeScripts = {
+          lightMode = pkgs.writeShellScriptBin "lightMode.sh" ''
+            # Alacritty
+            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+            # Kitty
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+
+            # Plasma Global Theme
+            lookandfeeltool --apply "org.kde.breeze.desktop"
+
+            # Wallpaper
+            #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
+          '';
         };
       };
 
@@ -323,9 +406,9 @@ in {
       xdg.mimeApps = {
         enable = true;
         defaultApplications = {
-          #"image/gif" = [ "org.gnome.Loupe.desktop" ];
-          #"image/jpg" = [ "org.gnome.Loupe.desktop" ];
-          #"image/png" = [ "org.gnome.Loupe.desktop" ];
+          "image/gif" = [ "org.kde.gwenview.desktop" ];
+          "image/jpg" = [ "org.kde.gwenview.desktop" ];
+          "image/png" = [ "org.kde.gwenview.desktop" ];
           #"text/plain" = [ "neovide.desktop" ];
         };
       };

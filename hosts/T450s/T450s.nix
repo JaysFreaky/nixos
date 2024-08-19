@@ -6,8 +6,8 @@
   ##########################################################
   # Desktop - gnome, hyprland, kde
   #gnome.enable = true;
-  hyprland.enable = true;
-  #kde.enable = true;
+  #hyprland.enable = true;
+  kde.enable = true;
 
   # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
   #bluetooth.enable = true;
@@ -21,20 +21,8 @@
   # System-Specific Packages / Variables
   ##########################################################
   environment = {
-    sessionVariables = lib.mkMerge [
-      ({
-        # Standard variables
-      })
-      (lib.mkIf (config.hyprland.enable) {
-        # Scaling
-        #GDK_SCALE = host.resScale;
-        #QT_AUTO_SCREEN_SCALE_FACTOR = host.resScale;
-      })
-    ];
-    systemPackages = with pkgs; [
-      # Category
-        cowsay
-    ];
+    sessionVariables = { };
+    #systemPackages = with pkgs; [ ];
   };
 
 
@@ -48,6 +36,7 @@
           "ClickMethod" = 2;
           "NaturalScroll" = true;
           "PointerAccelerationProfile" = 1;
+          "ScrollFactor" = 0.5;
           "TapDragLock" = true;
         };
       };
