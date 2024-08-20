@@ -86,13 +86,7 @@
     systems.url = "github:nix-systems/default-linux";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    nixpkgs-stable,
-    ...
-  } @ inputs:
-  let
+  outputs = { self, nixpkgs, nixpkgs-stable, ... } @ inputs: let
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
@@ -109,7 +103,6 @@
       user = "jays";
       name = "Jason";
       configPath = "/etc/nixos";
-      editor = "nvim";
       # Alacritty, kitty, or wezterm
       terminal = "kitty";
     };

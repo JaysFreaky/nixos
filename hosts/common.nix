@@ -84,7 +84,7 @@ in {
       variety                     # Wallpapers
     ];
     variables = {
-      EDITOR = "${vars.editor}";
+      EDITOR = "nvim";
       TERMINAL = "${vars.terminal}";
       # Set Firefox to use GPU for video codecs
       MOZ_DRM_DEVICE = gpuCard;
