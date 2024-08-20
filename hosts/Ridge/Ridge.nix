@@ -25,9 +25,8 @@
   # lspci -nn | grep -i vga
   programs.gamescope.args = [
     #"--prefer-vk-device \"1002:73a5\""
-    "--hdr-enabled"
-    "--fullscreen"
     #"--borderless"
+    "--fullscreen"
   ];
 
   services = {
@@ -254,10 +253,8 @@
   ##########################################################
   # Network
   ##########################################################
-  networking = {
-    # Interfaces not needed with NetworkManager enabled
-    networkmanager.enable = true;
-  };
+  # Interfaces not needed with NetworkManager enabled
+  networking.networkmanager.enable = true;
 
 
   ##########################################################

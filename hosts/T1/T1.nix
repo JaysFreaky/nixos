@@ -41,13 +41,20 @@
     # PWM fan control
     coolercontrol.enable = false;
 
-    # lspci -nn | grep -i vga
-    gamescope.args = [
-      #"--prefer-vk-device \"1002:73a5\""
-      "--hdr-enabled"
-      "--fullscreen"
-      #"--borderless"
-    ];
+    gamescope = {
+      # lspci -nn | grep -i vga
+      args = [
+        #"--prefer-vk-device \"1002:73a5\""
+        #"--borderless"
+        "--fullscreen"
+        "--hdr-enabled"
+      ];
+      env = {
+        DXVK_HDR = "1";
+        # Not sure if required with pkgs.gamescope-wsi
+        ENABLE_GAMESCOPE_WSI = "1";
+      };
+    };
 
     spicetify = let spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
       enable = true;
@@ -228,7 +235,7 @@
 
     plymouth = {
       enable = false;
-      theme = "rog_2";
+      theme = "loader";
       themePackages = [
         # Overriding installs the one theme instead of all 80, reducing the required size
         # Theme previews: https://github.com/adi1090x/plymouth-themes
@@ -248,10 +255,8 @@
   ##########################################################
   # Network
   ##########################################################
-  networking = {
-    # Interfaces not needed with NetworkManager enabled
-    networkmanager.enable = true;
-  };
+  # Interfaces not needed with NetworkManager enabled
+  networking.networkmanager.enable = true;
 
 
   ##########################################################

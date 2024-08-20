@@ -1,4 +1,18 @@
-{ config, host, lib, pkgs, vars, ... }: with lib; {
+{ config, host, lib, pkgs, vars, ... }: with lib; let
+  lutris-pkg = pkgs.lutris.override {
+    extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+      then extraPackages
+      else extraPackages32
+    );
+    extraPkgs = pkgs: with pkgs; [
+      dxvk
+      vkd3d
+      winetricks
+      # wineWow has both x86/64 - stable, staging, or wayland
+      wineWowPackages.wayland
+    ];
+  };
+in {
   options.gaming.enable = mkOption {
     default = false;
     type = types.bool;
@@ -13,21 +27,9 @@
     };
 
     environment.systemPackages = with pkgs; [
-      heroic                            # Game launcher - Epic, GOG, Prime
-      #playonlinux                      # GUI for Windows programs
-      (lutris.override {                # Game launcher - Epic, GOG, Humble Bundle, Steam
-        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-          then extraPackages
-          else extraPackages32
-        );
-        extraPkgs = pkgs: with pkgs; [
-          dxvk
-          vkd3d
-          winetricks
-          # wineWow has both x86/64 - stable, staging, or wayland
-          wineWowPackages.wayland
-        ];
-      })
+      gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
+      heroic          # Game launcher - Epic, GOG, Prime
+      lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
     ];
 
     home-manager.users.${vars.user} = {
@@ -96,7 +98,7 @@
     };
 
     programs = {
-      # Steam: Right-click game -> Properties -> Launch options: gamemoderun gamescope -- mangohud %command%
+      # Steam: Right-click game -> Properties -> Launch options: 'gamescope -- mangohud gamemoderun %command%'
       # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
       gamemode = {
         enable = true;
@@ -120,26 +122,24 @@
       gamescope = {
         enable = true;
         args = [
-          "-W host.resWidth"
-          "-H host.resHeight"
-          "-r host.resRefresh"    # Focused refresh
-          "-o 30"                 # Unfocused refresh
-          "--adaptive-sync"       # VRR (if available)
-          "--expose-wayland"
-          "--framerate-limit host.resRefresh"
-          "--rt"
+          "-W ${host.resWidth}"
+          "-H ${host.resHeight}"
+          "-r ${host.resRefresh}"                 # Focused refresh rate
+          "-o 30"                                 # Unfocused refresh rate
+          "--adaptive-sync"                       # VRR (if available)
+          #"--expose-wayland"                     # Incompatible with HDR?
+          "--framerate-limit ${host.resRefresh}"  # Sync framerate to refresh rate
+          "--rt"                                  # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
+          # Workaround command to alt-tab and run after launching a game: 'renice -n -20 -p $(pgrep gamescope-wl)'
         #capSysNice = true;
-        #package = pkgs.gamescope.override { enableExecutable = true; enableWsi = true; };
       };
 
       steam = {
         enable = true;
-        # Wayland xinput
-        #extest.enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
-        gamescopeSession.enable = true;
+        gamescopeSession.enable = false;
 
         # Firewall options
         dedicatedServer.openFirewall = false;
@@ -147,7 +147,7 @@
         remotePlay.openFirewall = true;
 
         package = pkgs.steam.override {
-          # Set extest here instead of through above options so gamemode alone doesn't overwrite it
+          # Set extest (Wayland xinput) here instead of through Steam options so gamemode env alone doesn't overwrite it
           extraEnv.LD_PRELOAD = "${getLib pkgs.gamemode}/lib/libgamemode.so:${pkgs.pkgsi686Linux.extest}/lib/libextest.so";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
