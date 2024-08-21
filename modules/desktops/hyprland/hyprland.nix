@@ -24,10 +24,8 @@ in {
           ### MONITORS ###
           ################
           # https://wiki.hyprland.org/Configuring/Monitors/
-          # hyprctl monitors all - "name, resolution@htz, position, scale"
-          #monitor = [
-            #", preferred, auto, auto"
-          #];
+          # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
+          monitor = lib.mkDefault [ ", preferred, auto, auto" ];
 
 
           #################
