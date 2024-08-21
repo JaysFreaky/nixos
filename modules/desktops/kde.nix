@@ -22,9 +22,17 @@
     sddm = "${vars.configPath}/assets/wallpapers/blobs-l.png";
   };
 in {
-  options.kde.enable = mkOption {
-    default = false;
-    type = types.bool;
+  options.kde = {
+    enable = mkOption {
+      default = false;
+      type = types.bool;
+    };
+    gpuWidget = mkOption {
+      default = null;
+      description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
+      example = "gpu/gpu0/temperature";
+      type = types.nullOr types.str;
+    };
   };
 
   config = mkIf (config.kde.enable) {
@@ -80,7 +88,7 @@ in {
       };
     };
 
-    home-manager.users.${vars.user} = { config, lib, ... }: {
+    home-manager.users.${vars.user} = {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
 
       # Sets profile image
@@ -233,7 +241,7 @@ in {
                 {
                   systemMonitor = {
                     title = "CPU Temperature";
-                    showTitle = false;
+                    showTitle = true;
                     displayStyle = "org.kde.ksysguard.textonly";
                     sensors = [
                       {
@@ -244,31 +252,31 @@ in {
                     ];
                   };
                 }
+              ] ++ optionals (config.kde.gpuWidget != null) [
                 {
                   systemMonitor = {
                     title = "GPU Temperature";
-                    showTitle = false;
+                    showTitle = true;
                     displayStyle = "org.kde.ksysguard.textonly";
                     sensors = [
                       {
                         label = "G";
-                        name = "gpu/gpu0/temperature";
+                        name = "${config.kde.gpuWidget}";
                         color = "0,200,0";
                       }
                     ];
                   };
                 }
+              ] ++ [
                 "org.kde.plasma.marginsseparator"
                 {
                   systemTray.items = {
-                    # We explicitly show bluetooth and battery
                     shown = [
                       "org.kde.plasma.bluetooth"
                       "org.kde.plasma.volume"
                       "org.kde.plasma.networkmanagement"
                       "org.kde.plasma.battery"
                     ];
-                    # And explicitly hide networkmanagement and volume
                     hidden = [
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
@@ -347,54 +355,48 @@ in {
             "services/kitty.desktop"."_launch" = "Meta+Return";
           };
 
-          #workspace = {
-            #cursor = {
-              #theme = cursor.name;
-              #size = cursor.size;
-            #};
-            #iconTheme = icon.name;
-            #wallpaper = wallpaper.day;
-          #};
+          #workspace.cursor.theme = cursor.name;
+          #workspace.cursor.size = cursor.size;
+          #workspace.iconTheme = icon.name;
+          #workspace.wallpaper = wallpaper.day;
         };
       };
 
+      /*
       services.darkman = let
         themeName = "everforest";
       in {
         enable = true;
         settings.usegeoclue = true;
 
-        darkModeScripts = {
-          darkMode = pkgs.writeShellScriptBin "darkMode.sh" ''
-            # Alacritty
-            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-            # Kitty
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
-            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+        darkModeScripts = ''
+          # Alacritty
+          ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+          # Kitty
+          ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+          kill -SIGUSR1 $(pidof kitty) 2>/dev/null
 
-            # Plasma Global Theme
-            lookandfeeltool --apply "org.kde.breezedark.desktop"
+          # Plasma Global Theme
+          lookandfeeltool --apply "org.kde.breezedark.desktop"
 
-            #Wallpaper
-            #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
-          '';
-        };
-        lightModeScripts = {
-          lightMode = pkgs.writeShellScriptBin "lightMode.sh" ''
-            # Alacritty
-            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-            # Kitty
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
-            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          #Wallpaper
+          #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
+        '';
+        lightModeScripts = ''
+          # Alacritty
+          ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+          # Kitty
+          ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+          kill -SIGUSR1 $(pidof kitty) 2>/dev/null
 
-            # Plasma Global Theme
-            lookandfeeltool --apply "org.kde.breeze.desktop"
+          # Plasma Global Theme
+          lookandfeeltool --apply "org.kde.breeze.desktop"
 
-            # Wallpaper
-            #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
-          '';
-        };
+          # Wallpaper
+          #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
+        '';
       };
+      */
 
       # Hide neovim from app grid
       xdg.desktopEntries.nvim = {

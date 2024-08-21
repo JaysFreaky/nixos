@@ -98,12 +98,8 @@
     };
 
     wayland.windowManager.hyprland.settings = lib.mkIf (config.hyprland.enable) {
-      # hyprctl monitors all
-      # name, widthxheight@rate, position, scale
-      monitor = [
-        ",preferred,auto,auto"
-        #"eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}"
-      ];
+      # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
+      #monitor = lib.mkForce [ "eDP-1, ${host.resWidth}x${host.resHeight}@${host.resRefresh}, 0x0, ${host.resScale}" ];
     };
 
     # OpenRGB autostart
@@ -172,7 +168,10 @@
     };
   };
 
+  #kde.gpuWidget = "gpu/gpu0/temperature";
+
   services.hardware.openrgb.enable = true;
+
 
   ##########################################################
   # Boot / Encryption

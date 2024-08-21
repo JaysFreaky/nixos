@@ -143,6 +143,8 @@
     ];
   };
 
+  #kde.gpuWidget = "gpu/gpu0/temperature";
+
 
   ##########################################################
   # Boot / Encryption
