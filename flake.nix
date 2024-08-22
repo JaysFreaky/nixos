@@ -11,6 +11,10 @@
         systems.follows = "systems";
       };
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -109,6 +113,7 @@
 
     standardModules = [
       ./hosts/common.nix
+      inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager {
         home-manager = {
           useGlobalPkgs = true;
