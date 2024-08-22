@@ -8,7 +8,7 @@
         ESP = {
           label = "boot";
           type = "EF00";
-          size = "1024MiB";
+          size = "1G";
           content = {
             type = "filesystem";
             format = "vfat";
@@ -17,7 +17,7 @@
         };
         root = {
           label = "root";
-          size = "90%";
+          size = "100%";
           content = {
             type = "btrfs";
             extraArgs = [
