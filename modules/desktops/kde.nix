@@ -61,7 +61,7 @@ in {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        extraPackages = [ pkgs.qt6.qt5compat ];
+        extraPackages = [ pkgs.kdePackages.qt5compat ];
         settings = {
           Theme = {
             CursorSize = cursor.size;
