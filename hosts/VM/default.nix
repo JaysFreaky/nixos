@@ -1,6 +1,6 @@
 { lib, pkgs, vars, ... }: {
   imports = [
-    ./disko.nix
+    ./filesystems.nix
     ./hardware-configuration.nix
   ];
 

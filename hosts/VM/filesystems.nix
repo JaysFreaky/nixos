@@ -1,5 +1,5 @@
 {
-  disko.devices.disk.main = {
+  disko.devices.disk.vda = {
     type = "disk";
     device = "/dev/vda";
     content = {
@@ -15,6 +15,7 @@
             mountpoint = "/boot";
           };
         };
+
         root = {
           label = "root";
           size = "100%";
