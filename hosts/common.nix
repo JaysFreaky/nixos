@@ -113,6 +113,26 @@ in {
     xdg.userDirs.createDirectories = true;
   };
 
+  networking.networkmanager.ensureProfiles = {
+    environmentFiles = [ config.sops.secrets."wifi.env".path ];
+    profiles."home-wifi" = {
+      connection = {
+        id = "$home_ssid";
+        type = "wifi";
+      };
+      ipv4.method = "auto";
+      ipv6.method = "disabled";
+      wifi = {
+        mode = "infrastructure";
+        ssid = "$home_ssid";
+      };
+      wifi-security = {
+        key-mgmt = "wpa-psk";
+        psk = "$home_psk";
+      };
+    };
+  };
+
   nix = {
     gc = {
       automatic = true;
@@ -179,8 +199,8 @@ in {
     defaultSopsFile = "${vars.configPath}/secrets/secrets.yaml";
     validateSopsFiles = false;
     secrets = {
-      #"wifi/home/ssid" = { };
       "user/password".neededForUsers = true;
+      "wifi.env" = { };
     };
   };
 
