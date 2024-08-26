@@ -25,7 +25,7 @@ in {
   "1password".enable = true;
   gaming.enable = true;
   syncthing.enable = true;
-  wezterm.enable = true;
+  #wezterm.enable = true;
 
 
   ##########################################################
