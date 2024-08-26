@@ -1,4 +1,4 @@
-{ inputs, lib, pkgs, stable, vars, ... }: let
+{ config, inputs, lib, pkgs, stable, vars, ... }: let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   spf-flake = inputs.superfile.packages.${pkgs.system};
@@ -66,7 +66,9 @@ in {
       nvme-cli                    # Manage NVMe
       pciutils                    # Manage PCI | 'lspci'
       shellcheck                  # Script formating checker
+      sops                        # Secret management
       spf-flake.superfile         # CLI file manager
+      ssh-to-age                  # Convert SSH keys to Age
       #vars.terminal              # Terminal installed via variable
       tldr                        # Helper
       tmux                        # Multiplexor
@@ -108,6 +110,7 @@ in {
   home-manager.users.${vars.user} = {
     home.stateVersion = "23.11";
     #programs.home-manager.enable = true;
+    xdg.userDirs.createDirectories = true;
   };
 
   nix = {
@@ -171,6 +174,16 @@ in {
     };
   };
 
+  sops = {
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    defaultSopsFile = "${vars.configPath}/secrets/secrets.yaml";
+    validateSopsFiles = false;
+    secrets = {
+      #"wifi/home/ssid" = { };
+      "user/password".neededForUsers = true;
+    };
+  };
+
   system.stateVersion = "23.11";
 
   systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
@@ -196,7 +209,7 @@ in {
         "video"
         "wheel"
       ];
-      hashedPasswordFile = "/etc/users/${vars.user}";
+      hashedPasswordFile = config.sops.secrets."user/password".path;
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"

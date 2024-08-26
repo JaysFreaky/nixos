@@ -1,0 +1,12 @@
+# 'mkdir -p ~/.config/sops/age'
+# 'sudo ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key -o ~/.config/sops/age/keys.txt'
+# 'ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub'
+# 'sops updatekeys secrets/secrets.yaml'
+keys:
+  - &host_t450s age130fy8vnm8jd7s9rhqxfaajf6up788hkd3m50p7rupvg47frq7e6q0yx4y8
+
+creation_rules:
+  - path_regex: secrets/secrets.yaml$
+    key_groups:
+    - age:
+      - *host_t450s

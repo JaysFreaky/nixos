@@ -45,6 +45,13 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs-stable";
+      };
+    };
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs = {
@@ -122,6 +129,7 @@
       }
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nur.nixosModules.nur
+      inputs.sops-nix.nixosModules.sops
       inputs.spicetify-nix.nixosModules.spicetify
       #inputs.stylix.nixosModules.stylix
     ];
