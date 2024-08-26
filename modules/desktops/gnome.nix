@@ -45,10 +45,10 @@ in {
         #evince                     # Document viewer
         geary                       # Email client
         #gedit                      # Text editor
-        gnome.gnome-characters      # Character map
-        gnome.gnome-contacts        # Contact app
-        gnome.gnome-initial-setup   # First time setup
-        gnome.gnome-music           # Music
+        gnome-characters            # Character map
+        gnome-contacts              # Contact app
+        gnome-initial-setup         # First time setup
+        gnome-music                 # Music
         #gnome-maps                 # Maps
         #gnome-photos               # Image viewer
         #gnome-terminal             # Console

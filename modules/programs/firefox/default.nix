@@ -3,8 +3,8 @@
     inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
   };
   bpc = {
-    version = "3.7.9.0";
-    sha256 = "sha256-2qERhC6qVPbMnnTEG9zdEknZ02cF6LXF7U6hNI1i1Uw=";
+    version = "3.8.1.1";
+    sha256 = "sha256-hzVscrHhFk13JDj4MjH+zyxnyfUhLZSyTpDS72KTCBY=";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
 in {
