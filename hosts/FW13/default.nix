@@ -4,7 +4,6 @@
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
 in {
-  #imports = lib.optional (builtins.pathExists ./swap.nix) ./swap.nix;
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -245,20 +244,6 @@ in {
     initrd = {
       availableKernelModules = [ "cryptd" ];
       kernelModules = [ ];
-      /*
-      luks.devices = {
-        "cryptkey" = { device = "/dev/disk/by-partlabel/key"; };
-        "cryptroot" = {
-          # SSD trim
-          allowDiscards = true;
-          # Faster SSD performance
-          bypassWorkqueues = true;
-          device = "/dev/disk/by-partlabel/root";
-          keyFile = "/dev/mapper/cryptkey";
-          keyFileSize = 8192;
-        };
-      };
-      */
       # Required for Plymouth (password prompt)
       systemd.enable = true;
     };
@@ -294,7 +279,7 @@ in {
 
     # https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md
     lanzaboote = {
-      enable = false;
+      enable = true;
       pkiBundle = "/etc/secureboot";
     };
 
@@ -345,55 +330,5 @@ in {
       };
     };
   };
-
-
-  ##########################################################
-  # Filesystems
-  ##########################################################
-  /*
-  fileSystems = {
-    "/" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=root"
-      ];
-    };
-    "/boot" = {
-      device = "/dev/disk/by-partlabel/boot";
-      fsType = "vfat";
-    };
-    "/home" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "subvol=home"
-      ];
-    };
-    "/nix" = {
-      device = "/dev/mapper/cryptroot";
-      fsType = "btrfs";
-      options = [
-        "compress=zstd"
-        "noatime"
-        "subvol=nix"
-      ];
-    };
-    "/mnt/nas" = {
-      device = "10.0.10.10:/mnt/user";
-      fsType = "nfs";
-      options = [
-        "noauto"
-        "x-systemd.automount"
-        "x-systemd.device-timeout=5s"
-        "x-systemd.idle-timeout=600"
-        "x-systemd.mount-timeout=5s"
-      ];
-    };
-  };
-  */
 
 }
