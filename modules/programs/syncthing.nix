@@ -1,10 +1,9 @@
-{ config, lib, vars, ... }: with lib; {
-  options.syncthing.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, vars, ... }: let
+  cfg = config.myOptions.syncthing;
+in {
+  options.myOptions.syncthing.enable = lib.mkEnableOption "Syncthing";
 
-  config = mkIf (config.syncthing.enable) {
+  config = lib.mkIf (cfg.enable) {
     services.syncthing = {
       enable = true;
       configDir = "/home/${vars.user}/.config/syncthing";
@@ -39,6 +38,8 @@
         };
       };
     };
-  };
 
+    users.users.${vars.user}.extraGroups = [ "syncthing" ];
+
+  };
 }

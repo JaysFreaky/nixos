@@ -1,8 +1,28 @@
-{ config, lib, pkgs, vars, ... }: with lib; let
+{ config, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.desktops.gnome;
+
+  cursor = {
+    # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
+    size = 24;
+  };
+  icon = {
+    # Variants: Papirus Papirus-Dark Papirus-Light
+    name = "Papirus";
+    # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
+    # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
+    # green grey indigo magenta nordic orange palebrown paleorange pink red
+    # teal violet white yaru yellow
+    package = pkgs.papirus-icon-theme.override { color = "violet"; };
+  };
   logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
 
-  themeChange = let themeName = "everforest"; in pkgs.writeShellScriptBin "theme_change.sh" ''
+  themeChange = let
+    themeName = "everforest";
+  in pkgs.writeShellScriptBin "themeChange.sh" ''
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
       # Alacritty
@@ -19,16 +39,12 @@
     fi;
   '';
 in {
-  options.gnome.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+  options.myOptions.desktops.gnome.enable = lib.mkEnableOption "GNOME desktop";
 
-  config = mkIf (config.gnome.enable) {
+  config = lib.mkIf (cfg.enable) {
     environment = {
-      # System-Wide Packages
       systemPackages = with pkgs; [
-        bibata-cursors              # For GDM login screen
+        cursor.package              # For GDM login screen
         dconf-editor                # GUI dconf editor
         gnome-tweaks                # Gnome tweaks
         nautilus-python             # Allow custom nautilus scripts/open-any-terminal
@@ -81,24 +97,20 @@ in {
       }];
     };
 
-    # Unlock keyring upon logon
+    # Unlock keyring upon login
     security.pam.services.gdm.enableGnomeKeyring = true;
 
     services = {
       # Manages keys/passwords in gnome-keyring
       dbus.packages = [ pkgs.seahorse ];
-
-      # Auto login can be enabled because LUKS is setup
-      # However, this will prevent the keyring from unlocking
+      # Autologin will prevent the keyring from auto-unlocking
       displayManager.autoLogin = {
-        enable = mkDefault false;
+        enable = lib.mkDefault false;
         user = "${vars.user}";
       };
 
       gnome = {
-        # Remove all games instead of individually above
         games.enable = false;
-
         gnome-keyring.enable = true;
       };
 
@@ -128,12 +140,10 @@ in {
       ];
     };
 
-    systemd = {
-      services = {
-        # These fix current autologin issues with Gnome
-        "getty@tty1".enable = false;
-        "autovt@tty1".enable = false;
-      };
+    systemd.services = {
+      # These fix current autologin issues with Gnome
+      "getty@tty1".enable = false;
+      "autovt@tty1".enable = false;
     };
 
     # Workaround to display profile image at login screen - image needs +x
@@ -335,11 +345,11 @@ in {
           show-suspend-then-hibernate = false;
         };
         "org/gnome/shell/extensions/just-perfection" = {
-          # Top center
+          # 1=top center
           notification-banner-position = 1;
-          # 2px
+          # 3=2px
           panel-button-padding-size = 3;
-          # By shell theme
+          # 0=shell theme
           panel-indicator-padding-size = 0;
           # 0=desktop, 1=overview
           startup-status = 0;
@@ -349,8 +359,10 @@ in {
         };
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          sunrise = "${themeChange}/bin/theme_change.sh";
-          sunset = "${themeChange}/bin/theme_change.sh";
+          #sunrise = "${themeChange}/bin/themeChange.sh";
+          #sunset = "${themeChange}/bin/themeChange.sh";
+          sunrise = "${lib.getExe themeChange}";
+          sunset = "${lib.getExe themeChange}";
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;
@@ -397,20 +409,13 @@ in {
       gtk = {
         enable = true;
         cursorTheme = {
-          # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
-          name = "Bibata-Modern-Classic";
-          package = pkgs.bibata-cursors;
-          # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
-          size = 24;
+          name = cursor.name;
+          package = cursor.package;
+          size = cursor.size;
         };
         iconTheme = {
-          # Variants: Papirus Papirus-Dark Papirus-Light
-          name = "Papirus";
-          # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
-          # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
-          # green grey indigo magenta nordic orange palebrown paleorange pink red
-          # teal violet white yaru yellow
-          package = pkgs.papirus-icon-theme.override { color = "violet"; };
+          name = icon.name;
+          package = icon.package;
         };
       };
 

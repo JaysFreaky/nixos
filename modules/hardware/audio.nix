@@ -1,19 +1,17 @@
-{ config, lib, pkgs, ... }: with lib; {
-  options.audio.enable = mkOption {
-    default = true;
-    type = types.bool;
-  };
+{ config, lib, pkgs, ... }: let
+  cfg = config.myOptions.hardware.audio;
+in {
+  options.myOptions.hardware.audio.enable = lib.mkEnableOption "Audio";
 
-  config = mkIf (config.audio.enable) {
+  config = lib.mkIf (cfg.enable) {
     environment.systemPackages = with pkgs; [
-      #pavucontrol    # Pulse audio control
-      pwvucontrol    # Pipewire audio control
+      #pwvucontrol    # Pipewire audio control
     ];
 
-    # Required for pipewire to work
+    # Required for pipewire
     hardware.pulseaudio.enable = false;
 
-    # Real-time audio enablement
+    # Real-time audio
     security.rtkit.enable = true;
 
     services.pipewire = {
@@ -26,6 +24,6 @@
         support32Bit = true;
       };
     };
-  };
 
+  };
 }

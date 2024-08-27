@@ -1,13 +1,12 @@
-{ config, lib, pkgs, ... }: with lib; let
-  cfg = config.nvidia;
+{ config, lib, pkgs, ... }: let
+  cfg = config.myOptions.hardware.nvidia;
+  cfg-hypr = config.myOptions.desktops.hyprland;
+  cfg-kde = config.myOptions.desktops.kde;
 in {
-  options.nvidia.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+  options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia";
 
-  config = mkMerge [
-    (mkIf (cfg.enable) {
+  config = lib.mkMerge [
+    (lib.mkIf (cfg.enable) {
       boot.kernelParams = [
         # Enable dedicated framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
         "nvidia-drm.fbdev=1"
@@ -39,7 +38,7 @@ in {
       };
     })
 
-    (mkIf (cfg.enable && config.hyprland.enable) {
+    (lib.mkIf (cfg.enable && cfg-hypr.enable) {
       environment = {
         sessionVariables = {
           __GL_GSYNC_ALLOWED = 1;
@@ -58,12 +57,12 @@ in {
       };
     })
 
-    (mkIf (cfg.enable && config.kde.enable) {
+    (lib.mkIf (cfg.enable && cfg-kde.enable) {
       boot.kernelParams = [
         # Disable GSP Mode - Smoother Plasma Wayland experience
         "nvidia.NVreg_EnableGpuFirmware=0"
       ];
     })
-  ];
 
+  ];
 }

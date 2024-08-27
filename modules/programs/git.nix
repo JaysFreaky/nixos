@@ -1,23 +1,16 @@
-{ config, lib, pkgs, vars, ... }: with lib;
-let
+{ config, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.git;
+  cfg-pwd = config.myOptions."1password";
+
   publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/+CvZ9Cnq3Y4my0UtpH19dSNBJeT1wCPK7BAJyAvMA";
 in {
-  options.git = {
-    libsecret.enable = mkOption {
-      default = false;
-      type = types.bool;
-    };
-    oauth.enable = mkOption {
-      default = false;
-      type = types.bool;
-    };
-    ssh.enable = mkOption {
-      default = true;
-      type = types.bool;
-    };
+  options.myOptions.git = {
+    libsecret.enable = lib.mkEnableOption "Git - Libsecret";
+    oauth.enable = lib.mkEnableOption "Git - Oauth";
+    ssh.enable = lib.mkEnableOption "Git - SSH";
   };
 
-  config.home-manager.users.${vars.user} = mkMerge [
+  config.home-manager.users.${vars.user} = with lib; mkMerge [
     {
       programs.git = {
         enable = true;
@@ -29,7 +22,7 @@ in {
 
     # credential.helper = "libsecret" stores credentials inside gnome-keyring
       # relies upon 'gnome-keyring', 'libsecret', and 'seahorse' pkgs in ../desktops/gnome.nix
-    (mkIf (config.git.libsecret.enable) {
+    (mkIf (cfg.libsecret.enable) {
       programs.git = {
         extraConfig.credential.helper = "libsecret";
         # gitFull contains git-credential-libsecret
@@ -38,28 +31,23 @@ in {
     })
 
     # OAuth does not require additional pkgs like libsecret
-    (mkIf (config.git.oauth.enable) {
+    (mkIf (cfg.oauth.enable) {
       programs.git-credential-oauth.enable = true;
     })
 
     # SSH signing/commits
-    (mkIf (config.git.ssh.enable) {
+    (mkIf (cfg.ssh.enable) {
       programs.git.extraConfig = {
         commit.gpgsign = true;
         gpg = {
           format = "ssh";
-          ssh = mkMerge [
-            (mkIf (config."1password".enable) {
-              program = "${pkgs._1password-gui}/bin/op-ssh-sign";
-            })
-            (mkIf (!config."1password".enable) {
-              program = "${pkgs.openssh}/bin/ssh-agent";
-            })
-          ];
+          ssh.program = if (cfg-pwd.enable)
+            then "${getExe' pkgs._1password-gui "op-ssh-sign"}"
+            else "${getExe' pkgs.openssh "ssh-agent"}";
         };
         user.signingkey = publicKey;
       };
     })
-  ];
 
+  ];
 }

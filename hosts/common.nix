@@ -9,8 +9,6 @@ in {
     import ../modules/programs
   );
 
-  ${vars.terminal}.enable = true;
-
   boot = {
     # Prioritize swap for hibernation only
     kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
@@ -95,8 +93,6 @@ in {
 
   fonts.packages = with pkgs; [
     cantarell-fonts               # GNOME
-    font-awesome                  # Icons
-    inter                         # Waybar
     (nerdfonts.override {
       fonts = [
         "FiraCode"
@@ -106,6 +102,11 @@ in {
       ];
     })
   ];
+  
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 
   home-manager.users.${vars.user} = {
     home.stateVersion = "23.11";
@@ -113,22 +114,31 @@ in {
     xdg.userDirs.createDirectories = true;
   };
 
-  networking.networkmanager.ensureProfiles = {
-    environmentFiles = [ config.sops.secrets."wifi.env".path ];
-    profiles."home-wifi" = {
-      connection = {
-        id = "$home_ssid";
-        type = "wifi";
-      };
-      ipv4.method = "auto";
-      ipv6.method = "disabled";
-      wifi = {
-        mode = "infrastructure";
-        ssid = "$home_ssid";
-      };
-      wifi-security = {
-        key-mgmt = "wpa-psk";
-        psk = "$home_psk";
+  myOptions = {
+    git.ssh.enable = lib.mkDefault true;
+    hardware.audio.enable = lib.mkDefault true;
+    ${vars.terminal}.enable = true;
+  };
+
+  networking.networkmanager = {
+    enable = true;
+    ensureProfiles = {
+      environmentFiles = [ config.sops.secrets."wifi.env".path ];
+      profiles."home-wifi" = {
+        connection = {
+          id = "$home_ssid";
+          type = "wifi";
+        };
+        ipv4.method = "auto";
+        ipv6.method = "disabled";
+        wifi = {
+          mode = "infrastructure";
+          ssid = "$home_ssid";
+        };
+        wifi-security = {
+          key-mgmt = "wpa-psk";
+          psk = "$home_psk";
+        };
       };
     };
   };
@@ -212,28 +222,29 @@ in {
     # All users setup via declaration
     mutableUsers = false;
 
-    # Disable root login
-    users.root.initialHashedPassword = "!";
-    #users.root.shell = "/run/current-system/sw/bin/nologin";
+    users = {
+      # Disable root login
+      root.initialHashedPassword = "!";
+      #root.shell = "/run/current-system/sw/bin/nologin";
 
-    # Just me using these systems, so user is a variable
-    users.${vars.user} = {
-      createHome = true;
-      description = "${vars.name}";
-      extraGroups = [
-        "audio"
-        "gamemode"
-        "input"
-        "networkmanager"
-        "syncthing"
-        "video"
-        "wheel"
-      ];
-      hashedPasswordFile = config.sops.secrets."user/password".path;
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
-      ];
+      # Just me using these systems, so user is a variable
+      ${vars.user} = {
+        createHome = true;
+        description = "${vars.name}";
+        extraGroups = [
+          "audio"
+          "input"
+          "networkmanager"
+          "video"
+          "wheel"
+        ];
+        #hashedPasswordFile = "/{$vars.user}";
+        hashedPasswordFile = config.sops.secrets."user/password".path;
+        isNormalUser = true;
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
+        ];
+      };
     };
   };
 

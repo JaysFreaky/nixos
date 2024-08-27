@@ -1,12 +1,11 @@
-{ config, lib, vars, ... }: with lib; {
-  options.kitty.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, vars, ... }: let
+  cfg = config.myOptions.kitty;
+in {
+  options.myOptions.kitty.enable = lib.mkEnableOption "Kitty";
 
-  config = mkIf (config.kitty.enable) {
+  config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = {
-      programs.kitty = {
+      programs.kitty = with lib; {
         enable = true;
         font.name = mkDefault "JetBrainsMono Nerd Font Mono";
         font.size = mkDefault 12;
@@ -27,6 +26,6 @@
         };
       };
     };
-  };
 
+  };
 }

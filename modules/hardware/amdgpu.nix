@@ -1,10 +1,9 @@
-{ config, lib, pkgs, ... }: with lib; {
-  options.amdgpu.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, pkgs, ... }: let
+  cfg = config.myOptions.hardware.amdgpu;
+in {
+  options.myOptions.hardware.amdgpu.enable = lib.mkEnableOption "AMDGPU";
 
-  config = mkIf (config.amdgpu.enable) {
+  config = lib.mkIf (cfg.enable) {
     boot.kernelParams = [
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       #"amdgpu.ppfeaturemask=0xffffffff"
@@ -44,6 +43,6 @@
       # Autostart service at boot
       services.lactd.wantedBy = [ "multi-user.target" ];
     };
-  };
 
+  };
 }

@@ -1,4 +1,7 @@
-{ config, host, inputs, lib, pkgs, vars, ... }: with lib; let
+{ config, inputs, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.desktops.kde;
+  host = config.myHosts;
+
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
     name = "Bibata-Modern-Classic";
@@ -16,17 +19,19 @@
     package = pkgs.papirus-icon-theme.override { color = "violet"; };
   };
   profileImg = ../../assets/profile.png;
+  sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
+    themeConfig = {
+      Background = "${vars.configPath}/assets/wallpapers/blobs-l.png";
+      CustomBackground = "true";
+    };
+  };
   wallpaper = {
     day = "${vars.configPath}/assets/wallpapers/blobs-l.png";
     night = "${vars.configPath}/assets/wallpapers/blobs-d.png";
-    sddm = "${vars.configPath}/assets/wallpapers/blobs-l.png";
   };
 in {
-  options.kde = {
-    enable = mkOption {
-      default = false;
-      type = types.bool;
-    };
+  options.myOptions.desktops.kde = with lib; {
+    enable = mkEnableOption "KDE desktop";
     gpuWidget = mkOption {
       default = null;
       description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
@@ -35,33 +40,27 @@ in {
     };
   };
 
-  config = mkIf (config.kde.enable) {
+  config = lib.mkIf (cfg.enable) {
     environment = {
       systemPackages = with pkgs; [
-        cursor.package                  # For GDM login screen
-        icon.package                    # Icon theme
-        libsecret                       # Secret storage used by gnome-keyring / KDE-wallet
-        neovide                         # GUI launcher for neovim
-        sddm-astronaut                  # SDDM theme
-        /*
-        (sddm-astronaut.override {      # SDDM theme w/ custom background
-          themeConfig = {
-            Background = "${wallpaper.sddm}";
-            CustomBackground = "true";
-          };
-        })
-        */
+        cursor.package              # For GDM login screen
+        icon.package                # Icon theme
+        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+        neovide                     # GUI launcher for neovim
+        sddm-astronaut              # SDDM theme
+        #sddm-astronaut-pkg          # Custom SDDM theme
       ] ++ (with kdePackages; [
-        sddm-kcm                        # SDDM configuration module
+        qt5compat                   # QT5 compatibility
+        sddm-kcm                    # SDDM configuration module
       ]);
-      #plasma6.excludePackages = with pkgs.kdePackages; [ ];
+      plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
     services = {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        extraPackages = [ pkgs.kdePackages.qt5compat ];
+        #extraPackages = [ pkgs.kdePackages.qt5compat ];
         settings = {
           Theme = {
             CursorSize = cursor.size;
@@ -183,7 +182,7 @@ in {
               # Focus follows mouse instead of clicking
               "Windows"."FocusPolicy" = "FocusFollowsMouse";
               # Set host scaling
-              "Xwayland"."Scale" = host.resScale;
+              "Xwayland"."Scale" = host.scale;
             };
           };
 
@@ -252,7 +251,7 @@ in {
                     ];
                   };
                 }
-              ] ++ optionals (config.kde.gpuWidget != null) [
+              ] ++ lib.optionals (cfg.gpuWidget != null) [
                 {
                   systemMonitor = {
                     title = "GPU Temperature";
@@ -261,7 +260,7 @@ in {
                     sensors = [
                       {
                         label = "G";
-                        name = "${config.kde.gpuWidget}";
+                        name = "${cfg.gpuWidget}";
                         color = "0,200,0";
                       }
                     ];
@@ -362,13 +361,13 @@ in {
         };
       };
 
-      /*
       services.darkman = let
         themeName = "everforest";
       in {
-        enable = true;
+        enable = false;
         settings.usegeoclue = true;
 
+        /*
         darkModeScripts = ''
           # Alacritty
           ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
@@ -395,8 +394,8 @@ in {
           # Wallpaper
           #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
         '';
+        */
       };
-      */
 
       # Hide neovim from app grid
       xdg.desktopEntries.nvim = {

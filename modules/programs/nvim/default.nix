@@ -10,7 +10,6 @@
       enable = true;
       viAlias = true;
       vimAlias = true;
-
       extraPackages = with pkgs; [
         nil    # Nix language
       ];
@@ -21,6 +20,6 @@
       "nvim/init.lua".source = ./init.lua;
       "nvim/.stylua.toml".source = ./.stylua.toml;
     };
-  };
 
+  };
 }

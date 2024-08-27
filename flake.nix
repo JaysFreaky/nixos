@@ -152,12 +152,6 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host = {
-            resWidth = "2256";
-            resHeight = "1504";
-            resRefresh = "60";
-            resScale = "1.5";
-          };
         };
         modules = standardModules ++ [
           { networking.hostName = "FW13"; }
@@ -171,12 +165,6 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host = {
-            resWidth = "2560";
-            resHeight = "1440";
-            resRefresh = "144";
-            resScale = "1.25";
-          };
         };
         modules = standardModules ++ [
           { networking.hostName = "Ridge"; }
@@ -189,12 +177,6 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host = {
-            resWidth = "2560";
-            resHeight = "1440";
-            resRefresh = "144";
-            resScale = "1.25";
-          };
         };
         modules = standardModules ++ [
           { networking.hostName = "T1"; }
@@ -207,12 +189,6 @@
         inherit pkgs system;
         specialArgs = {
           inherit inputs stable vars;
-          host = {
-            resWidth = "1920";
-            resHeight = "1080";
-            resRefresh = "60";
-            resScale = "1.25";
-          };
         };
         modules = standardModules ++ [
           { networking.hostName = "T450s"; }

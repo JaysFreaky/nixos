@@ -1,18 +1,17 @@
-{ config, lib, pkgs, ... }: with lib; {
-  options.fp_reader.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, pkgs, ... }: let
+  cfg = config.myOptions.hardware.fp_reader;
+in {
+  options.myOptions.hardware.fp_reader.enable = lib.mkEnableOption "Fingerprint reader";
 
-  config = mkMerge [
-    (mkIf (config.fp_reader.enable) {
+  config = lib.mkMerge [
+    (lib.mkIf (cfg.enable) {
       environment.systemPackages = [ pkgs.fprintd ];
       services.fprintd.enable = lib.mkForce true;
     })
 
-    (mkIf (!config.fp_reader.enable) {
+    (lib.mkIf (!cfg.enable) {
       services.fprintd.enable = lib.mkForce false;
     })
-  ];
 
+  ];
 }

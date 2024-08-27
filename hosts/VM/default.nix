@@ -7,18 +7,21 @@
   ##########################################################
   # Custom Options
   ##########################################################
-  # Desktop - gnome, hyprland, kde
-  gnome.enable = true;
+  myOptions = {
+    desktops = {  # gnome, hyprland, kde
+      gnome.enable = true;
+    };
 
-  # Hardware - amdgpu, audio (on by default), bluetooth, fp_reader, nvidia
-  audio.enable = false;
+    hardware = {  # amdgpu, audio, bluetooth, fp_reader, nvidia
+      audio.enable = false;
+    };
 
-  # Programs / Features - 1password, alacritty, flatpak, gaming, kitty, syncthing, wezterm
-  # Whichever terminal is defined in flake.nix is auto-enabled in hosts/common.nix, but can enable more
+    # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+  };
 
 
   ##########################################################
-  # System-Specific Packages / Variables
+  # System Packages / Variables
   ##########################################################
   environment.systemPackages = [ ];
 
@@ -29,7 +32,7 @@
 
 
   ##########################################################
-  # Home Manager Options
+  # Home Manager
   ##########################################################
 
 
@@ -37,8 +40,6 @@
   # Hardware
   ##########################################################
   hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
     extraPackages = with pkgs; [
       intel-media-driver
       intel-vaapi-driver
@@ -51,7 +52,7 @@
 
 
   ##########################################################
-  # Boot / Encryption
+  # Boot
   ##########################################################
   boot = {
     initrd = {
@@ -91,7 +92,5 @@
   ##########################################################
   # Network
   ##########################################################
-  # Interfaces not needed with NetworkManager enabled
-  networking.networkmanager.enable = true;
 
 }

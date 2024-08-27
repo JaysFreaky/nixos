@@ -1,12 +1,14 @@
 { config, pkgs, vars, ... }: let
-  my-addons = pkgs.callPackage ./addons.nix {
-    inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
-  };
   bpc = {
     version = "3.8.1.1";
     sha256 = "sha256-hzVscrHhFk13JDj4MjH+zyxnyfUhLZSyTpDS72KTCBY=";
   };
+
+  browser = "floorp"; # or firefox
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
+  myAddons = pkgs.callPackage ./addons.nix {
+    inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
+  };
 in {
   environment.systemPackages = with pkgs; [
     # Hardware video acceleration
@@ -16,8 +18,7 @@ in {
   home-manager.users.${vars.user} = {
     imports = [ ./floorp-hm.nix ];
 
-    #programs.firefox = {
-    programs.floorp = {
+    programs.${browser} = {
       enable = true;
 
       policies = {
@@ -55,13 +56,14 @@ in {
         #userContent = builtins.readFile ./userContent.css;
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
-        extensions = with firefox-addons; [
-          (bypass-paywalls-clean.override {   # Previous releases can be deleted, so overriding with latest version
-            version = bpc.version;
-            #url = "https://github.com/bpc-clone/bpc_updates/releases/download/latest/bypass_paywalls_clean-${bpc.version}.xpi";
-            url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${bpc.version}.xpi";
-            sha256 = bpc.sha256;
-          })
+        extensions = with firefox-addons; let
+          bpc-pkg = bypass-paywalls-clean.override rec {
+            version = "${bpc.version}";
+            url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${version}.xpi";
+            sha256 = "${bpc.sha256}";
+          };
+        in [
+          bpc-pkg                         # Previous releases get deleted, so overriding with latest version
           canvasblocker
           darkreader
           enhancer-for-youtube
@@ -72,7 +74,7 @@ in {
           sponsorblock
           tabliss
           ublock-origin
-        ] ++ (with my-addons; [
+        ] ++ (with myAddons; [
           ttv-lol-pro
         ]);
       };
@@ -86,10 +88,9 @@ in {
     xdg.mimeApps = {
       enable = true;
       defaultApplications = {
-        #"application/pdf" = [ "firefox.desktop" ]
-        "application/pdf" = [ "floorp.desktop" ];
+        "application/pdf" = [ "${browser}.desktop" ];
       };
     };
-  };
 
+  };
 }

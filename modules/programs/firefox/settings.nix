@@ -497,7 +497,7 @@
 
   /** SYNC ***/
   # use hostname for FF account device name
-    "identity.fxaccounts.account.device.name" = config.networking.hostName;
+    "identity.fxaccounts.account.device.name" = "${config.networking.hostName}";
   # only syncing bookmarks/tabs
     "services.sync.declinedEngines" = "addons,addresses,creditcards,forms,history,passwords,prefs";
     "services.sync.addons" = false;
@@ -519,7 +519,7 @@
 
   # PREF: sharpen scrolling
   "general.smoothScroll" = true; # DEFAULT
-  "mousewheel.min_line_scroll_amount" = 10; # 10-40; adjust this number to your liking; default=5
+  "mousewheel.min_line_scroll_amount" = 5; # 10-40; adjust this number to your liking; default=5
   "general.smoothScroll.mouseWheel.durationMinMS" = 80; # default=50
   "general.smoothScroll.currentVelocityWeighting" = "0.15"; # default=.25
   "general.smoothScroll.stopDecelerationWeighting" = "0.6"; # default=.4
@@ -534,7 +534,7 @@
   "browser.newtabpage.activity-stream.floorp.newtab.imagecredit.hide" = true;
   "browser.newtabpage.activity-stream.floorp.newtab.releasenote.hide" = true;
   "floorp.browser.sidebar.useIconProvider" = "duckduckgo";
-  "floorp.browser.sidebar2.data" = "{\"data\":{\"floorp__bmt\":{\"url\":\"floorp//bmt\",\"width\":600},\"floorp__bookmarks\":{\"url\":\"floorp//bookmarks\",\"width\":415},\"floorp__history\":{\"url\":\"floorp//history\",\"width\":415},\"floorp__downloads\":{\"url\":\"floorp//downloads\",\"width\":415},\"floorp__notes\":{\"url\":\"floorp//notes\",\"width\":550},\"w0\":{\"url\":\"https://translate.google.com\"},\"w202471813257\":{\"url\":\"https://mail.proton.me/\",\"userAgent\":true}},\"index\":[\"floorp__bmt\",\"floorp__bookmarks\",\"floorp__history\",\"floorp__downloads\",\"floorp__notes\",\"w0\",\"w202471813257\"]}";
+  "floorp.browser.sidebar2.data" = "{\"data\":{\"floorp__bmt\":{\"url\":\"floorp//bmt\",\"width\":600},\"floorp__bookmarks\":{\"url\":\"floorp//bookmarks\",\"width\":415},\"floorp__history\":{\"url\":\"floorp//history\",\"width\":415},\"floorp__downloads\":{\"url\":\"floorp//downloads\",\"width\":415},\"floorp__notes\":{\"url\":\"floorp//notes\",\"width\":550},\"w0\":{\"url\":\"https://translate.google.com\"},\"w202471813257\":{\"url\":\"https://mail.proton.me/\"}},\"index\":[\"floorp__bmt\",\"floorp__bookmarks\",\"floorp__history\",\"floorp__downloads\",\"floorp__notes\",\"w0\",\"w202471813257\"]}";
   "floorp.browser.sidebar2.global.webpanel.width" = 350;
   "floorp.browser.tabbar.settings" = 2;
   "floorp.browser.tabs.openNewTabPosition" = 1;

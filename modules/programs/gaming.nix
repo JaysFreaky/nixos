@@ -1,32 +1,32 @@
-{ config, host, lib, pkgs, vars, ... }: with lib; let
-  lutris-pkg = pkgs.lutris.override {
-    extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-      then extraPackages
-      else extraPackages32
-    );
-    extraPkgs = pkgs: with pkgs; [
-      dxvk
-      vkd3d
-      winetricks
-      # wineWow has both x86/64 - stable, staging, or wayland
-      wineWowPackages.wayland
-    ];
-  };
+{ config, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.gaming;
+  host = config.myHosts;
 in {
-  options.gaming.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+  options.myOptions.gaming.enable = lib.mkEnableOption "Gaming";
 
-  config = mkIf (config.gaming.enable) {
+  config = lib.mkIf (cfg.enable) {
     boot.kernel.sysctl = {
       # Faster timeout so games can reuse their TCP ports
       "net.ipv4.tcp_fin_timeout" = 5;
       # Increase stability/performance of games
-      "vm.max_map_count" = mkForce 2147483642;
+      "vm.max_map_count" = lib.mkForce 2147483642;
     };
 
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = with pkgs; let
+      lutris-pkg = pkgs.lutris.override {
+        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+          then extraPackages
+          else extraPackages32
+        );
+        extraPkgs = pkgs: with pkgs; [
+          dxvk
+          vkd3d
+          winetricks
+          # wineWow has both x86/64 - stable, staging, or wayland
+          wineWowPackages.wayland
+        ];
+      };
+    in [
       gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
       heroic          # Game launcher - Epic, GOG, Prime
       lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
@@ -35,20 +35,20 @@ in {
     home-manager.users.${vars.user} = {
       # Custom .desktop file with host's scaling applied
       home.file = let
-        steamPkg = (config.programs.steam.package);
+        steam-pkg = config.programs.steam.package;
       in {
         ".local/share/applications/steam.desktop" = {
           executable = true;
-          text = replaceStrings [ "Exec=steam %U" ] [ "Exec=${getExe steamPkg} -forcedesktopscaling=${host.resScale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
+          text = lib.replaceStrings [ "Exec=steam %U" ] [ "Exec=${lib.getExe steam-pkg} -forcedesktopscaling=${host.scale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
         };
       };
 
       programs.mangohud = {
         enable = true;
         enableSessionWide = false;
-        settings = {
+        settings = with lib; {
           ### Performance ###
-          fps_limit = host.resRefresh;
+          fps_limit = host.refresh;
           fps_limit_method = "late";
           vsync = 0;
           gl_vsync = -1;
@@ -105,14 +105,14 @@ in {
         enableRenice = true;
         settings = {
           custom = {
-            start = "${getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
-            end = "${getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
+            start = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
+            end = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
           };
           general = {
             # Prevents errors when screensaver not installed
             inhibit_screensaver = 0;
             # Game process priority
-            renice = 10;
+            renice = 20;
             # Scheduler policy
             softrealtime = "auto";
           };
@@ -122,14 +122,14 @@ in {
       gamescope = {
         enable = true;
         args = [
-          "-W ${host.resWidth}"
-          "-H ${host.resHeight}"
-          "-r ${host.resRefresh}"                 # Focused refresh rate
-          "-o 30"                                 # Unfocused refresh rate
-          "--adaptive-sync"                       # VRR (if available)
-          #"--expose-wayland"                     # Incompatible with HDR?
-          "--framerate-limit ${host.resRefresh}"  # Sync framerate to refresh rate
-          "--rt"                                  # Real-time scheduling
+          "-W ${host.width}"
+          "-H ${host.height}"
+          "-r ${host.refresh}"                 # Focused refresh rate
+          "-o 30"                              # Unfocused refresh rate
+          "--adaptive-sync"                    # VRR (if available)
+          #"--expose-wayland"                  # Incompatible with HDR?
+          "--framerate-limit ${host.refresh}"  # Sync framerate to refresh rate
+          "--rt"                               # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
           # Workaround command to alt-tab and run after launching a game: 'renice -n -20 -p $(pgrep gamescope-wl)'
@@ -148,7 +148,7 @@ in {
 
         package = pkgs.steam.override {
           # Set extest (Wayland xinput) here instead of through Steam options so gamemode env alone doesn't overwrite it
-          extraEnv.LD_PRELOAD = "${getLib pkgs.gamemode}/lib/libgamemode.so:${pkgs.pkgsi686Linux.extest}/lib/libextest.so";
+          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so:${pkgs.pkgsi686Linux.extest}/lib/libextest.so";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
@@ -172,8 +172,10 @@ in {
       type = "-";
       item = "nice";
       # Range from -20 to 19
-      value = -10;
+      value = -20;
     }];
+
+    users.users.${vars.user}.extraGroups = [ "gamemode" ];
 
   };
 }

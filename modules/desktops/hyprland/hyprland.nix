@@ -1,13 +1,15 @@
 { config, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.desktops.hyprland;
+
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     day = "${wallpaper.dir}/blobs-l.png";
     night = "${wallpaper.dir}/blobs-d.png";
   };
 in {
-  config = lib.mkIf (config.hyprland.enable) {
+  config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = { lib, ... }: let
-      hyprApps = config.hyprApps;
+      hyprApps = cfg.hyprApps;
     in {
       wayland.windowManager.hyprland = {
         enable = true;
@@ -18,6 +20,7 @@ in {
           # Sets "Windows" key as main modifier
           mainMod = "SUPER";
         in {
+          # Import optional color schemes
           #source = "/home/${vars.user}/.cache/wal/colors-hyprland.conf";
 
           ################

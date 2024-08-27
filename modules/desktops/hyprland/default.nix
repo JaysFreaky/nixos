@@ -1,4 +1,23 @@
-{ config, host, lib, pkgs, vars, ... }: with lib; let
+{ config, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.desktops.hyprland;
+  host = config.myHosts;
+
+  cursor = {
+    # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
+    name = "Bibata-Modern-Classic";
+    package = pkgs.bibata-cursors;
+    # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
+    size = 24;
+  };
+  icon = {
+    # Variants: Papirus Papirus-Dark Papirus-Light
+    name = "Papirus-Dark";
+    # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
+    # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
+    # green grey indigo magenta nordic orange palebrown paleorange pink red
+    # teal violet white yaru yellow
+    package = pkgs.papirus-icon-theme.override { color = "violet"; };
+  };
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
     regreet = "${wallpaper.dir}/blobs-l.png";
@@ -9,20 +28,17 @@ in {
     ./waybar.nix
   ];
 
-  options = {
-    hyprland.enable = mkOption {
-      default = false;
-      description = "Enable the Hyprland environment.";
-      type = types.bool;
-    };
+  options.myOptions.desktops.hyprland = with lib; {
+    enable = mkEnableOption "Hyprland desktop";
     hyprApps = mkOption {
-      description = "Bins for Hyprland environment.";
+      description = "Bins for Hyprland";
       type = types.attrs;
     };
   };
 
-  config = mkIf (config.hyprland.enable) {
-    hyprApps = {
+  config = lib.mkIf (cfg.enable) {
+    /*
+    myOptions.desktops.hyprland.hyprApps = with lib; {
       blueman = getExe' pkgs.blueman "blueman-manager";
       brightnessctl = getExe pkgs.brightnessctl;
       btop = getExe pkgs.btop;
@@ -46,6 +62,7 @@ in {
       wl-copy = getExe' pkgs.wl-clipboard "wl-copy";
       wofi = getExe pkgs.wofi;
     };
+    */
 
     environment = {
       sessionVariables = {
@@ -60,18 +77,18 @@ in {
           XDG_SESSION_TYPE = "wayland";
 
         # Scaling
-          GDK_SCALE = host.resScale;
-          QT_AUTO_SCREEN_SCALE_FACTOR = host.resScale;
+          GDK_SCALE = host.scale;
+          QT_AUTO_SCREEN_SCALE_FACTOR = host.scale;
         
         # Toolkit Backend
           GDK_BACKEND = "wayland,x11";
           QT_QPA_PLATFORM = "wayland;xcb";
 
         # Cursor
-          HYPRCURSOR_SIZE = 24;
-          HYPRCURSOR_THEME = "Bibata-Modern-Classic";
-          XCURSOR_SIZE = 24;
-          XCURSOR_THEME = "Bibata-Modern-Classic";
+          HYPRCURSOR_SIZE = cursor.size;
+          HYPRCURSOR_THEME = cursor.name;
+          XCURSOR_SIZE = cursor.size;
+          XCURSOR_THEME = cursor.name;
 
         # Theming
           #GTK_THEME = "Catppuccin-Frappe-Standard-Mauve-Dark";
@@ -129,7 +146,7 @@ in {
 
         # Wayland
           libsForQt5.qt5.qtwayland  # QT5 Wayland support
-          qt6.qtwayland             # QT6 Wayland support
+          kdePackages.qtwayland     # QT6 Wayland support
           wayland-protocols         # Wayland protocol extensions
           wayland-utils             # Wayland utilities | 'wayland-info'
           wev                       # Keymapper
@@ -138,24 +155,22 @@ in {
       ];
     };
 
+    fonts.packages = with pkgs; [
+      font-awesome                  # Icons
+      inter                         # Waybar
+    ];
+
     home-manager.users.${vars.user} = { lib, ... }: {
       gtk = {
         enable = true;
         cursorTheme = {
-          # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
-          name = "Bibata-Modern-Classic";
-          package = pkgs.bibata-cursors;
-          # Sizes: 16 20 22 24 28 32 40 48 56 64 72 80 88 96
-          size = 24;
+          name = cursor.name;
+          package = cursor.package;
+          size = cursor.size;
         };
         iconTheme = {
-          # Variants: Papirus Papirus-Dark Papirus-Light
-          name = "Papirus";
-          # Folder color variants: https://github.com/PapirusDevelopmentTeam/papirus-folders
-          # adwaita black blue bluegrey breeze brown carmine cyan darkcyan deeporange
-          # green grey indigo magenta nordic orange palebrown paleorange pink red
-          # teal violet white yaru yellow
-          package = pkgs.papirus-icon-theme.override { color = "violet"; };
+          name = icon.name;
+          package = icon.package;
         };
         #theme = {
           #name = "";
@@ -166,9 +181,9 @@ in {
       home.pointerCursor = {
         gtk.enable = true;
         # x11.enable = true;
-        package = pkgs.bibata-cursors;
-        name = "Bibata-Modern-Classic";
-        size = 24;
+        package = cursor.package;
+        name = cursor.name;
+        size = cursor.size;
       };
 
       # Use Pywal for terminal theming
@@ -240,9 +255,9 @@ in {
 
           [GTK]
           application_prefer_dark_theme = true
-          cursor_theme_name = "Bibata-Modern-Classic"
+          cursor_theme_name = "${cursor.name}"
           font_name = "Cantarell 16"
-          icon_theme_name = "Papirus-Dark"
+          icon_theme_name = "${icon.name}"
           #theme_name = ""
         '';
       };
@@ -260,17 +275,18 @@ in {
 
       greetd = {
         enable = true;
-        package = pkgs.greetd.tuigreet;
+        package = lib.mkIf (!config.programs.regreet.enable) pkgs.greetd.tuigreet;
         settings = let
-          hyprApps = config.hyprApps;
+          hyprApps = cfg.hyprApps;
         in rec {
           # Auto login
           default_session = initial_session;
           initial_session = {
-            # Regreet command
-            #command = "${hyprApps.hyprland}";
-            # Tuigreet command
-            command = "${hyprApps.tuigreet} --asterisks --remember --remember-user-session --time --cmd ${hyprApps.hyprland}";
+            command = if (config.programs.regreet.enable)
+              # Regreet
+              then "${hyprApps.hyprland}"
+              # Tuigreet
+              else "${hyprApps.tuigreet} --asterisks --remember --remember-user-session --time --cmd ${hyprApps.hyprland}";
             user = "${vars.user}";
           };
         };

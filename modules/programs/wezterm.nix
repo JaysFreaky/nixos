@@ -1,10 +1,9 @@
-{ config, inputs, lib, pkgs, vars, ... }: with lib; {
-  options.wezterm.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, inputs, lib, pkgs, vars, ... }: let
+  cfg = config.myOptions.wezterm;
+in {
+  options.myOptions.wezterm.enable = lib.mkEnableOption "Wezterm";
 
-  config = mkIf (config.wezterm.enable) {
+  config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = {
       programs.wezterm = {
         enable = true;
@@ -48,6 +47,6 @@
         '';
       };
     };
-  };
 
+  };
 }

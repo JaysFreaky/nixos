@@ -1,10 +1,9 @@
-{ config, lib, ... }: with lib; {
-  options.bluetooth.enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, ... }: let
+  cfg = config.myOptions.hardware.bluetooth;
+in {
+  options.myOptions.hardware.bluetooth.enable = lib.mkEnableOption "Bluetooth";
 
-  config = mkIf (config.bluetooth.enable) {
+  config = lib.mkIf (cfg.enable) {
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
@@ -20,6 +19,6 @@
     };
 
     services.blueman.enable = true;
-  };
 
+  };
 }

@@ -2,10 +2,7 @@
   home-manager.users.${vars.user} = {
     programs.bash = {
       enable = true;
-
-      initExtra = ''
-      '';
-
+      #initExtra = '''';
       shellAliases = {
         ".." = "cd ..";
         ".df" = "cd ${vars.configPath}";

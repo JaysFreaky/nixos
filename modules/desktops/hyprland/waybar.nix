@@ -1,7 +1,9 @@
-{ config, lib, vars, ... }: {
-  config = lib.mkIf (config.hyprland.enable) {
+{ config, lib, vars, ... }: let
+  cfg = config.myOptions.desktops.hyprland;
+in {
+  config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = { lib, ... }: let
-      hyprApps = config.hyprApps;
+      hyprApps = cfg.hyprApps;
     in {
       programs.waybar = {
         enable = true;

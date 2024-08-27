@@ -1,15 +1,14 @@
-{ config, lib, vars, ... }: with lib; {
-  options."1password".enable = mkOption {
-    default = false;
-    type = types.bool;
-  };
+{ config, lib, vars, ... }: let
+  cfg = config.myOptions."1password";
+in {
+  options.myOptions."1password".enable = lib.mkEnableOption "1Password";
 
-  config = mkIf (config."1password".enable) {
+  config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = {
       xdg.configFile = let
-        onePasswordPkg = (config.programs._1password-gui.package);
+        onePassword-pkg = config.programs._1password-gui.package;
       in {
-        "autostart/1password.desktop".text = replaceStrings [ "Exec=1password %U" ] [ "Exec=${getExe onePasswordPkg} --silent %U" ] (lib.fileContents "${onePasswordPkg}/share/applications/1password.desktop");
+        "autostart/1password.desktop".text = lib.replaceStrings [ "Exec=1password %U" ] [ "Exec=${lib.getExe onePassword-pkg} --silent %U" ] (lib.fileContents "${onePassword-pkg}/share/applications/1password.desktop");
       };
     };
 
