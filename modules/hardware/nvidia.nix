@@ -3,7 +3,7 @@
   cfg-hypr = config.myOptions.desktops.hyprland;
   cfg-kde = config.myOptions.desktops.kde;
 in {
-  options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia";
+  options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia GPU";
 
   config = lib.mkMerge [
     (lib.mkIf (cfg.enable) {
@@ -19,13 +19,20 @@ in {
       hardware = {
         graphics.enable = true;
         nvidia = {
-          # kernelParams: "nvidia-drm.modeset=1"
+          # "nvidia-drm.modeset=1"
           modesetting.enable = true;
+          # Nvidia settings application
           nvidiaSettings = true;
-          # Current beta (555) fixes Wayland issues - beta or stable
-          package = config.boot.kernelPackages.nvidiaPackages.beta;
-          # kernelParams: "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-          powerManagement.enable = false;
+          # Starting with 560, open drivers are used by default
+          open = false;
+          # beta or stable
+          package = config.boot.kernelPackages.nvidiaPackages.stable;
+          powerManagement = {
+            # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" - enable if graphical corruption on sleep resume
+            enable = false;
+            # Experimental - Turns off GPU when not in use
+            finegrained = false;
+          };
         };
       };
 
@@ -44,7 +51,7 @@ in {
           __GL_GSYNC_ALLOWED = 1;
           __GL_VRR_ALLOWED = 1;
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          # GBM could possibily cause Firefox to crash - remove if so
+          # GBM could possibily cause Firefox to crash - comment out if so
           GBM_BACKEND = "nvidia_drm";
           # Hardware Accelaration - 'nvidia' or 'vdpau'
           LIBVA_DRIVER_NAME = "nvidia";
