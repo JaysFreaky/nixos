@@ -37,7 +37,6 @@ in {
   };
 
   config = lib.mkIf (cfg.enable) {
-    /*
     myOptions.desktops.hyprland.hyprApps = with lib; {
       blueman = getExe' pkgs.blueman "blueman-manager";
       brightnessctl = getExe pkgs.brightnessctl;
@@ -62,7 +61,6 @@ in {
       wl-copy = getExe' pkgs.wl-clipboard "wl-copy";
       wofi = getExe pkgs.wofi;
     };
-    */
 
     environment = {
       sessionVariables = {
