@@ -83,6 +83,7 @@ in {
       base16-schemes              # Presets
       variety                     # Wallpapers
     ];
+
     variables = {
       EDITOR = "nvim";
       TERMINAL = "${vars.terminal}";
@@ -95,7 +96,6 @@ in {
     cantarell-fonts               # GNOME
     (nerdfonts.override {
       fonts = [
-        "FiraCode"
         "JetBrainsMono"
         "NerdFontsSymbolsOnly"
         "Noto"
@@ -205,7 +205,11 @@ in {
   };
 
   sops = {
-    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    age = {
+      generateKey = false;
+      #keyFile = "/var/lib/sops-nix/key.txt";
+      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+    };
     defaultSopsFile = "${vars.configPath}/secrets/secrets.yaml";
     validateSopsFiles = false;
     secrets = {
@@ -215,19 +219,13 @@ in {
   };
 
   system.stateVersion = "23.11";
-
   systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
   users = {
-    # All users setup via declaration
+    # All users/passwords setup via declaration
     mutableUsers = false;
-
     users = {
-      # Disable root login
-      root.initialHashedPassword = "!";
-      #root.shell = "/run/current-system/sw/bin/nologin";
-
-      # Just me using these systems, so user is a variable
+      # Single-user system, so user is a variable
       ${vars.user} = {
         createHome = true;
         description = "${vars.name}";
@@ -238,12 +236,18 @@ in {
           "video"
           "wheel"
         ];
-        #hashedPasswordFile = "/{$vars.user}";
         hashedPasswordFile = config.sops.secrets."user/password".path;
         isNormalUser = true;
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
         ];
+      };
+
+      root = {
+        # Disables root login
+        initialHashedPassword = "!";
+        # Disables 'sudo su'
+        #shell = "/run/current-system/sw/bin/nologin";
       };
     };
   };
