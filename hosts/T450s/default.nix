@@ -140,19 +140,21 @@ in {
           # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
           monitor = [ "eDP-1, ${host.width}x${host.height}@${host.refresh}, 0x0, ${host.scale}" ];
           bind = [
-            # Function key binds
             ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
-            ", XF86AudioLowerVolume, exec, ${hyprApps.pw-volume} change -5%"
-            ", XF86AudioRaiseVolume, exec, ${hyprApps.pw-volume} change +5%"
             #", XF86, exec, amixer sset Capture toggle"  # Mic disabled in firmware
-            ", XF86MonBrightnessDown, exec, ${hyprApps.brightnessctl} s 10%-"
-            ", XF86MonBrightnessUp, exec, ${hyprApps.brightnessctl} s +10%"
             #", XF86Display, ," # Presentation mode?
             #", XF86WLAN, ," # Disables wifi by default
             #", XF86Tools, ," # Settings shortcut?
             #", XF86Search, ," # rofi search?
             #", XF86LaunchA, exec, rofi -show drun"  # rofi launcher
             #", XF86Explorer, exec, kitty spf"
+          ];
+          # Hold for continuous adjustment
+          binde = [
+            ", XF86AudioLowerVolume, exec, ${hyprApps.pw-volume} change -5%"
+            ", XF86AudioRaiseVolume, exec, ${hyprApps.pw-volume} change +5%"
+            ", XF86MonBrightnessDown, exec, ${hyprApps.brightnessctl} s 10%-"
+            ", XF86MonBrightnessUp, exec, ${hyprApps.brightnessctl} s +10%"
           ];
         };
       };
