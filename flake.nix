@@ -15,6 +15,13 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    framework-plymouth = {
+      url = "github:JaysFreaky/framework-plymouth";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
+      };
+    };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -209,10 +216,5 @@
       };
     };
 
-    packages.${system} = {
-      framework-plymouth = nixpkgs.legacyPackages.${system}.callPackage ./packages/framework-plymouth { };
-      setup-system = nixpkgs.legacyPackages.${system}.callPackage ./packages/setup-system { };
-    };
   };
-
 }

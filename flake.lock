@@ -181,6 +181,29 @@
         "type": "github"
       }
     },
+    "framework-plymouth": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1724963460,
+        "narHash": "sha256-J/FxP2hHe1nd4JtbGDWuNp/zZxD+EefCIJIvo5NB3lU=",
+        "owner": "JaysFreaky",
+        "repo": "framework-plymouth",
+        "rev": "32f71c25ac02655f547668325901a4d15de98ea5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "JaysFreaky",
+        "repo": "framework-plymouth",
+        "type": "github"
+      }
+    },
     "freetype2": {
       "flake": false,
       "locked": {
@@ -459,6 +482,7 @@
         "disko": "disko",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
+        "framework-plymouth": "framework-plymouth",
         "hardware": "hardware",
         "home-manager": "home-manager",
         "jovian": "jovian",

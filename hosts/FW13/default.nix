@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   # Custom plymouth theme
-  framework-plymouth = pkgs.callPackage ../../packages/framework-plymouth { };
+  framework-plymouth = inputs.framework-plymouth.packages.${pkgs.system}.framework-plymouth;
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
 in {
