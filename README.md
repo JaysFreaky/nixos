@@ -7,18 +7,23 @@ The system's are entirely declarative, even using [disko](https://github.com/nix
 
 To deploy this flake, boot the installer image and run these commands as root:
 
-`nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko --flake github:JaysFreaky/nixos#<HOST>
+```bash
+nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko --flake github:JaysFreaky/nixos#<HOST>
 mkdir -p /mnt/etc/nixos && cd $_
 git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
-git remote set-url nixos git@github.com:JaysFreaky/nixos.git`
+git remote set-url nixos git@github.com:JaysFreaky/nixos.git
+```
 
 * If this is the first system being setup, you'll need to initialize your .sops.yaml and secrets/secrets.yaml - check [sops-nix's github](https://github.com/Mic92/sops-nix) for instructions.
 
 * If this is an additional system being added, from an already established system, you'll need to add the new system's ssh-to-age key to your .sops.yaml and run `sops updatekeys secrets/secrets.yaml` and then transfer those files to the new system's '/mnt/etc/nixos' via scp.
 
 Because this is git repo, you'll need to run the installer command from a nix-shell environment:
-`nix-shell -p git
-nixos-install --no-root-passwd --flake .#<HOST>`
+
+```bash
+nix-shell -p git
+nixos-install --no-root-passwd --flake .#<HOST>
+```
 
 ---
 ## Breakdown
