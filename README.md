@@ -7,7 +7,7 @@ The system's are entirely declarative, even using [disko](https://github.com/nix
 
 To deploy this flake, boot the installer image and run these commands as root:
 
-```bash
+```
 nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko --flake github:JaysFreaky/nixos#<HOST>
 mkdir -p /mnt/etc/nixos && cd $_
 git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
@@ -20,7 +20,7 @@ git remote set-url nixos git@github.com:JaysFreaky/nixos.git
 
 Because this is git repo, you'll need to run the installer command from a nix-shell environment:
 
-```bash
+```
 nix-shell -p git
 nixos-install --no-root-passwd --flake .#<HOST>
 ```
