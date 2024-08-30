@@ -243,9 +243,8 @@ in {
         grub = {
           enable = false;
           configurationLimit = 5;
-          device = "nodev";
+          #efiInstallAsRemovable = true;
           efiSupport = true;
-          enableCryptodisk = false;
           memtest86.enable = true;
           theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
           useOSProber = true;
