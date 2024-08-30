@@ -14,9 +14,9 @@ git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
 git remote set-url nixos git@github.com:JaysFreaky/nixos.git
 ```
 
-* If this is the first system being setup, you'll need to initialize your .sops.yaml and secrets/secrets.yaml - check [sops-nix's github](https://github.com/Mic92/sops-nix) for instructions.
+* If this is the first system being setup, you'll need to initialize your .sops.yaml and secrets/secrets.yaml - check sops-nix's [instructions](https://github.com/Mic92/sops-nix?tab=readme-ov-file#usage-example).
 
-* If this is an additional system being added, from an already established system, you'll need to add the new system's ssh-to-age key to your .sops.yaml and run `sops updatekeys secrets/secrets.yaml` and then transfer those files to the new system's '/mnt/etc/nixos' via scp.
+* If this is an additional system being added, from an already established system, you'll need to add the new system's ssh-to-age key to your .sops.yaml and run `sops updatekeys secrets/secrets.yaml` and then transfer those files to '/mnt/etc/nixos' via scp.
 
 Because this is git repo, you'll need to run the installer command from a nix-shell environment:
 
