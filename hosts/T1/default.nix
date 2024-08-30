@@ -243,6 +243,7 @@ in {
         grub = {
           enable = false;
           configurationLimit = 5;
+          device = "nodev";
           #efiInstallAsRemovable = true;
           efiSupport = true;
           memtest86.enable = true;
