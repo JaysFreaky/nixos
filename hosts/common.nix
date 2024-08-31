@@ -54,6 +54,7 @@ in {
       clinfo                      # OpenCL info | 'clinfo -l' or -a
       coreutils                   # GNU utilities
       dig                         # DNS tools
+      eza                         # ls replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
       file                        # File information
       killall                     # Process killer
