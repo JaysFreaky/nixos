@@ -13,6 +13,11 @@ in {
     };
 
     environment.systemPackages = with pkgs; let
+      gs-renice-pkg = pkgs.writeShellScriptBin "gs-renice" ''
+        (sleep 1; pgrep gamescope | xargs renice -n -20 -p)&
+        exec gamescope "$@"
+      '';
+
       lutris-pkg = pkgs.lutris.override {
         extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
           then extraPackages
@@ -28,20 +33,21 @@ in {
       };
     in [
       gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
+      gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
       heroic          # Game launcher - Epic, GOG, Prime
       lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
     ];
 
     home-manager.users.${vars.user} = {
       # Custom .desktop file with host's scaling applied
-      home.file = let
+      /* home.file = let
         steam-pkg = config.programs.steam.package;
       in {
         ".local/share/applications/steam.desktop" = {
           executable = true;
           text = lib.replaceStrings [ "Exec=steam %U" ] [ "Exec=${lib.getExe steam-pkg} -forcedesktopscaling=${host.scale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
         };
-      };
+      }; */
 
       programs.mangohud = {
         enable = true;
@@ -52,10 +58,8 @@ in {
           fps_limit_method = "late";
           vsync = 0;
           gl_vsync = -1;
-
           ### Visual ###
           time_no_label = true;
-
           gpu_text = "GPU";
           gpu_stats = true;
           gpu_load_change = true;
@@ -63,7 +67,6 @@ in {
           gpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
           gpu_temp = true;
           gpu_power = true;
-
           cpu_text = "CPU";
           cpu_stats = true;
           cpu_load_change = true;
@@ -71,10 +74,8 @@ in {
           cpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
           cpu_temp = true;
           cpu_power = true;
-
           vram = true;
           ram = true;
-
           fps = true;
           vulkan_driver = true;
           # Display GameMode status
@@ -82,15 +83,12 @@ in {
           # Display Gamescope options status
           fsr = true;
           hdr = true;
-
           # Display above Steam UI
           mangoapp_steam = false;
-
           position = "top-left";
           round_corners = 10;
           table_columns = 4;
           background_alpha = mkForce 0.4;
-
           ### Interaction ###
           toggle_hud = "Shift_R+F12";
         };
@@ -98,16 +96,15 @@ in {
     };
 
     programs = {
-      # Steam: Right-click game -> Properties -> Launch options: 'gamescope -- mangohud gamemoderun %command%'
+      # Steam: Right-click game -> Properties -> Launch options: 'gs-renice -- mangohud gamemoderun %command%'
       # Lutris: Preferences -> Global options -> CPU -> Enable Feral GameMode
       gamemode = {
         enable = true;
         enableRenice = true;
         settings = {
-          custom = {
-            start = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
-            end = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
-          };
+          # Currently hiding Gamemode notifications
+          #custom.start = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Activated'";
+          #custom.end = "${lib.getExe pkgs.libnotify} -a 'GameMode' -i 'input-gaming' 'GameMode Deactivated'";
           general = {
             # Prevents errors when screensaver not installed
             inhibit_screensaver = 0;
@@ -127,17 +124,17 @@ in {
           "-r ${host.refresh}"                 # Focused refresh rate
           "-o 30"                              # Unfocused refresh rate
           "--adaptive-sync"                    # VRR (if available)
-          #"--expose-wayland"                  # Incompatible with HDR?
           "--framerate-limit ${host.refresh}"  # Sync framerate to refresh rate
           "--rt"                               # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
-          # Workaround command to alt-tab and run after launching a game: 'renice -n -20 -p $(pgrep gamescope-wl)'
+          # Current workaround is using 'gs-renice' to replace gamescope in launch options mentioned above
         #capSysNice = true;
       };
 
       steam = {
         enable = true;
+        extest.enable = true;
         extraCompatPackages = [ pkgs.proton-ge-bin ];
         gamescopeSession.enable = false;
 
@@ -147,8 +144,7 @@ in {
         remotePlay.openFirewall = true;
 
         package = pkgs.steam.override {
-          # Set extest (Wayland xinput) here instead of through Steam options so gamemode env alone doesn't overwrite it
-          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so:${pkgs.pkgsi686Linux.extest}/lib/libextest.so";
+          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so:$LD_PRELOAD";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
@@ -166,7 +162,7 @@ in {
       };
     };
 
-    # Gamemode renice fix
+    # Gamemode process priority renice fix
     security.pam.loginLimits = [{
       domain = "@gamemode";
       type = "-";
