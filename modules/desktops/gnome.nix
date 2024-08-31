@@ -158,9 +158,7 @@ in {
  
     home-manager.users.${vars.user} = { config, lib, ... }: rec {
       dconf.settings = {
-        "ca/desrt/dconf-editor" = {
-          show-warning = false;
-        };
+        "ca/desrt/dconf-editor".show-warning = false;
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {
           new-tab = true;
           terminal = "${vars.terminal}";
@@ -185,9 +183,7 @@ in {
           remove-old-temp-files = true;
           report-technical-problems = "false";
         };
-        "org/gnome/desktop/session" = {
-          idle-delay = lib.hm.gvariant.mkUint32 300;
-        };
+        "org/gnome/desktop/session".idle-delay = lib.hm.gvariant.mkUint32 300;
         "org/gnome/desktop/wm/keybindings" = {
           close = [ "<Super>q" ];
           #maximize = [];
@@ -248,16 +244,10 @@ in {
           #toggle-tiled-left = [];
           #toggle-tiled-right = [];
         };
-        "org/gnome/mutter/wayland/keybindings" = {
-          restore-shortcuts = [];
-        };
-        "org/gnome/nautilus/preferences" = {
-          always-use-location-entry = false;
-        };
+        "org/gnome/mutter/wayland/keybindings".restore-shortcuts = [];
+        "org/gnome/nautilus/preferences".always-use-location-entry = false;
         "org/gnome/settings-daemon/plugins/media-keys" = {
-          custom-keybindings = [
-            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-          ];
+          custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
           help = [];
           home = [ "<Super>e" ];
           magnifier = [];
@@ -273,9 +263,7 @@ in {
           command = "${vars.terminal}";
           name = "Launch Terminal";
         };
-        "org/gnome/settings-daemon/plugins/power" = {
-          sleep-inactive-ac-type = "nothing";
-        };
+        "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
         "org/gnome/shell" = {
           enabled-extensions = (map (extension: extension.extensionUuid) home.packages) ++ [
             # Enable extensions that ship, but aren't enabled by default
@@ -296,9 +284,7 @@ in {
             "plexmediaplayer.desktop"
           ];
         };
-        "org/gnome/shell/extensions/appindicator" = {
-          icon-size = 16;
-        };
+        "org/gnome/shell/extensions/appindicator".icon-size = 16;
         "org/gnome/shell/extensions/bluetooth-quick-connect" = {
           bluetooth-auto-power-off = true;
           bluetooth-auto-power-off-interval = 180;
@@ -306,9 +292,7 @@ in {
           show-battery-icon-on = true;
           show-battery-value-on = true;
         };
-        "org/gnome/shell/extensions/blur-my-shell" = {
-          hacks-level = 3;
-        };
+        "org/gnome/shell/extensions/blur-my-shell".hacks-level = 3;
         "org/gnome/shell/extensions/blur-my-shell/applications" = {
           blur = true;
           blur-on-overview = true;
@@ -354,9 +338,7 @@ in {
           # 0=desktop, 1=overview
           startup-status = 0;
         };
-        "org/gnome/shell/extensions/lockkeys" = {
-          style = "show-hide-capslock";
-        };
+        "org/gnome/shell/extensions/lockkeys".style = "show-hide-capslock";
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
           #sunrise = "${themeChange}/bin/themeChange.sh";
@@ -379,9 +361,7 @@ in {
           position-in-panel = 2;
           use-higher-precision = false;
         };
-        "org/gnome/shell/extensions/weatherornot" = {
-          position = "clock-left";
-        };
+        "org/gnome/shell/extensions/weatherornot".position = "clock-left";
         "org/gnome/shell/keybindings" = {
           focus-active-notification = [];
           shift-overview-down = [ "<Super><Alt>Down" ];
@@ -392,18 +372,10 @@ in {
           switch-to-application-4 = [];
           toggle-message-tray = [];
         };
-        "org/gnome/shell/weather" = {
-          automatic-location = true;
-        };
-        "org/gnome/system/location" = {
-          enabled = true;
-        };
-        "org/gnome/TextEditor" = {
-          restore-session = false;
-        };
-        "org/gtk/gtk4/settings/file-chooser" = {
-          show-hidden = true;
-        };
+        "org/gnome/shell/weather".automatic-location = true;
+        "org/gnome/system/location".enabled = true;
+        "org/gnome/TextEditor".restore-session = false;
+        "org/gtk/gtk4/settings/file-chooser".show-hidden = true;
       };
 
       gtk = {
