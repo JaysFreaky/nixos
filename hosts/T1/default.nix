@@ -1,6 +1,13 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   cfg-hypr = config.myOptions.desktops.hyprland;
   host = config.myHosts;
+
+  gpuPci = {
+    gamescope = "1002:73a5";
+    mangohud = "0:0a:00.0";
+    fancontrol = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+    nvidia = "PCI:";
+  };
 in {
   imports = [
     ./filesystems.nix
@@ -76,7 +83,7 @@ in {
       gamescope = {
         # lspci -nn | grep -i vga
         args = [
-          #"--prefer-vk-device \"1002:73a5\""
+          #"--prefer-vk-device ${gpuPci.gamescope}"
           #"--borderless"
           "--fullscreen"
           "--hdr-enabled"
@@ -125,7 +132,7 @@ in {
       programs.mangohud.settings = {
         gpu_voltage = true;
         gpu_fan = true;
-        #pci_dev = "0:0a:00.0";
+        #pci_dev = ${gpuPci.mangohud};
         table_columns = lib.mkForce 6;
       };
 
@@ -153,15 +160,19 @@ in {
     # Hardware
     ##########################################################
     hardware = {
-      # Control CPU / case fans
+      # Control case/cpu fans
       fancontrol = let 
-        #gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-        gpuHW = "";
+        gpuHW = "${gpuPci.fancontrol}";
         gpuDrv = "nvidia";
         fanHW = "devices/platform/nct6775.656";
         fanDrv ="nct6798";
         cpuHW = "devices/pci0000:00/0000:00:18.3";
         cpuDrv = "zenpower";
+        # Percent * 2.55
+        caseMin = "102";
+        caseMax = "102";
+        cpuMin = "64";
+        cpuMax = "217";
       in {
         enable = false;
         config = ''
@@ -174,11 +185,11 @@ in {
           MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
           # Always spin @ MINPWM until MINTEMP
           MINSTART=hwmon2/pwm1=0 hwmon2/pwm2=0
-          MINSTOP=hwmon2/pwm1=64 hwmon2/pwm2=64
-          # Fans @ 25% until 40 degress
-          MINPWM=hwmon2/pwm1=64 hwmon2/pwm2=64
-          # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-          MAXPWM=hwmon2/pwm1=140 hwmon2/pwm2=217
+          MINSTOP=hwmon2/pwm1=${caseMin} hwmon2/pwm2=${cpuMin}
+          # Fans @ 40%/25% until 40 degress
+          MINPWM=hwmon2/pwm1=${caseMin} hwmon2/pwm2=${cpuMin}
+          # Fans ramp to 40%/85% @ 80 degrees
+          MAXPWM=hwmon2/pwm1=${caseMax} hwmon2/pwm2=${cpuMax}
         '';
       };
 
@@ -192,6 +203,12 @@ in {
           libva-vdpau-driver
           libvdpau-va-gl
         ];
+      };
+
+      nvidia.prime = {
+        #amdgpuBusId = "PCI:";
+        #nvidiaBusId = "${gpuPci.nvidia}";
+        #sync.enable = true;
       };
 
       openrazer = {
@@ -225,11 +242,14 @@ in {
       extraModulePackages = with config.boot.kernelPackages; [
         zenpower
       ];
-      kernelPackages = pkgs.linuxPackages_latest;
       # CachyOS kernel relies on chaotic.scx
-      #kernelPackages = pkgs.linuxPackages_cachyos;
+      kernelPackages = if (!config.chaotic.scx.enable)
+        then pkgs.linuxPackages_latest
+        else pkgs.linuxPackages_cachyos;
       kernelParams = [
         "amd_pstate=active"
+        # Disable iGPU
+        #"module_blacklist=amdgpu"
         # Hides text prior to plymouth boot logo
         #"quiet"
         #"splash"
@@ -279,11 +299,6 @@ in {
       enable = false;
       scheduler = "scx_lavd";
     };
-
-
-    ##########################################################
-    # Network
-    ##########################################################
 
   };
 }
