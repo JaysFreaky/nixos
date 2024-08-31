@@ -69,6 +69,8 @@ in {
         # Disable GSP Mode - Smoother Plasma Wayland experience
         "nvidia.NVreg_EnableGpuFirmware=0"
       ];
+      # Does the same thing as above?
+      #hardware.nvidia.gsp.enable = false;
     })
 
   ];
