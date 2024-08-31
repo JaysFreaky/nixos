@@ -57,6 +57,7 @@ in {
       eza                         # ls replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
       file                        # File information
+      htop                        # Resource manager
       killall                     # Process killer
       libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
       lm_sensors                  # Hardware sensors | 'sensors-detect'
