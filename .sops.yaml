@@ -4,7 +4,7 @@
 # 'sops updatekeys secrets/secrets.yaml'
 keys:
   - &host_fw13 age1v7vle8u0qwje9f083y0d3u4neufqxtd7zpcqwtdvqklenjhv94esgx35pc
-  - &host_t450s age130fy8vnm8jd7s9rhqxfaajf6up788hkd3m50p7rupvg47frq7e6q0yx4y8
+  - &host_t450s age1xxfjyz845az6j7awq6gs8ndfvshkd6k2at8u2vl7s5alj2g3k39s75n9wh
 
 creation_rules:
   - path_regex: secrets/secrets.yaml$
