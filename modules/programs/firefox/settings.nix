@@ -417,7 +417,7 @@
     # 0=blank, 1=home, 2=last visited page, 3=resume previous session
       "browser.startup.page" = 1;
     # extension path is dynamic, so commented out
-      #"browser.startup.homepage" = "moz-extension://44e4680c-fa64-4989-af43-9a2a089d96fa/index.html";
+      #"browser.startup.homepage" = "";
     "browser.newtab.extensionControlled" = true;
     #"browser.newtab.privateAllowed" = false;
   # Settings->Home->Firefox Home Control
@@ -501,20 +501,16 @@
     "browser.bookmarks.showMobileBookmarks" = true;
 
   /** SYNC ***/
-  # use hostname for FF account device name
-    "identity.fxaccounts.account.device.name" = "${config.networking.hostName}";
-  # only syncing bookmarks/tabs
-    "services.sync.declinedEngines" = "addons,addresses,creditcards,forms,history,passwords,prefs";
-    #"services.sync.declinedEngines" = "addresses,creditcards,forms,history,passwords";
-    "services.sync.addons" = false;
-    #"services.sync.addons" = true;
+  "identity.fxaccounts.account.device.name" = "${config.networking.hostName}";
+  # only syncing addons/bookmarks/prefs/tabs
+    "services.sync.declinedEngines" = "addresses,creditcards,forms,history,passwords";
+    "services.sync.addons" = true;
     "services.sync.addresses" = false;
     "services.sync.bookmarks" = true;
     "services.sync.creditcards" = false;
     "services.sync.history" = false;
     "services.sync.passwords" = false;
-    "services.sync.prefs" = false;
-    #"services.sync.prefs" = true;
+    "services.sync.prefs" = true;
     "services.sync.tabs" = true;
     "services.sync.deletePwdFxA" = true;
 
