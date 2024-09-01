@@ -168,6 +168,12 @@
         ];
       };
 
+      # nix build .#nixosConfigurations.iso.config.system.build.isoImage
+      iso = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [ ./hosts/iso ];
+      };
+
       Ridge = nixpkgs.lib.nixosSystem {
         inherit pkgs system;
         specialArgs = {
