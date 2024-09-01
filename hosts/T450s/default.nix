@@ -4,7 +4,7 @@
   host = config.myHosts;
 in {
   imports = [
-    #./filesystems.nix
+    ./filesystems.nix
     ./hardware-configuration.nix
   ];
 
@@ -216,59 +216,6 @@ in {
       };
 
       supportedFilesystems = [ "btrfs" ];
-    };
-
-
-    ##########################################################
-    # Network
-    ##########################################################
-
-
-    ##########################################################
-    # Filesystems
-    ##########################################################
-    fileSystems = {
-      "/" = {
-        device = "/dev/disk/by-partlabel/root";
-        fsType = "btrfs";
-        options = [
-          "compress=zstd"
-          "noatime"
-          "subvol=root"
-        ];
-      };
-      "/boot" = {
-        device = "/dev/disk/by-partlabel/boot";
-        fsType = "vfat";
-      };
-      "/home" = {
-        device = "/dev/disk/by-partlabel/root";
-        fsType = "btrfs";
-        options = [
-          "compress=zstd"
-          "subvol=home"
-        ];
-      };
-      "/nix" = {
-        device = "/dev/disk/by-partlabel/root";
-        fsType = "btrfs";
-        options = [
-          "compress=zstd"
-          "noatime"
-          "subvol=nix"
-        ];
-      };
-      "/mnt/nas" = {
-        device = "10.0.10.10:/mnt/user";
-        fsType = "nfs";
-        options = [
-          "noauto"
-          "x-systemd.automount"
-          "x-systemd.device-timeout=5s"
-          "x-systemd.idle-timeout=600"
-          "x-systemd.mount-timeout=5s"
-        ];
-      };
     };
 
   };
