@@ -1,7 +1,7 @@
 { config, inputs, lib, pkgs, stable, vars, ... }: let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
-  spf-flake = inputs.superfile.packages.${pkgs.system};
+  superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
   imports = (
     import ../modules/desktops ++
@@ -67,7 +67,7 @@ in {
       pciutils                    # Manage PCI | 'lspci'
       shellcheck                  # Script formating checker
       sops                        # Secret management
-      spf-flake.superfile         # CLI file manager
+      superfile-pkg               # CLI file manager
       ssh-to-age                  # Convert SSH keys to Age
       #vars.terminal              # Terminal installed via variable
       tldr                        # Helper
@@ -162,7 +162,7 @@ in {
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
-      trusted-substituters = [
+      substituters = [
         "https://nix-community.cachix.org"
       ];
       trusted-public-keys = [
@@ -208,7 +208,7 @@ in {
 
   sops = {
     age = {
-      generateKey = false;
+      #generateKey = true;
       #keyFile = "/var/lib/sops-nix/key.txt";
       sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     };
@@ -229,7 +229,6 @@ in {
     users = {
       # Single-user system, so user is a variable
       ${vars.user} = {
-        createHome = true;
         description = "${vars.name}";
         extraGroups = [
           "audio"
