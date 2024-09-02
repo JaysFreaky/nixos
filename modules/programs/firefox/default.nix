@@ -1,7 +1,7 @@
 { config, pkgs, vars, ... }: let
   bpc = {
-    version = "3.8.1.1";
-    sha256 = "sha256-hzVscrHhFk13JDj4MjH+zyxnyfUhLZSyTpDS72KTCBY=";
+    version = "3.8.2.1";
+    sha256 = "sha256-pZvACdKDqUPxD9fg2oDxonU+k5Vj/2AKRbR07EP7Vrk=";
   };
 
   browser = "floorp"; # or firefox
@@ -68,7 +68,6 @@ in {
           darkreader
           enhancer-for-youtube
           multi-account-containers
-          nighttab
           onepassword-password-manager
           simplelogin
           sponsorblock
