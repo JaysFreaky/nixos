@@ -35,19 +35,30 @@ in {
       gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
       gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
       heroic          # Game launcher - Epic, GOG, Prime
+      jdk             # Java games
       lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
     ];
 
     home-manager.users.${vars.user} = {
-      # Custom .desktop file with host's scaling applied
-      /* home.file = let
-        steam-pkg = config.programs.steam.package;
-      in {
-        ".local/share/applications/steam.desktop" = {
+      home.file = {
+        # Custom steam.desktop file with host's scaling applied
+        /*".local/share/applications/steam.desktop" = let
+          steam-pkg = config.programs.steam.package;
+        in {
           executable = true;
           text = lib.replaceStrings [ "Exec=steam %U" ] [ "Exec=${lib.getExe steam-pkg} -forcedesktopscaling=${host.scale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
+        };*/
+
+        "Games/Severed_Chains_Linux/launch" = {
+          executable = true;
+          text = ''
+            #!/usr/bin/env bash
+            export LD_LIBRARY_PATH=${pkgs.libGL}/lib:$LD_LIBRARY_PATH
+            cd ~/Games/Severed_Chains_Linux/
+            ${lib.getExe' pkgs.jdk "java"} -cp "lod-game-cbb72c363c4425e53434bd75874d9d697a6cdda2.jar:libs/*" legend.game.Main -ea
+          '';
         };
-      }; */
+      };
 
       programs.mangohud = {
         enable = true;
