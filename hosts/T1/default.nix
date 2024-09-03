@@ -1,13 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   cfg-hypr = config.myOptions.desktops.hyprland;
   host = config.myHosts;
-
-  gpuPci = {
-    gamescope = "1002:73a5";
-    mangohud = "0:0a:00.0";
-    fancontrol = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-    nvidia = "PCI:";
-  };
 in {
   imports = [
     ./filesystems.nix
@@ -42,7 +35,7 @@ in {
         #hyprland.enable = true;
         kde = {
           enable = true;
-          #gpuWidget = "gpu/gpu0/temperature";
+          gpuWidget = "gpu/gpu1/temperature";
         };
       };
 
@@ -83,7 +76,7 @@ in {
       gamescope = {
         # lspci -nn | grep -i vga
         args = [
-          #"--prefer-vk-device ${gpuPci.gamescope}"
+          "--prefer-vk-device \"10de:2684\""
           #"--borderless"
           "--fullscreen"
           "--hdr-enabled"
@@ -132,7 +125,7 @@ in {
       programs.mangohud.settings = {
         gpu_voltage = true;
         gpu_fan = true;
-        #pci_dev = ${gpuPci.mangohud};
+        pci_dev = "0:01:00.0";
         table_columns = lib.mkForce 6;
       };
 
@@ -162,34 +155,32 @@ in {
     hardware = {
       # Control case/cpu fans
       fancontrol = let 
-        gpuHW = "${gpuPci.fancontrol}";
-        gpuDrv = "nvidia";
-        fanHW = "devices/platform/nct6775.656";
-        fanDrv ="nct6798";
+        fanHW = "devices/platform/nct6687.2592";
+        fanDrv ="nct6686";
         cpuHW = "devices/pci0000:00/0000:00:18.3";
         cpuDrv = "zenpower";
         # Percent * 2.55
-        caseMin = "102";
-        caseMax = "102";
-        cpuMin = "64";
-        cpuMax = "217";
+        caseMin = "102"; # 40%
+        caseMax = "102"; # 40%
+        cpuMin = "64"; # 25%
+        cpuMax = "217"; # 85%
       in {
         enable = false;
         config = ''
           INTERVAL=10
-          DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
-          DEVNAME=hwmon1=${gpuDrv} hwmon2=${fanDrv} hwmon3=${cpuDrv}
-          FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon3/temp2_input
-          FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
-          MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
-          MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
+          DEVPATH=hwmon0=${fanHW} hwmon3=${cpuHW}pwm1
+          DEVNAME=hwmon0=${fanDrv} hwmon3=${cpuDrv}
+          FCTEMPS=hwmon0/pwm1=hwmon3/temp1_input hwmon0/pwm2=hwmon3/temp1_input
+          FCFANS=hwmon0/pwm1=hwmon0/fan1_input hwmon0/pwm2=hwmon0/fan2_input
+          MINTEMP=hwmon0/pwm1=40 hwmon0/pwm2=40
+          MAXTEMP=hwmon0/pwm1=80 hwmon0/pwm2=80
           # Always spin @ MINPWM until MINTEMP
-          MINSTART=hwmon2/pwm1=0 hwmon2/pwm2=0
-          MINSTOP=hwmon2/pwm1=${caseMin} hwmon2/pwm2=${cpuMin}
-          # Fans @ 40%/25% until 40 degress
-          MINPWM=hwmon2/pwm1=${caseMin} hwmon2/pwm2=${cpuMin}
-          # Fans ramp to 40%/85% @ 80 degrees
-          MAXPWM=hwmon2/pwm1=${caseMax} hwmon2/pwm2=${cpuMax}
+          MINSTART=hwmon0/pwm1=0 hwmon0/pwm2=0
+          MINSTOP=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
+          # Fans @ 25%/40% until 40 degress
+          MINPWM=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
+          # Fans ramp to 85%/40% @ 80 degrees
+          MAXPWM=hwmon0/pwm1=${cpuMax} hwmon0/pwm2=${caseMax}
         '';
       };
 
@@ -206,9 +197,9 @@ in {
       };
 
       nvidia.prime = {
-        #amdgpuBusId = "PCI:";
-        #nvidiaBusId = "${gpuPci.nvidia}";
-        #sync.enable = true;
+        amdgpuBusId = "PCI:13:0:0";
+        nvidiaBusId = "PCI:1:0:0";
+        sync.enable = true;
       };
 
       openrazer = {
@@ -236,7 +227,7 @@ in {
       # Zenpower uses same PCI device as k10temp, so disabling k10temp
       blacklistedKernelModules = [ "k10temp" ];
       kernelModules = [
-        #"nct6775"
+        "nct6687"
         "zenpower"
       ];
       extraModulePackages = with config.boot.kernelPackages; [
