@@ -1,5 +1,5 @@
 { config, inputs, lib, pkgs, vars, ... }: let
-  # Custom plymouth theme
+  # Framework plymouth theme
   framework-plymouth = inputs.framework-plymouth.packages.${pkgs.system}.default;
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
@@ -74,14 +74,17 @@ in {
       zenmonitor              # CPU stats
 
       # Multimedia
+      celluloid               # MPV GTK frontend w/ Wayland
+      clapper                 # GTK media player
       mpv                     # Media player
-      plex-media-player       # Plex player
+      plex-media-player       # Plex client
+      smplayer                # MPV frontend
 
       # Notes
       obsidian                # Markdown notes
 
       # Productivity
-      libreoffice
+      libreoffice             # Office suite
 
       # VPN
       protonvpn-gui           # VPN client
@@ -169,9 +172,7 @@ in {
     ##########################################################
     hardware = {
       bluetooth.powerOnBoot = lib.mkForce false;
-
       enableAllFirmware = true;
-      # Firmware updates for amdgpu/wifi
       firmware = [ pkgs.linux-firmware ];
 
       graphics = {
@@ -209,7 +210,6 @@ in {
         sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
       }) { inherit (pkgs) system; }).fwupd;*/
 
-      # Lid close, power button, and idle actions
       logind = {
         lidSwitch = "suspend";
         powerKey = "suspend-then-hibernate";
@@ -219,7 +219,6 @@ in {
         '';
       };
 
-      # Temperature management
       thermald.enable = true;
 
       # GPU perfarmance adjusts when plugged into power - power_dpm_force_performance_level is auto by default
@@ -228,17 +227,14 @@ in {
           #!/usr/bin/env bash
           # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
           GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
-
-          # Default level
           DPM_PERF_LEVEL=low
-          # Evaluate argument passed by udev
+
           if [ $1 -eq 1 ] ; then
             DPM_PERF_LEVEL=high
           else
             DPM_PERF_LEVEL=low
           fi
 
-          # Set performance level
           echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
         '';
       in ''
