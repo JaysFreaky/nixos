@@ -431,10 +431,6 @@ in {
 
       # Hide apps from app grid
       xdg.desktopEntries = {
-        neovide = {
-          name = "Neovide";
-          noDisplay = true;
-        };
         nvim = {
           name = "Neovim wrapper";
           noDisplay = true;

@@ -397,12 +397,6 @@ in {
         */
       };
 
-      # Hide neovim from app grid
-      xdg.desktopEntries.nvim = {
-        name = "Neovim wrapper";
-        noDisplay = true;
-      };
-
       # Set default applications
       xdg.mimeApps = {
         enable = true;
