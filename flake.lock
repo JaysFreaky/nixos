@@ -89,6 +89,29 @@
         "type": "github"
       }
     },
+    "fancontrol-gui": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ]
+      },
+      "locked": {
+        "lastModified": 1725472956,
+        "narHash": "sha256-yKkssLTiX7drJdczz6fmqB/fT8dRdiucSs4hOyz6zDU=",
+        "owner": "JaysFreaky",
+        "repo": "fancontrol-gui",
+        "rev": "ee38e2c0c98e642156e8e7362b23875de12c9483",
+        "type": "github"
+      },
+      "original": {
+        "owner": "JaysFreaky",
+        "repo": "fancontrol-gui",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -480,6 +503,7 @@
       "inputs": {
         "chaotic": "chaotic",
         "disko": "disko",
+        "fancontrol-gui": "fancontrol-gui",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "framework-plymouth": "framework-plymouth",

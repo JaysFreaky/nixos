@@ -1,6 +1,8 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   cfg-hypr = config.myOptions.desktops.hyprland;
   host = config.myHosts;
+
+  fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
 in {
   imports = [
     ./filesystems.nix
@@ -56,6 +58,7 @@ in {
     ##########################################################
     environment.systemPackages = with pkgs; [
       # Hardware
+        fancontrol-gui          # Fancontrol GUI for lm-sensors
         polychromatic           # Razer lighting GUI
 
       # Messaging
@@ -63,7 +66,7 @@ in {
 
       # Multimedia
         #mpv                     # Media player
-        #plex-media-player       # Plex player
+        #plex-media-player       # Plex client
 
       # Notes
         #obsidian                # Markdown notes
@@ -115,6 +118,8 @@ in {
         upper = "06:00";
       };
     };
+
+    users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
 
     ##########################################################
