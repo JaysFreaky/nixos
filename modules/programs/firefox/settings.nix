@@ -452,7 +452,7 @@
   "extensions.pocket.site" = " ";
 
   /** DOWNLOADS ***/
-  "browser.download.always_ask_before_handling_new_types" = true;
+  "browser.download.always_ask_before_handling_new_types" = false;
   "browser.download.manager.addToRecentDocs" = false;
 
   /** PDF ***/
@@ -544,16 +544,17 @@
   "browser.newtabpage.activity-stream.floorp.newtab.releasenote.hide" = true;
   "floorp.browser.sidebar.useIconProvider" = "duckduckgo";
   "floorp.browser.sidebar2.data" = ''
-    {"data":{"floorp__bmt":{"url":"floorp//bmt","width":600},"floorp__bookmarks":{"url":"floorp//bookmarks","width":415},"floorp__history":{"url":"floorp//history","width":415},"floorp__downloads":{"url":"floorp//downloads","width":415},"floorp__notes":{"url":"floorp//notes","width":550},"w0":{"url":"https://translate.google.com"},"w202471813257":{"url":"https://mail.proton.me/"}},"index":["floorp__bmt","floorp__bookmarks","floorp__history","floorp__downloads","floorp__notes","w0","w202471813257"]}
+    {"data":{"floorp__bmt":{"url":"floorp//bmt","width":500},"floorp__bookmarks":{"url":"floorp//bookmarks"},"floorp__downloads":{"url":"floorp//downloads"},"floorp__notes":{"url":"floorp//notes"},"w0":{"url":"https://translate.google.com"},"w202471813257":{"url":"https://mail.proton.me/"}},"index":["floorp__bmt","floorp__bookmarks","floorp__downloads","floorp__notes","w0","w202471813257"]}
   '';
-  "floorp.browser.sidebar2.global.webpanel.width" = 350;
+  "floorp.browser.sidebar2.global.webpanel.width" = 400;
   "floorp.browser.tabbar.settings" = 2;
   "floorp.browser.tabs.openNewTabPosition" = 1;
   "floorp.browser.tabs.verticaltab" = true;
   "floorp.browser.user.interface" = 1;
   "floorp.browser.workspaces.enabled" = false;
-  "floorp.download.notification" = 3;
-  "floorp.downloading.red.color" = true;
+  # 1=starts, 2=finishes, 3=both, 4=disabled
+    "floorp.download.notification" = 2;
+  "floorp.downloading.red.color" = false;
   "floorp.tabbar.style" = 2;
   "floorp.verticaltab.hover.enabled" = true;
   "floorp.verticaltab.show.newtab.button" = true;
