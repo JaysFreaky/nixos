@@ -1,4 +1,6 @@
-{
+{ lib, ...}: let
+  formatHome = true;
+in {
   boot = {
     # sudo btrfs inspect-internal map-swapfile -r /.swap/swapfile
     #kernelParams = [ "resume_offset=" ];
@@ -36,7 +38,7 @@
                 mountOptions = [ "compress=zstd" "noatime" ];
                 mountpoint = "/";
               };
-              "home" = {
+              "home" = lib.mkIf (formatHome) {
                 mountOptions = [ "compress=zstd" ];
                 mountpoint = "/home";
               };
@@ -55,16 +57,27 @@
     };
   };
 
-  fileSystems."/mnt/nas" = {
-    device = "10.0.10.10:/mnt/user";
-    fsType = "nfs";
-    options = [
-      "noauto"
-      "x-systemd.automount"
-      "x-systemd.device-timeout=5s"
-      "x-systemd.idle-timeout=600"
-      "x-systemd.mount-timeout=5s"
-    ];
+  fileSystems = {
+    "/home" = lib.mkIf (!formatHome) {
+      device = "/dev/disk/by-partlabel/root";
+      fsType = "btrfs";
+      options = [
+        "compress=zstd"
+        "subvol=home"
+      ];
+    };
+
+    "/mnt/nas" = {
+      device = "10.0.10.10:/mnt/user";
+      fsType = "nfs";
+      options = [
+        "noauto"
+        "x-systemd.automount"
+        "x-systemd.device-timeout=5s"
+        "x-systemd.idle-timeout=600"
+        "x-systemd.mount-timeout=5s"
+      ];
+    };
   };
 
 }
