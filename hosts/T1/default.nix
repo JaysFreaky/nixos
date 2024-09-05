@@ -159,28 +159,28 @@ in {
     ##########################################################
     hardware = {
       # Control case/cpu fans
-      fancontrol = let 
-        fanHW = "devices/platform/nct6687.2592";
-        fanDrv ="nct6686";
-        cpuHW = "devices/pci0000:00/0000:00:18.3";
-        cpuDrv = "zenpower";
-        # Percent * 2.55
-        caseMin = "102"; # 40%
-        caseMax = "102"; # 40%
-        cpuMin = "64"; # 25%
-        cpuMax = "217"; # 85%
-      in {
+      fancontrol = {
         enable = false;
-        config = ''
+        config = let
+          fanPath = "devices/platform/nct6687.2592";
+          fanName ="nct6686";
+          cpuPath = "devices/pci0000:00/0000:00:18.3";
+          cpuName = "zenpower";
+          # Value = percent * 2.55
+          caseMin = "102"; # 40%
+          caseMax = "102"; # 40%
+          cpuMin = "64"; # 25%
+          cpuMax = "217"; # 85%
+        in ''
           INTERVAL=10
-          DEVPATH=hwmon0=${fanHW} hwmon3=${cpuHW}pwm1
-          DEVNAME=hwmon0=${fanDrv} hwmon3=${cpuDrv}
+          DEVPATH=hwmon0=${fanPath} hwmon3=${cpuPath}
+          DEVNAME=hwmon0=${fanName} hwmon3=${cpuName}
           FCTEMPS=hwmon0/pwm1=hwmon3/temp1_input hwmon0/pwm2=hwmon3/temp1_input
           FCFANS=hwmon0/pwm1=hwmon0/fan1_input hwmon0/pwm2=hwmon0/fan2_input
           MINTEMP=hwmon0/pwm1=40 hwmon0/pwm2=40
           MAXTEMP=hwmon0/pwm1=80 hwmon0/pwm2=80
           # Always spin @ MINPWM until MINTEMP
-          MINSTART=hwmon0/pwm1=0 hwmon0/pwm2=0
+          MINSTART=hwmon0/pwm1=30 hwmon0/pwm2=30
           MINSTOP=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
           # Fans @ 25%/40% until 40 degress
           MINPWM=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
@@ -236,6 +236,7 @@ in {
         "zenpower"
       ];
       extraModulePackages = with config.boot.kernelPackages; [
+        nct6687d
         zenpower
       ];
       # CachyOS kernel relies on chaotic.scx
