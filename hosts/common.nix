@@ -1,6 +1,7 @@
 { config, inputs, lib, pkgs, stable, vars, ... }: let
   # Generate GPU path for Firefox environment variable
   gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+  secrets = config.sops.secrets;
   superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
   imports = (
@@ -125,7 +126,7 @@ in {
   networking.networkmanager = {
     enable = true;
     ensureProfiles = {
-      environmentFiles = [ config.sops.secrets."wifi.env".path ];
+      environmentFiles = [ secrets."wifi.env".path ];
       profiles."home-wifi" = {
         connection = {
           id = "$home_ssid";
@@ -237,10 +238,10 @@ in {
           "video"
           "wheel"
         ];
-        hashedPasswordFile = config.sops.secrets."user/password".path;
+        hashedPasswordFile = secrets."user/password".path;
         isNormalUser = true;
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT jays@FW13"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT ${vars.user}@FW13"
         ];
       };
 
