@@ -27,9 +27,9 @@ in {
 
   environment = {
     # List packages installed in system profile. To search, run:
-    # $ nix search wget
+      # $ nix search wget
     # To use a stable version, add 'stable.' to the beginning of the package:
-    # stable.wget
+      # stable.wget
     systemPackages = with pkgs; [
     # ASCII Art
       asciiquarium                # Fishies swimming
@@ -38,53 +38,60 @@ in {
     # File Support
       #cifs-utils                 # SMB support
       exiftool                    # File metadata
-      imagemagick                 # Image tools
+      file                        # File information
+      libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
       nfs-utils                   # NFS support
       p7zip                       # Zip encryption
-      qview                       # Image viewer
       unzip                       # Zip files
       unrar                       # Rar files
+      #xdragon                    # Terminal drag'n'drop
       zip                         # Zip files
+
+    # Hardware
+      clinfo                      # OpenCL info | 'clinfo -l' or -a
+      lm_sensors                  # Hardware sensors | 'sensors-detect'
+      lshw                        # Hardware config
+      nvme-cli                    # Manage NVMe
+      pciutils                    # Manage PCI | 'lspci'
+      usbutils                    # Manage USB | 'lsusb'
+
+    # Images
+      feh                         # Image viewer
+      imagemagick                 # Image tools
+      qview                       # Image viewer
+
+    # Monitoring
+      btop                        # Resource manager
+      htop                        # Resource manager
 
     # Notifications
       libnotify                   # Notification engine
 
+    # Secrets
+      sops                        # Secret management
+      ssh-to-age                  # Convert SSH keys to Age
+
     # Terminal
       bat                         # cat with syntax highlighting
-      btop                        # Resource manager
-      clinfo                      # OpenCL info | 'clinfo -l' or -a
       coreutils                   # GNU utilities
       dig                         # DNS tools
-      eza                         # ls replacement | 'eza' or 'exa'
+      eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
-      file                        # File information
-      htop                        # Resource manager
       killall                     # Process killer
-      libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
-      lm_sensors                  # Hardware sensors | 'sensors-detect'
-      lshw                        # Hardware config
       nix-tree                    # Browse nix store
-      nvme-cli                    # Manage NVMe
-      pciutils                    # Manage PCI | 'lspci'
       shellcheck                  # Script formating checker
-      sops                        # Secret management
       superfile-pkg               # CLI file manager
-      ssh-to-age                  # Convert SSH keys to Age
-      #vars.terminal              # Terminal installed via variable
-      tldr                        # Helper
+      tldr                        # Abbreviated manual
       tmux                        # Multiplexor
       tree                        # Directory layout
-      usbutils                    # Manage USB | 'lsusb'
-      vim                         # Editor
       wget                        # Retriever
       wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
       xdg-utils                   # Environment integration
-      xdragon                     # Terminal drag'n'drop
       zellij                      # Tmux alternative
 
     # Theming
-      base16-schemes              # Presets
-      variety                     # Wallpapers
+      #base16-schemes             # Presets
+      #variety                    # Wallpapers
     ];
 
     variables = {
