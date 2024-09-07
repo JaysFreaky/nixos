@@ -49,6 +49,15 @@
       };
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nixos-cosmic = {
+      url = "github:lilyinstarlight/nixos-cosmic";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs-stable";
+        rust-overlay.follows = "rust-overlay";
+      };
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
     nur.url = "github:nix-community/NUR";
@@ -142,6 +151,7 @@
         };
       }
       inputs.nix-flatpak.nixosModules.nix-flatpak
+      inputs.nixos-cosmic.nixosModules.default
       inputs.nur.nixosModules.nur
       inputs.sops-nix.nixosModules.sops
       inputs.spicetify-nix.nixosModules.spicetify
