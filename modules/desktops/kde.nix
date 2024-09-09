@@ -43,24 +43,29 @@ in {
   config = lib.mkIf (cfg.enable) {
     environment = {
       systemPackages = with pkgs; [
-        cursor.package              # For GDM login screen
+        cursor.package              # For SDDM login screen
         icon.package                # Icon theme
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
         neovide                     # GUI launcher for neovim
         sddm-astronaut              # SDDM theme
-        #sddm-astronaut-pkg          # Custom SDDM theme
+        #sddm-astronaut-pkg         # Custom SDDM theme
       ] ++ (with kdePackages; [
+        kwallet                     # KDE Wallet
+        kwallet-pam                 # Unlock on login
+        kwalletmanager              # Wallet manager
         qt5compat                   # QT5 compatibility
         sddm-kcm                    # SDDM configuration module
       ]);
       plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
+    #security.pam.services.sddm.kwallet.enable = true;
+
     services = {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        #extraPackages = [ pkgs.kdePackages.qt5compat ];
+        extraPackages = [ pkgs.kdePackages.qt5compat ];
         settings = {
           Theme = {
             CursorSize = cursor.size;
@@ -90,8 +95,8 @@ in {
     home-manager.users.${vars.user} = {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
 
-      # Sets profile image
       home.file = {
+        # Sets profile image
         ".face".source = profileImg;
         # KRunner web search providers
         ".local/share/kf6/searchproviders/hm.desktop".text = ''
@@ -354,6 +359,7 @@ in {
             "services/kitty.desktop"."_launch" = "Meta+Return";
           };
 
+          # Setting cursor/icon themes via configFile
           #workspace.cursor.theme = cursor.name;
           #workspace.cursor.size = cursor.size;
           #workspace.iconTheme = icon.name;
@@ -366,35 +372,38 @@ in {
       in {
         enable = false;
         settings.usegeoclue = true;
+        darkModeScripts = {
+          kde = ''
+            # Plasma Global Theme
+            lookandfeeltool --apply "org.kde.breezedark.desktop"
+            # Wallpaper
+            qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
+          '';
 
-        /*
-        darkModeScripts = ''
-          # Alacritty
-          ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-          # Kitty
-          ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
-          kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          terminal = ''
+            # Alacritty
+            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+            # Kitty
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          '';
+        };
+        lightModeScripts = {
+          kde = ''
+            # Plasma Global Theme
+            lookandfeeltool --apply "org.kde.breeze.desktop"
+            # Wallpaper
+            qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
+          '';
 
-          # Plasma Global Theme
-          lookandfeeltool --apply "org.kde.breezedark.desktop"
-
-          #Wallpaper
-          #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
-        '';
-        lightModeScripts = ''
-          # Alacritty
-          ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-          # Kitty
-          ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
-          kill -SIGUSR1 $(pidof kitty) 2>/dev/null
-
-          # Plasma Global Theme
-          lookandfeeltool --apply "org.kde.breeze.desktop"
-
-          # Wallpaper
-          #qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
-        '';
-        */
+          terminal = ''
+            # Alacritty
+            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+            # Kitty
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          '';
+        };
       };
 
       # Set default applications
