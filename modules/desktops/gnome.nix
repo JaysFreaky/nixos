@@ -30,12 +30,16 @@
       # Kitty
       ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+      # Wallpaper
+      #gsettings set org.gnome.desktop.background picture-uri '${vars.configPath}/assets/wallpapers/blobs-l.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Alacritty
       ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
       # Kitty
       ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+      # Wallpaper
+      #gsettings set org.gnome.desktop.background picture-uri-dark '${vars.configPath}/assets/wallpapers/blobs-d.png'
     fi;
   '';
 in {
@@ -112,6 +116,7 @@ in {
       gnome = {
         games.enable = false;
         gnome-keyring.enable = true;
+        sushi.enable = true;
       };
 
       libinput = {
@@ -414,10 +419,16 @@ in {
         weather-or-not
       ];
 
-      # Set terminal themes
       programs = {
+        # Set terminal themes
         alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
         kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
+
+        # SSH agent
+        bash.initExtra = ''
+          eval $(/run/wrappers/bin/gnome-keyring-daemon --start --daemonize)
+          export SSH_AUTH_SOCK
+        '';
       };
 
       # Set Nautilus bookmarks
