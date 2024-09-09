@@ -35,12 +35,10 @@ in {
       asciiquarium                # Fishies swimming
       cbonsai                     # Bonsai growing
 
-    # File Support
-      #cifs-utils                 # SMB support
+    # Files
       exiftool                    # File metadata
       file                        # File information
       libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
-      nfs-utils                   # NFS support
       p7zip                       # Zip encryption
       unzip                       # Zip files
       unrar                       # Rar files
@@ -64,6 +62,12 @@ in {
       btop                        # Resource manager
       htop                        # Resource manager
 
+    # Network
+      #cifs-utils                 # SMB support
+      dig                         # DNS tools
+      nfs-utils                   # NFS support
+      nmap                        # Network discovery
+
     # Notifications
       libnotify                   # Notification engine
 
@@ -74,7 +78,6 @@ in {
     # Terminal
       bat                         # cat with syntax highlighting
       coreutils                   # GNU utilities
-      dig                         # DNS tools
       eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
       killall                     # Process killer
