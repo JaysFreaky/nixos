@@ -40,6 +40,7 @@ in {
       hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
         amdgpu.enable = true;
         bluetooth.enable = true;
+        #fp_reader.enable = true;
       };
 
       # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
@@ -201,14 +202,19 @@ in {
 
     services = {
       # Firmware updater
-      fwupd.enable = true;
-      # v1.9.7 is required to downgrade the fingerprint sensor firmware
-        # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
-        # https://knowledgebase.frame.work/en_us/updating-fingerprint-reader-firmware-on-linux-for-13th-gen-and-amd-ryzen-7040-series-laptops-HJrvxv_za
-    /*fwupd.package = (import (builtins.fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
-        sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
-      }) { inherit (pkgs) system; }).fwupd;*/
+      fwupd = {
+        enable = true;
+        # Downgrading fwupd is required to modify the fingerprint sensor firmware
+          # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
+        /*package = (import (builtins.fetchTarball {
+          # v1.8.14
+          url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
+          sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
+          # v1.9.7
+          #url = "https://github.com/NixOS/nixpkgs/archive/21ef15cc55ec43c4a5f8d952f58e87d964480b0a.tar.gz";
+          #sha256 = "sha256:0q71dz2fivpz7s6n74inrq27y8s6y80z7hhj5b8p0090j4xllia7";
+        }) { inherit (pkgs) system; }).fwupd;*/
+      };
 
       logind = {
         lidSwitch = "suspend";
