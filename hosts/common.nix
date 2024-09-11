@@ -183,7 +183,15 @@ in {
     };
   };
 
-  programs.dconf.enable = true;
+  programs = {
+    dconf.enable = true;
+    /*direnv = {
+      enable = true;
+      enableBashIntegration = true;
+      nix-direnv.enable = true;
+    };*/
+    #ssh.startAgent = true;
+  };
 
   security = {
     polkit.enable = true;
@@ -209,10 +217,17 @@ in {
 
     openssh = {
       enable = true;
+      knownHosts = {
+        "FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGQQSTCKMqWNCTIFsND7Da2EUTjYktXX8xNl7Yf4X4At";
+        #"T1".publicKey = "";
+        "T450s".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIECb1ohJxet0NfaDOGRGEMVGkTY8sUZQ9t9h3P49g+nj";
+      };
       settings = {
         KbdInteractiveAuthentication = false;
         PasswordAuthentication = false;
         PermitRootLogin = "no";
+        PubkeyAuthentication = "yes";
+        UseDns = true;
       };
     };
   };
@@ -251,7 +266,7 @@ in {
         hashedPasswordFile = secrets."user/password".path;
         isNormalUser = true;
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT ${vars.user}@FW13"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT ${vars.user}"
         ];
       };
 
