@@ -1,7 +1,7 @@
 { config, pkgs, vars, ... }: let
   bpc = {
-    version = "3.8.2.1";
-    sha256 = "sha256-pZvACdKDqUPxD9fg2oDxonU+k5Vj/2AKRbR07EP7Vrk=";
+    version = "3.8.3.0";
+    sha256 = "sha256-ShYiV8opUs2XTTsRqHBhrxsv4QB4Hr190kSTJIFjsyE=";
   };
 
   browser = "floorp"; # or firefox

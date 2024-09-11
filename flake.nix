@@ -8,7 +8,6 @@
         home-manager.follows = "home-manager";
         jovian.follows = "jovian";
         nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
       };
     };
     disko = {
