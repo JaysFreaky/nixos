@@ -2,7 +2,7 @@
   cfg = config.myOptions.git;
   cfg-pwd = config.myOptions."1password";
 
-  publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/+CvZ9Cnq3Y4my0UtpH19dSNBJeT1wCPK7BAJyAvMA";
+  gitHubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/+CvZ9Cnq3Y4my0UtpH19dSNBJeT1wCPK7BAJyAvMA";
 in {
   options.myOptions.git = {
     libsecret.enable = lib.mkEnableOption "Git - Libsecret";
@@ -20,8 +20,9 @@ in {
       };
     }
 
-    # credential.helper = "libsecret" stores credentials inside gnome-keyring
-      # relies upon 'gnome-keyring', 'libsecret', and 'seahorse' pkgs in ../desktops/gnome.nix
+    # credential.helper = "libsecret" stores credentials inside gnome-keyring / kde-wallet
+      # Gnome relies upon 'gnome-keyring', 'libsecret', and 'seahorse' pkgs in ../desktops/gnome.nix
+      # KDE relies upon 'kwallet', 'kwallet-pam', 'kwalletmanager', and 'libsecret' pkgs in ../desktops/kde.nix ?
     (mkIf (cfg.libsecret.enable) {
       programs.git = {
         extraConfig.credential.helper = "libsecret";
@@ -37,15 +38,22 @@ in {
 
     # SSH signing/commits
     (mkIf (cfg.ssh.enable) {
-      programs.git.extraConfig = {
-        commit.gpgsign = true;
-        gpg = {
-          format = "ssh";
-          ssh.program = if (cfg-pwd.enable)
-            then "${getExe' pkgs._1password-gui "op-ssh-sign"}"
-            else "${getExe' pkgs.openssh "ssh-agent"}";
+      programs = {
+        git.extraConfig = {
+          commit.gpgsign = true;
+          gpg = {
+            format = "ssh";
+            ssh.program = if (cfg-pwd.enable)
+              then "${getExe' pkgs._1password-gui "op-ssh-sign"}"
+              else "${getExe' pkgs.openssh "ssh-agent"}";
+          };
+          user.signingkey = gitHubKey;
         };
-        user.signingkey = publicKey;
+
+        ssh.extraConfig = mkIf (cfg-pwd.enable) ''
+          Host github.com
+            IdentityAgent ~/.1password/agent.sock
+        '';
       };
     })
 
