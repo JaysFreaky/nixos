@@ -19,42 +19,61 @@
     package = pkgs.papirus-icon-theme.override { color = "violet"; };
   };
   profileImg = ../../assets/profile.png;
-  sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
-    themeConfig = {
-      Background = "${vars.configPath}/assets/wallpapers/blobs-l.png";
-      CustomBackground = "true";
-    };
-  };
   wallpaper = {
-    day = "${vars.configPath}/assets/wallpapers/blobs-l.png";
-    night = "${vars.configPath}/assets/wallpapers/blobs-d.png";
+    dark = "${vars.configPath}/assets/wallpapers/blobs-d.png";
+    light = "${vars.configPath}/assets/wallpapers/blobs-l.png";
+    sddm = "${vars.configPath}/assets/wallpapers/blobs-l.png";
   };
 in {
   options.myOptions.desktops.kde = with lib; {
     enable = mkEnableOption "KDE desktop";
+    cpuWidget = mkOption {
+      default = "cpu/all/averageTemperature";
+      description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
+      example = "cpu/all/averageTemperature";
+      type = types.nullOr types.str;
+    };
     gpuWidget = mkOption {
       default = null;
       description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
       example = "gpu/gpu0/temperature";
       type = types.nullOr types.str;
     };
+    gpuWidget2 = mkOption {
+      default = null;
+      description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
+      example = "gpu/gpu1/temperature";
+      type = types.nullOr types.str;
+    };
   };
 
   config = lib.mkIf (cfg.enable) {
     environment = {
-      systemPackages = with pkgs; [
+      systemPackages = with pkgs; let
+        sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
+          themeConfig = {
+            #Background = "${wallpaper.sddm}";
+            Blur = 1.0;
+            BlurMax = 64;
+            FullBlur = true;
+            HideVirtualKeyboard = true;
+            PartialBlur = false;
+            ScreenHeight = "${host.height}";
+            ScreenWidth = "${host.width}";
+          };
+        };
+      in [
         cursor.package              # For SDDM login screen
         icon.package                # Icon theme
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
         neovide                     # GUI launcher for neovim
-        sddm-astronaut              # SDDM theme
-        #sddm-astronaut-pkg         # Custom SDDM theme
+        sddm-astronaut-pkg          # SDDM theme
       ] ++ (with kdePackages; [
         kwallet                     # KDE Wallet
         kwallet-pam                 # Unlock on login
         kwalletmanager              # Wallet manager
-        qt5compat                   # QT5 compatibility
-        sddm-kcm                    # SDDM configuration module
+        qt5compat                   # Qt5 compatibility
+        sddm-kcm                    # SDDM settings module
       ]);
       plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
@@ -91,6 +110,14 @@ in {
         excludePackages = with pkgs; [ xterm ];
       };
     };
+
+    # Workaround to display profile image at login screen - image needs +x
+    system.activationScripts.showProfileImage.text = ''
+      mkdir -p /var/lib/AccountsService/{icons,users}
+      cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
+
+      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\n" > /var/lib/AccountsService/users/${vars.user}
+    '';
 
     home-manager.users.${vars.user} = {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
@@ -249,9 +276,9 @@ in {
                     displayStyle = "org.kde.ksysguard.textonly";
                     sensors = [
                       {
-                        label = "C";
-                        name =  "cpu/all/averageTemperature";
-                        color = "170,0,255";
+                        label = "CPU";
+                        name = "${cfg.cpuWidget}";
+                        color = "125,60,235";
                       }
                     ];
                   };
@@ -264,9 +291,15 @@ in {
                     displayStyle = "org.kde.ksysguard.textonly";
                     sensors = [
                       {
-                        label = "G";
+                        label = "GPU";
                         name = "${cfg.gpuWidget}";
                         color = "0,200,0";
+                      }
+                    ] ++ lib.optionals (cfg.gpuWidget2 != null) [
+                      {
+                        label = "GPU 2";
+                        name = "${cfg.gpuWidget2}";
+                        color = "0,125,255";
                       }
                     ];
                   };
@@ -276,12 +309,13 @@ in {
                 {
                   systemTray.items = {
                     shown = [
-                      "org.kde.plasma.bluetooth"
                       "org.kde.plasma.volume"
+                      "org.kde.plasma.bluetooth"
                       "org.kde.plasma.networkmanagement"
                       "org.kde.plasma.battery"
                     ];
                     hidden = [
+                      "blueman"
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
                     ];
@@ -303,10 +337,10 @@ in {
                   iconTasks.launchers = [
                     "applications:${vars.terminal}.desktop"
                     "applications:org.kde.dolphin.desktop"
-                    "applications:firefox.desktop"
+                    #"applications:firefox.desktop"
                     "applications:floorp.desktop"
                     "applications:spotify.desktop"
-                    "applications:thunderbird.desktop"
+                    #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
                     "applications:plexmediaplayer.desktop"
@@ -363,23 +397,24 @@ in {
           #workspace.cursor.theme = cursor.name;
           #workspace.cursor.size = cursor.size;
           #workspace.iconTheme = icon.name;
-          #workspace.wallpaper = wallpaper.day;
+          #workspace.wallpaper = wallpaper.light;
         };
       };
 
       services.darkman = let
         themeName = "everforest";
+        lookandfeeltool = lib.getExe' pkgs.kdePackages.plasma-workspace "lookandfeeltool";
+        qdbus = lib.getExe' pkgs.kdePackages.qttools "qdbus";
       in {
         enable = false;
         settings.usegeoclue = true;
         darkModeScripts = {
           kde = ''
             # Plasma Global Theme
-            lookandfeeltool --apply "org.kde.breezedark.desktop"
+            ${lookandfeeltool} --apply "org.kde.breezedark.desktop"
             # Wallpaper
-            qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.night}'")}'
+            ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.dark}'")}'
           '';
-
           terminal = ''
             # Alacritty
             ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
@@ -388,14 +423,14 @@ in {
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
         };
+
         lightModeScripts = {
           kde = ''
             # Plasma Global Theme
-            lookandfeeltool --apply "org.kde.breeze.desktop"
+            ${lookandfeeltool} --apply "org.kde.breeze.desktop"
             # Wallpaper
-            qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.day}'")}'
+            ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.light}'")}'
           '';
-
           terminal = ''
             # Alacritty
             ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
