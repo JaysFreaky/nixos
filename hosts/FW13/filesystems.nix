@@ -1,5 +1,6 @@
 {
   boot = {
+    # sudo btrfs inspect-internal map-swapfile -r /.swap/swapfile
     kernelParams = [ "resume_offset=533760" ];
     resumeDevice = "/dev/disk/by-label/NixOS";
   };
