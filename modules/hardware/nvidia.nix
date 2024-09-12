@@ -7,11 +7,6 @@ in {
 
   config = lib.mkMerge [
     (lib.mkIf (cfg.enable) {
-      boot.kernelParams = [
-        # Enable dedicated framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
-        "nvidia-drm.fbdev=1"
-      ];
-
       environment.systemPackages = with pkgs; [
         nvtopPackages.nvidia    # GPU stats
       ];
@@ -19,7 +14,7 @@ in {
       hardware = {
         graphics.enable = true;
         nvidia = {
-          # "nvidia-drm.modeset=1"
+          # "nvidia-drm.modeset=1" / "nvidia-drm.fbdev=1" - Enable dedicated framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
           modesetting.enable = true;
           # Nvidia settings application
           nvidiaSettings = true;
@@ -28,9 +23,9 @@ in {
           # beta or stable
           package = config.boot.kernelPackages.nvidiaPackages.stable;
           powerManagement = {
-            # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" - enable if graphical corruption on sleep resume
-            enable = false;
-            # Experimental - Turns off GPU when not in use
+            # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" - enable if graphical corruption on resumption from sleep
+            enable = true;
+            # Experimental: Turns off GPU when not in use - cannot be used with nvidia.prime.sync
             finegrained = false;
           };
         };
@@ -69,8 +64,6 @@ in {
         # Disable GSP Mode - Smoother Plasma Wayland experience
         "nvidia.NVreg_EnableGpuFirmware=0"
       ];
-      # Does the same thing as above?
-      #hardware.nvidia.gsp.enable = false;
     })
 
   ];
