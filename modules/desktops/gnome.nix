@@ -141,7 +141,7 @@ in {
 
       # Enable additional systray icons
       udev.packages = with pkgs; [
-        gnome.gnome-settings-daemon
+        gnome-settings-daemon
       ];
     };
 
