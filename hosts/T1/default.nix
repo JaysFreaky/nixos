@@ -37,7 +37,8 @@ in {
         #hyprland.enable = true;
         kde = {
           enable = true;
-          gpuWidget = "gpu/gpu1/temperature";
+          gpuWidget = "gpu/gpu0/temperature";
+          gpuWidget2 = "gpu/gpu1/temperature";
         };
       };
 
@@ -62,19 +63,23 @@ in {
         polychromatic           # Razer lighting GUI
 
       # Messaging
-        #discord                 # Discord
+        discord                 # Discord
 
       # Multimedia
+        haruna                  # MPV frontend
+        kdePackages.dragon      # Media player
+        mpc-qt                  # MPV frontend
         #mpv                     # Media player
-        #plex-media-player       # Plex client
+        plex-media-player       # Plex client
+        #smplayer                # MPV frontend
 
       # Notes
-        #obsidian                # Markdown notes
+        obsidian                # Markdown notes
     ];
 
     programs = {
       # PWM fan control
-      coolercontrol.enable = false;
+      #coolercontrol.enable = true;
 
       gamescope = {
         # lspci -nn | grep -i vga
@@ -104,22 +109,10 @@ in {
       };
     };
 
-    system.autoUpgrade = {
-      enable = false;
-      allowReboot = true;
-      dates = "weekly";
-      flags = [
-        "--commit-lock-file"
-      ];
-      flake = inputs.self.outPath;
-      randomizedDelaySec = "45min";
-      rebootWindow = {
-        lower = "02:00";
-        upper = "06:00";
-      };
-    };
-
-    users.users.${vars.user}.extraGroups = [ "fancontrol" ];
+    users.users.${vars.user}.extraGroups = [
+      "fancontrol"
+      "i2c"
+    ];
 
 
     ##########################################################
@@ -138,19 +131,6 @@ in {
         # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
         #monitor = lib.mkForce [ "eDP-1, ${host.width}x${host.height}@${host.refresh}, 0x0, ${host.scale}" ];
       };
-
-      # OpenRGB autostart
-      xdg.configFile."autostart/OpenRGB.desktop".text = ''
-        [Desktop Entry]
-        Categories=Utility;
-        Comment=OpenRGB 0.9, for controlling RGB lighting.
-        Exec=${pkgs.openrgb}/bin/.openrgb-wrapped --startminimized
-        Icon=OpenRGB
-        Name=OpenRGB
-        StartupNotify=true
-        Terminal=false
-        Type=Application
-      '';
     };
 
 
@@ -158,34 +138,33 @@ in {
     # Hardware
     ##########################################################
     hardware = {
-      # Control case/cpu fans
       fancontrol = {
-        enable = false;
+        enable = true;
         config = let
           fanPath = "devices/platform/nct6687.2592";
           fanName ="nct6686";
           cpuPath = "devices/pci0000:00/0000:00:18.3";
-          cpuName = "zenpower";
+          cpuName = "k10temp";
           # Value = percent * 2.55
-          caseMin = "102"; # 40%
+          caseMin = "100"; # 40%
           caseMax = "102"; # 40%
           cpuMin = "64"; # 25%
           cpuMax = "217"; # 85%
         in ''
           INTERVAL=10
-          DEVPATH=hwmon0=${fanPath} hwmon3=${cpuPath}
-          DEVNAME=hwmon0=${fanName} hwmon3=${cpuName}
-          FCTEMPS=hwmon0/pwm1=hwmon3/temp1_input hwmon0/pwm2=hwmon3/temp1_input
-          FCFANS=hwmon0/pwm1=hwmon0/fan1_input hwmon0/pwm2=hwmon0/fan2_input
-          MINTEMP=hwmon0/pwm1=40 hwmon0/pwm2=40
-          MAXTEMP=hwmon0/pwm1=80 hwmon0/pwm2=80
+          DEVPATH=hwmon1=${cpuPath} hwmon2=${fanPath}
+          DEVNAME=hwmon1=${cpuName} hwmon2=${fanName}
+          FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon1/temp1_input
+          FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
+          MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
+          MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
           # Always spin @ MINPWM until MINTEMP
-          MINSTART=hwmon0/pwm1=30 hwmon0/pwm2=30
-          MINSTOP=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
+          MINSTART=hwmon2/pwm1=30 hwmon2/pwm2=30
+          MINSTOP=hwmon2/pwm1=${cpuMin} hwmon2/pwm2=${caseMin}
           # Fans @ 25%/40% until 40 degress
-          MINPWM=hwmon0/pwm1=${cpuMin} hwmon0/pwm2=${caseMin}
+          MINPWM=hwmon2/pwm1=${cpuMin} hwmon2/pwm2=${caseMin}
           # Fans ramp to 85%/40% @ 80 degrees
-          MAXPWM=hwmon0/pwm1=${cpuMax} hwmon0/pwm2=${caseMax}
+          MAXPWM=hwmon2/pwm1=${cpuMax} hwmon2/pwm2=${caseMax}
         '';
       };
 
@@ -201,6 +180,8 @@ in {
         ];
       };
 
+      i2c.enable = true;
+
       nvidia.prime = {
         amdgpuBusId = "PCI:13:0:0";
         nvidiaBusId = "PCI:1:0:0";
@@ -213,7 +194,10 @@ in {
       };
     };
 
-    services.hardware.openrgb.enable = true;
+    services.hardware.openrgb = {
+      enable = true;
+      package = pkgs.openrgb-with-all-plugins;
+    };
 
 
     ##########################################################
@@ -222,51 +206,29 @@ in {
     boot = {
       initrd = {
         availableKernelModules = [ ];
-        kernelModules = [
-          "nfs"
-        ];
+        kernelModules = [ "nfs" ];
         # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
 
-      # Zenpower uses same PCI device as k10temp, so disabling k10temp
-      blacklistedKernelModules = [ "k10temp" ];
-      kernelModules = [
-        "nct6687"
-        "zenpower"
+      blacklistedKernelModules = [
+        #"amdgpu"  # Disable iGPU
       ];
-      extraModulePackages = with config.boot.kernelPackages; [
-        nct6687d
-        zenpower
-      ];
+      kernelModules = [ "nct6687" ];
+      extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
       # CachyOS kernel relies on chaotic.scx
       kernelPackages = if (!config.chaotic.scx.enable)
         then pkgs.linuxPackages_latest
         else pkgs.linuxPackages_cachyos;
       kernelParams = [
         "amd_pstate=active"
-        # Disable iGPU
-        #"module_blacklist=amdgpu"
-        # Hides text prior to plymouth boot logo
-        #"quiet"
-        #"splash"
+        "quiet"  # Hides text prior to plymouth boot logo
       ];
 
       loader = {
         efi = {
           canTouchEfiVariables = true;
           efiSysMountPoint = "/boot";
-        };
-        grub = {
-          enable = false;
-          configurationLimit = 5;
-          device = "nodev";
-          #efiInstallAsRemovable = true;
-          efiSupport = true;
-          memtest86.enable = true;
-          theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
-          useOSProber = true;
-          #users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
         };
         systemd-boot = {
           enable = true;
@@ -280,11 +242,11 @@ in {
       };
 
       plymouth = {
-        enable = false;
+        enable = true;
         theme = "loader";
         themePackages = [
-          # Overriding installs the one theme instead of all 80, reducing the required size
-          # Theme previews: https://github.com/adi1090x/plymouth-themes
+          # Overriding installs a single theme instead of all 80, reducing the required size
+            # Theme previews: https://github.com/adi1090x/plymouth-themes
           (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "loader" ]; })
         ];
       };
@@ -293,7 +255,7 @@ in {
     };
 
     chaotic.scx = {
-      enable = false;
+      enable = true;
       scheduler = "scx_lavd";
     };
 
