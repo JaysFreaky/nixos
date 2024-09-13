@@ -195,8 +195,12 @@ in {
             };
             # Icon theme
             "kdeglobals"."Icons"."Theme" = icon.name;
-            # Disable file search from KRunner
-            "krunnerrc"."Plugins"."baloosearchEnabled" = false;
+            "krunnerrc" = {
+              # Disable search history
+              "General"."historyBehavior" = "Disabled";
+              # Disable file search from KRunner
+              "Plugins"."baloosearchEnabled" = false;
+            };
             "kscreenlockerrc" = {
               # Screen locking timeout & plugin / provider
               "Daemon"."Timeout" = 10;
@@ -211,6 +215,12 @@ in {
                 "Number" = 4;
                 "Rows" = 1;
               };
+              # Screen edge - Top-center
+              "Effect-overview"."BorderActivate" = 0;
+              # Screen edge - Top-left
+              "ElectricBorders"."TopLeft" = "ApplicationLauncher";
+              # Screen edge - Top-right
+              "ElectricBorders"."TopRight" = "ShowDesktop";
               # Focus follows mouse instead of clicking
               "Windows"."FocusPolicy" = "FocusFollowsMouse";
               # Set host scaling
@@ -391,6 +401,7 @@ in {
             "services/firefox.desktop"."_launch" = "Meta+W";
             "services/floorp.desktop"."_launch" = "Meta+W";
             "services/kitty.desktop"."_launch" = "Meta+Return";
+            "services/org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };
 
           # Setting cursor/icon themes via configFile
