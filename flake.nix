@@ -167,6 +167,7 @@
         modules = standardModules ++ [
           { networking.hostName = "Dekki"; }
           ./hosts/Dekki
+          inputs.chaotic.nixosModules.default
           inputs.jovian.nixosModules.jovian
         ];
       };

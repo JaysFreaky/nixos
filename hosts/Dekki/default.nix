@@ -26,9 +26,9 @@
   # System Packages / Variables
   ##########################################################
   environment.systemPackages = with pkgs; [
-    # Monitoring
-      amdgpu_top              # GPU stats
-      nvtopPackages.amd       # GPU stats
+  # Monitoring
+    amdgpu_top              # GPU stats
+    nvtopPackages.amd       # GPU stats
   ];
 
   jovian = {
@@ -77,9 +77,7 @@
       };
     };
 
-    home.packages = with pkgs.gnomeExtensions; [
-      dash-to-dock
-    ];
+    home.packages = with pkgs.gnomeExtensions; [ dash-to-dock ];
   };
 
 
@@ -89,6 +87,8 @@
   hardware.graphics = {
     extraPackages = with pkgs; [
       #amdvlk
+      #jovian-chaotic.mesa-radeonsi-jupiter
+      #jovian-chaotic.mesa-radv-jupiter
       #rocmPackages.clr
       #rocmPackages.clr.icd
     ];
@@ -111,6 +111,7 @@
 
     kernelModules = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
+    #kernelPackages = pkgs.jovian-chaotic.linux_jovian;
     kernelParams = [
       "quiet"
       "splash"
