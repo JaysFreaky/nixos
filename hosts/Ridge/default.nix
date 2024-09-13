@@ -46,7 +46,11 @@
     ##########################################################
     # System Packages / Variables
     ##########################################################
-    environment.systemPackages = with pkgs; [ ];
+    environment = {
+      systemPackages = with pkgs; [ ];
+      # Set Firefox to use GPU for video codecs
+      variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+    };
 
     # lspci -nn | grep -i vga
     programs.gamescope.args = [
@@ -75,9 +79,7 @@
       enable = false;
       allowReboot = true;
       dates = "weekly";
-      flags = [
-        "--commit-lock-file"
-      ];
+      flags = [ "--commit-lock-file" ];
       flake = inputs.self.outPath;
       randomizedDelaySec = "45min";
       rebootWindow = {
@@ -212,9 +214,7 @@
     boot = {
       initrd = {
         availableKernelModules = [ ];
-        kernelModules = [
-          "nfs"
-        ];
+        kernelModules = [ "nfs" ];
         # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
@@ -225,9 +225,7 @@
         "nct6775"
         "zenpower"
       ];
-      extraModulePackages = with config.boot.kernelPackages; [
-        zenpower
-      ];
+      extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
       # CachyOS kernel relies on chaotic.scx
       kernelPackages = pkgs.linuxPackages_cachyos;
       kernelParams = [
@@ -274,11 +272,6 @@
       enable = true;
       scheduler = "scx_lavd";
     };
-
-
-    ##########################################################
-    # Network
-    ##########################################################
 
   };
 }

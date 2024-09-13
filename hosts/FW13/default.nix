@@ -54,42 +54,47 @@ in {
     ##########################################################
     # System Packages / Variables
     ##########################################################
-    environment.systemPackages = with pkgs; [
+    environment = {
+      systemPackages = with pkgs; [
       # Email
-      protonmail-bridge-gui   # GUI bridge for Thunderbird
-      thunderbird             # Email client
+        protonmail-bridge-gui   # GUI bridge for Thunderbird
+        thunderbird             # Email client
 
       # Framework Hardware
-      dmidecode               # Firmware | 'dmidecode -s bios-version'
-      framework-tool          # Swiss army knife for FWs
-      fw-ectool               # Embedded controller | 'ectool'
-      iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
-      lshw                    # Firmware
-      sbctl                   # Secure boot key manager
+        dmidecode               # Firmware | 'dmidecode -s bios-version'
+        framework-tool          # Swiss army knife for FWs
+        fw-ectool               # Embedded controller | 'ectool'
+        iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
+        lshw                    # Firmware
+        sbctl                   # Secure boot key manager
 
       # Messaging
-      discord                 # Discord
+        discord                 # Discord
 
       # Monitoring
-      powertop                # Power stats
-      zenmonitor              # CPU stats
+        powertop                # Power stats
+        zenmonitor              # CPU stats
 
       # Multimedia
-      celluloid               # MPV GTK frontend w/ Wayland
-      clapper                 # GTK media player
-      mpv                     # Media player
-      plex-media-player       # Plex client
-      smplayer                # MPV frontend
+        celluloid               # MPV GTK frontend w/ Wayland
+        clapper                 # GTK media player
+        mpv                     # Media player
+        plex-media-player       # Plex client
+        smplayer                # MPV frontend
 
       # Notes
-      obsidian                # Markdown notes
+        obsidian                # Markdown notes
 
       # Productivity
-      libreoffice             # Office suite
+        libreoffice             # Office suite
 
       # VPN
-      protonvpn-gui           # VPN client
-    ];
+        protonvpn-gui           # VPN client
+      ];
+
+      # Set Firefox to use GPU for video codecs
+      variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+    };
 
     programs = {
       # lspci -nn | grep -i vga
@@ -120,9 +125,7 @@ in {
       dconf.settings = {
         # Automatic screen brightness
         "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;
-        "org/gnome/shell".enabled-extensions = [
-          "Battery-Health-Charging@maniacx.github.com"
-        ];
+        "org/gnome/shell".enabled-extensions = [ "Battery-Health-Charging@maniacx.github.com" ];
         "org/gnome/shell/extensions/Battery-Health-Charging" = {
           amend-power-indicator = true;
           bal-end-threshold = 85;
@@ -133,9 +136,7 @@ in {
         };
       };
 
-      home.packages = with pkgs.gnomeExtensions; [
-        battery-health-charging
-      ];
+      home.packages = with pkgs.gnomeExtensions; [ battery-health-charging ];
 
       # lspci -D | grep -i vga
       programs.mangohud.settings.pci_dev = "0:c1:00.0";

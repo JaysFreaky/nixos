@@ -1,6 +1,4 @@
 { config, inputs, lib, pkgs, stable, vars, ... }: let
-  # Generate GPU path for Firefox environment variable
-  gpuCard = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   secrets = config.sops.secrets;
   superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
@@ -100,8 +98,6 @@ in {
     variables = {
       EDITOR = "nvim";
       TERMINAL = "${vars.terminal}";
-      # Set Firefox to use GPU for video codecs
-      MOZ_DRM_DEVICE = gpuCard;
     };
   };
 

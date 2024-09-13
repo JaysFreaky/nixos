@@ -57,7 +57,8 @@ in {
     ##########################################################
     # System Packages / Variables
     ##########################################################
-    environment.systemPackages = with pkgs; [
+    environment = {
+      systemPackages = with pkgs; [
       # Hardware
         fancontrol-gui          # Fancontrol GUI for lm-sensors
         polychromatic           # Razer lighting GUI
@@ -75,7 +76,11 @@ in {
 
       # Notes
         obsidian                # Markdown notes
-    ];
+      ];
+
+      # Set Firefox to use GPU for video codecs
+      variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:01:00.0-render";
+    };
 
     programs = {
       # PWM fan control

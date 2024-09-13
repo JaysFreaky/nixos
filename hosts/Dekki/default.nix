@@ -25,11 +25,16 @@
   ##########################################################
   # System Packages / Variables
   ##########################################################
-  environment.systemPackages = with pkgs; [
-  # Monitoring
-    amdgpu_top              # GPU stats
-    nvtopPackages.amd       # GPU stats
-  ];
+  environment = {
+    systemPackages = with pkgs; [
+    # Monitoring
+      amdgpu_top              # GPU stats
+      nvtopPackages.amd       # GPU stats
+    ];
+
+    # Set Firefox to use GPU for video codecs
+    variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+  };
 
   jovian = {
     decky-loader.enable = true;
@@ -146,10 +151,5 @@
 
     supportedFilesystems = [ "btrfs" ];
   };
-
-
-  ##########################################################
-  # Network
-  ##########################################################
 
 }

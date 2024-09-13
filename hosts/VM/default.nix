@@ -23,7 +23,11 @@
   ##########################################################
   # System Packages / Variables
   ##########################################################
-  environment.systemPackages = [ ];
+  environment = {
+    systemPackages = [ ];
+    # Set Firefox to use GPU for video codecs
+    variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+  };
 
   services.displayManager.autoLogin = {
     enable = lib.mkForce true;
@@ -65,10 +69,7 @@
     kernelModules = [ ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = [
-      "quiet"
-      "splash"
-    ];
+    kernelParams = [ "quiet" ];
 
     loader = {
       efi = {
@@ -87,10 +88,5 @@
 
     supportedFilesystems = [ "btrfs" ];
   };
-
-
-  ##########################################################
-  # Network
-  ##########################################################
 
 }
