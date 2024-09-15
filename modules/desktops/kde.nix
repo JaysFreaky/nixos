@@ -334,12 +334,12 @@ in {
                   systemTray.items = {
                     shown = [
                       "org.kde.plasma.volume"
-                      "org.kde.plasma.bluetooth"
+                      "blueman"
                       "org.kde.plasma.networkmanagement"
                       "org.kde.plasma.battery"
                     ];
                     hidden = [
-                      "blueman"
+                      "org.kde.plasma.bluetooth"
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
                     ];
