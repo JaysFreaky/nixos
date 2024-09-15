@@ -93,7 +93,7 @@ in {
       ];
 
       # Set Firefox to use GPU for video codecs
-      variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+      variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
     };
 
     programs = {
