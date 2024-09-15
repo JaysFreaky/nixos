@@ -186,6 +186,10 @@ in {
           configFile = {
             # Disable file indexing
             "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
+            "dolphinrc"."General" = {
+              "HomeUrl" = "/";
+              "RememberOpenedTabs" = false;
+            };
             # Do not remember file history
             "kactivitymanagerdrc"."Plugins"."org.kde.ActivityManager.ResourceScoringEnabled" = false;
             # Cursor size & theme
@@ -193,8 +197,16 @@ in {
               "cursorSize" = cursor.size;
               "cursorTheme" = cursor.name;
             };
-            # Icon theme
-            "kdeglobals"."Icons"."Theme" = icon.name;
+            "kdeglobals" = {
+              # Icon theme
+              "Icons"."Theme" = icon.name;
+              # Dolphin thumbnails
+              "PreviewSettings" = {
+                "EnableRemoteFolderThumbnail" = true;
+                # 20 MiB
+                "MaximumRemoteSize" = 20971520;
+              };
+            };
             "krunnerrc" = {
               # Disable search history
               "General"."historyBehavior" = "Disabled";
@@ -205,7 +217,9 @@ in {
               # Screen locking timeout & plugin / provider
               "Daemon"."Timeout" = 10;
               "Greeter"."WallpaperPlugin" = "org.kde.potd";
-              "Greeter/Wallpaper/org.kde.potd/General"."Provider" = "flickr";
+              # Astronomy (NASA) is set by commenting out the provider
+                # Providers: bing, natgeo, noaa, wcpotd
+              #"Greeter/Wallpaper/org.kde.potd/General"."Provider" = "natgeo";
             };
             # Start an empty session upon login
             "ksmserverrc"."General"."loginMode" = "emptySession";
