@@ -1,4 +1,5 @@
 { config, lib, pkgs, vars, ... }: let
+  browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.gnome;
 
   cursor = {
@@ -280,8 +281,7 @@ in {
           favorite-apps = [
             "${vars.terminal}.desktop"
             "org.gnome.Nautilus.desktop"
-            "firefox.desktop"
-            "floorp.desktop"
+            "${browser}.desktop"
             "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"

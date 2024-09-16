@@ -1,4 +1,5 @@
 { config, inputs, lib, pkgs, vars, ... }: let
+  browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.kde;
   host = config.myHosts;
 
@@ -361,8 +362,7 @@ in {
                   iconTasks.launchers = [
                     "applications:${vars.terminal}.desktop"
                     "applications:org.kde.dolphin.desktop"
-                    #"applications:firefox.desktop"
-                    "applications:floorp.desktop"
+                    "applications:${browser}.desktop"
                     "applications:spotify.desktop"
                     #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
@@ -412,9 +412,8 @@ in {
               "activate task manager entry 10" = [ ];
               "manage activities" = [ ];
             };
-            "services/firefox.desktop"."_launch" = "Meta+W";
-            "services/floorp.desktop"."_launch" = "Meta+W";
-            "services/kitty.desktop"."_launch" = "Meta+Return";
+            "services/${browser}.desktop"."_launch" = "Meta+W";
+            "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
             "services/org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };
 
