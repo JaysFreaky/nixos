@@ -10,11 +10,6 @@
     inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
   };
 in {
-  environment.systemPackages = with pkgs; [
-    # Hardware video acceleration
-    ffmpeg
-  ];
-
   home-manager.users.${vars.user} = {
     imports = [ ./floorp-hm.nix ];
 

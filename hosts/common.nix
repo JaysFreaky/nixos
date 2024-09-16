@@ -45,6 +45,7 @@ in {
 
     # Hardware
       clinfo                      # OpenCL info | 'clinfo -l' or -a
+      ffmpeg-full                 # Hardware video acceleration
       lm_sensors                  # Hardware sensors | 'sensors-detect'
       lshw                        # Hardware config
       nvme-cli                    # Manage NVMe
