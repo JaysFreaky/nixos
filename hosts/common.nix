@@ -158,14 +158,7 @@ in {
       dates = "weekly";
       options = "--delete-older-than 30d";
     };
-
     optimise.automatic = true;
-
-    registry = {
-      nixpkgs.flake = inputs.nixpkgs;
-      nixpkgs-stable.flake = inputs.nixpkgs-stable;
-    };
-
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
@@ -177,6 +170,11 @@ in {
       ];
       trusted-users = [ "@wheel" ];
     };
+  };
+
+  nixpkgs = {
+    config.allowUnfree = true;
+    overlays = [ inputs.nur.overlay ];
   };
 
   programs = {

@@ -1,6 +1,7 @@
 {
   description = "NixOS Systems Flake";
 
+
   inputs = {
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
@@ -119,15 +120,9 @@
     systems.url = "github:nix-systems/default-linux";
   };
 
+
   outputs = { self, nixpkgs, nixpkgs-stable, ... } @ inputs: let
     system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-      overlays = [
-        inputs.nur.overlay
-      ];
-    };
     stable = import nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
@@ -160,7 +155,7 @@
     # 'nixos-rebuild switch --flake .#your-hostname'
     nixosConfigurations = {
       Dekki = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
@@ -173,7 +168,7 @@
       };
 
       FW13 = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
@@ -192,7 +187,7 @@
       };
 
       Ridge = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
@@ -204,7 +199,7 @@
       };
 
       T1 = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
@@ -216,7 +211,7 @@
       };
 
       T450s = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
@@ -228,7 +223,7 @@
       };
 
       VM = nixpkgs.lib.nixosSystem {
-        inherit pkgs system;
+        inherit system;
         specialArgs = {
           inherit inputs stable vars;
         };
