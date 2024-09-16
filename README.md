@@ -13,9 +13,10 @@ ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@<HOST>"
 ssh-to-age -i /mnt/etc/ssh/ssh_host_ed25519_key.pub
 ```
 
-* If this is an additional install with sops, from an existing sops system, you'll need to add the newly generated age key to your .sops.yaml, run `sops updatekeys secrets/secrets.yaml`, and then commit those two files.
-
-* If this is the first time sops is being setup, you'll need to initialize your .sops.yaml and secrets/secrets.yaml after cloning the repo - refer to [sops-nix's instructions](https://github.com/Mic92/sops-nix?tab=readme-ov-file#usage-example).
+* If this is an additional system being deployed:
+    * From an existing, established sops system, add the newly generated age key to .sops.yaml, run `sops updatekeys secrets/secrets.yaml`, commit those files, and then proceed with the below commands.
+* If this is the first time sops is being setup:
+    * .sops.yaml and secrets/secrets.yaml will need to be initialized after cloning the repo - refer to [sops-nix's instructions](https://github.com/Mic92/sops-nix?tab=readme-ov-file#usage-example) - then come back here.
 
 ```
 mkdir -p /mnt/etc/nixos && cd $_
@@ -25,7 +26,29 @@ nixos-install --no-root-passwd --flake .#<HOST>
 ```
 
 ## Breakdown
-The main flake.nix contains all your typical inputs/outputs, nixosConfigurations, and some custom variables.
+```
+.
+├── .sops.yaml
+├── assets
+│  └── wallpapers
+├── flake.lock
+├── flake.nix
+├── hosts
+│  ├── common.nix
+│  ├── Dekki
+│  ├── FW13
+│  ├── iso
+│  ├── Ridge
+│  ├── T1
+│  ├── T450s
+│  └── VM
+├── modules
+│  ├── desktops
+│  ├── hardware
+│  └── programs
+└── secrets
+   └── secrets.yaml
+```
 
 ### Hosts
 * common.nix is the base system configuration that is imported with each system, alongside their specific configs. Base programs, fonts, nix settings, users, etc are set here.
@@ -35,11 +58,14 @@ The main flake.nix contains all your typical inputs/outputs, nixosConfigurations
 ### Modules
 This is where all modules imported via their directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
 
-* /desktops contain the individual desktop environments and their requirements (GNOME/Hyprland/KDE)
-* /hardware contains the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader, dedicated GPU hardware)
-* /programs contain apps that can be enabled/disabled, the contents didn't seem like a good fit, or the code was too long to go inside /hosts/common.nix
+* /desktops : contain the individual desktop environments and their requirements (GNOME/Hyprland/KDE)
+* /hardware : contain the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader, dedicated GPU hardware)
+* /programs : contain apps that:
+    * can be enabled/disabled
+    * the contents didn't seem like a good fit
+    * or the code was too long to go inside /hosts/common.nix
 
-I'm not very experienced with neovim yet, so I haven't bothered to translate (and I'm not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files/directories via Home Manager's xdg.configFile."<file>".source feature.
+I'm not very experienced with neovim yet, so I haven't bothered to translate (and I'm not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files & directories via Home Manager's xdg.configFile."directory/file".source feature.
 
 # Credits
 The flake itself was based off of [Matthias Benaets' config](https://github.com/MatthiasBenaets/nixos-config). When I was first looking into converting my config into a flake, practically all of the flakes I came across were using separate system and home directories/files for the same module (I understand it makes more sense to separate them, especially with a non-NixOS system using the Nix package manager, but I wasn't a fan of it). I finally came across Matthias' config, and after looking through their repo, I decided to follow suite. I liked the idea of a base configuration for all hosts, and most importantly, modules declared in a single file, instead of spread throughout both the hosts and home directories.
