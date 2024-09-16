@@ -265,8 +265,9 @@ in {
                   plasmusicToolbar = {
                     panelIcon = {
                       albumCover = {
-                        useAsIcon = false;
-                        radius = 8;
+                        fallbackToIcon = true;
+                        radius = 10;
+                        useAsIcon = true;
                       };
                       icon = "view-media-track";
                     };
@@ -280,8 +281,9 @@ in {
                       maximumWidth = 150;
                       scrolling = {
                         enable = true;
-                        behavior = "scrollOnHover";
-                        speed = 3;
+                        behavior = "alwaysScrollExceptOnHover";
+                        resetOnPause = true;
+                        speed = 1;
                       };
                     };
                   };
@@ -333,16 +335,18 @@ in {
                 "org.kde.plasma.marginsseparator"
                 {
                   systemTray.items = {
-                    shown = [
-                      "org.kde.plasma.volume"
-                      "blueman"
-                      "org.kde.plasma.networkmanagement"
-                      "org.kde.plasma.battery"
-                    ];
                     hidden = [
                       "org.kde.plasma.bluetooth"
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
+                      "org.kde.plasma.mediacontroller"
+                    ];
+                    shown = [
+                      "chrome_status_icon_1"              # 1Password
+                      "org.kde.plasma.volume"
+                      "blueman"
+                      "org.kde.plasma.networkmanagement"
+                      "org.kde.plasma.battery"
                     ];
                   };
                 }
