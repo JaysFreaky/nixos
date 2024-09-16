@@ -236,8 +236,14 @@ in {
               "ElectricBorders"."TopLeft" = "ApplicationLauncher";
               # Screen edge - Top-right
               "ElectricBorders"."TopRight" = "ShowDesktop";
-              # Focus follows mouse instead of clicking
-              "Windows"."FocusPolicy" = "FocusFollowsMouse";
+              "Windows" = {
+                # Screen edge reactivation delay in ms
+                "ElectricBorderCooldown" = 275;
+                # Screen edge delay in ms
+                "ElectricBorderDelay" = 225;
+                # Focus follows mouse instead of clicking
+                "FocusPolicy" = "FocusFollowsMouse";
+              };
               # Set host scaling
               "Xwayland"."Scale" = host.scale;
             };
