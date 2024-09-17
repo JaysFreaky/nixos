@@ -41,7 +41,12 @@ in {
     ];
 
     # PS4 controller pairability
-    hardware.bluetooth.input.General.ClassicBondedOnly = lib.mkIf (cfg-bt.enable) false;
+    hardware.bluetooth.input.General = lib.mkIf (cfg-bt.enable) {
+      ClassicBondedOnly = false;
+      #IdleTimeout = 20;           # Minutes
+      #LEAutoSecurity = false;
+      #UserspaceHID = true;
+    };
 
     home-manager.users.${vars.user} = {
       home.file = {
