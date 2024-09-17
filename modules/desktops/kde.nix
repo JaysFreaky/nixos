@@ -96,18 +96,8 @@ in {
         wayland.enable = true;
       };
 
-      libinput = {
-        enable = true;
-        touchpad = {
-          disableWhileTyping = true;
-          tapping = true;
-          tappingDragLock = true;
-        };
-      };
-
       xserver = {
         enable = true;
-        xkb.layout = "us";
         excludePackages = with pkgs; [ xterm ];
       };
     };

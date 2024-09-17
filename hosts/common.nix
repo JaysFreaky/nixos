@@ -207,8 +207,17 @@ in {
       fileSystems = [ "/" "/home" "/nix" ];
     };
 
-    # Enable SSD trim
+    # SSD trim
     fstrim.enable = lib.mkDefault true;
+
+    libinput = {
+      enable = true;
+      touchpad = {
+        disableWhileTyping = true;
+        tapping = true;
+        tappingDragLock = true;
+      };
+    };
 
     openssh = {
       enable = true;
@@ -225,6 +234,8 @@ in {
         UseDns = true;
       };
     };
+
+    xserver.xkb.layout = "us";
   };
 
   sops = {

@@ -43,18 +43,8 @@ in {
       desktopManager.cosmic.enable = true;
       displayManager.cosmic-greeter.enable = true;
 
-      libinput = {
-        enable = true;
-        touchpad = {
-          disableWhileTyping = true;
-          tapping = true;
-          tappingDragLock = true;
-        };
-      };
-
       xserver = {
         enable = true;
-        xkb.layout = "us";
         excludePackages = with pkgs; [ xterm ];
       };
     };
