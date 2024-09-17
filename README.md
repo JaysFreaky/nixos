@@ -58,12 +58,11 @@ nixos-install --no-root-passwd --flake .#<HOST>
 ### Modules
 This is where all modules imported via their directory through /hosts/common.nix live. Each directory has a default.nix that declares/imports the individual modules. You'll notice that some of these utilize custom options to easily enable them with boolean values in the system configurations - others are enabled just by being imported initially.
 
-* /desktops : contain the individual desktop environments and their requirements (GNOME/Hyprland/KDE)
-* /hardware : contain the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader, dedicated GPU hardware)
-* /programs : contain apps that:
+* /desktops: contain the individual desktop environments and their requirements (GNOME/Hyprland/KDE)
+* /hardware: contain the configs to enable individual hardware on systems (audio, bluetooth, fingerprint reader, dedicated GPU hardware)
+* /programs: contain apps that:
     * can be enabled/disabled
-    * the contents didn't seem like a good fit
-    * or the code was too long to go inside /hosts/common.nix
+    * the contents didn't seem like a good fit and/or the code was too long to be inside /hosts/common.nix
 
 I'm not very experienced with neovim yet, so I haven't bothered to translate (and I'm not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files & directories via Home Manager's xdg.configFile."directory/file".source feature.
 
