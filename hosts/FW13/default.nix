@@ -1,6 +1,4 @@
 { config, inputs, lib, pkgs, vars, ... }: let
-  # Framework plymouth theme
-  framework-plymouth = inputs.framework-plymouth.packages.${pkgs.system}.default;
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
 in {
@@ -121,7 +119,10 @@ in {
     ##########################################################
     # Home Manager
     ##########################################################
-    home-manager.users.${vars.user} = { config, ... }: {
+    home-manager.users.${vars.user} = { config, ... }: let
+      ee-pkg = config.services.easyeffects.package;
+      eePreset = config.services.easyeffects.preset;
+    in {
       dconf.settings = {
         # Automatic screen brightness
         "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;
@@ -141,20 +142,15 @@ in {
       # lspci -D | grep -i vga
       programs.mangohud.settings.pci_dev = "0:c1:00.0";
 
-      # https://github.com/ceiphr/ee-framework-presets
+      # https://github.com/FrameworkComputer/linux-docs/tree/main/easy-effects
       services.easyeffects = {
         enable = true;
-        preset = "philonmetal";
+        preset = "fw13-easy-effects";
       };
 
       # Workaround for easyeeffects preset not auto loading
         # https://github.com/nix-community/home-manager/issues/5185
-      systemd.user.services.easyeffects = let
-        ee-pkg = config.services.easyeffects.package;
-        eePreset = config.services.easyeffects.preset;
-      in {
-        Service.ExecStartPost = [ "${lib.getExe ee-pkg} --load-preset ${eePreset}" ];
-      };
+      systemd.user.services.easyeffects.Service.ExecStartPost = [ "${lib.getExe ee-pkg} --load-preset ${eePreset}" ];
 
       xdg.configFile = {
         "autostart/ProtonMailBridge.desktop".text = ''
@@ -164,7 +160,10 @@ in {
           Type=Application
           X-GNOME-Autostart-enabled=true
         '';
-        "easyeffects/output/philonmetal.json".source = ./philonmetal.json;
+        "easyeffects/output/${eePreset}.json".source = builtins.fetchurl {
+          url = "https://raw.githubusercontent.com/FrameworkComputer/linux-docs/main/easy-effects/${eePreset}.json";
+          sha256 = "sha256:187c18qy1h8axg7xmlgm7qfdl8xflgil1321rng17n7rs891nyqr";
+        };
       };
     };
 
@@ -327,7 +326,9 @@ in {
         timeout = 1;
       };
 
-      plymouth = {
+      plymouth = let
+        framework-plymouth = inputs.framework-plymouth.packages.${pkgs.system}.default;
+      in {
         enable = true;
         theme = "framework";
         themePackages = [ framework-plymouth ];
