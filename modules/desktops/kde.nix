@@ -228,9 +228,9 @@ in {
               "ElectricBorders"."TopRight" = "ShowDesktop";
               "Windows" = {
                 # Screen edge reactivation delay in ms
-                "ElectricBorderCooldown" = 275;
+                "ElectricBorderCooldown" = 225;
                 # Screen edge delay in ms
-                "ElectricBorderDelay" = 225;
+                "ElectricBorderDelay" = 175;
                 # Focus follows mouse instead of clicking
                 "FocusPolicy" = "FocusFollowsMouse";
               };
