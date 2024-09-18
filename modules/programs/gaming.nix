@@ -1,6 +1,5 @@
 { config, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.gaming;
-  cfg-bt = config.myOptions.hardware.bluetooth;
   host = config.myHosts;
 in {
   options.myOptions.gaming.enable = lib.mkEnableOption "Gaming";
@@ -39,14 +38,6 @@ in {
       jdk             # Java games
       lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
     ];
-
-    # PS4 controller pairability
-    hardware.bluetooth.input.General = lib.mkIf (cfg-bt.enable) {
-      ClassicBondedOnly = false;
-      #IdleTimeout = 20;           # Minutes
-      #LEAutoSecurity = false;
-      #UserspaceHID = true;
-    };
 
     home-manager.users.${vars.user} = {
       home.file = {
