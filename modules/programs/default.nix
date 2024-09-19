@@ -10,6 +10,7 @@
   ./kitty
   #./lf
   ./nvim
+  ./plex.nix
   ./starship
   ./syncthing.nix
   ./wezterm.nix

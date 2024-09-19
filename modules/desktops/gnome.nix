@@ -1,6 +1,7 @@
 { config, lib, pkgs, vars, ... }: let
   browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.gnome;
+  plex = config.myOptions.plex;
 
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -275,7 +276,7 @@ in {
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
-            "plexmediaplayer.desktop"
+            "${plex.shortcut}"
           ];
         };
         "org/gnome/shell/extensions/appindicator".icon-size = 16;

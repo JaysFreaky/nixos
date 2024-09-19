@@ -2,6 +2,7 @@
   browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.kde;
   host = config.myHosts;
+  plex = config.myOptions.plex;
 
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -373,7 +374,7 @@ in {
                     #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
-                    "applications:plexmediaplayer.desktop"
+                    "applications:${plex.shortcut}"
                   ];
                 }
               ];

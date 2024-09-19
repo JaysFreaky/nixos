@@ -47,9 +47,10 @@ in {
         nvidia.enable = true;
       };
 
-      # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+      # "1password", alacritty, flatpak, gaming, kitty, plex, syncthing, wezterm
       "1password".enable = true;
       gaming.enable = true;
+      plex.enable = true;
       syncthing.enable = true;
     };
 
@@ -71,7 +72,6 @@ in {
         kdePackages.dragon      # Media player
         mpc-qt                  # MPV frontend
         #mpv                     # Media player
-        plex-media-player       # Plex client
         #smplayer                # MPV frontend
 
       # Notes
