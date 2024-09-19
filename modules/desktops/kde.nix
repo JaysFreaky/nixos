@@ -21,9 +21,9 @@
   };
   profileImg = ../../assets/profile.png;
   wallpaper = {
-    dark = "${vars.configPath}/assets/wallpapers/blobs-d.png";
-    light = "${vars.configPath}/assets/wallpapers/blobs-l.png";
-    sddm = "${vars.configPath}/assets/wallpapers/blobs-l.png";
+    dark = "${vars.configPath}/assets/wallpapers/dark.png";
+    light = "${vars.configPath}/assets/wallpapers/light.png";
+    sddm = "${vars.configPath}/assets/wallpapers/login.png";
   };
 in {
   options.myOptions.desktops.kde = with lib; {
@@ -53,14 +53,19 @@ in {
       systemPackages = with pkgs; let
         sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
           themeConfig = {
-            #Background = "${wallpaper.sddm}";
-            Blur = 1.0;
-            BlurMax = 64;
-            FullBlur = true;
-            HideVirtualKeyboard = true;
-            PartialBlur = false;
-            ScreenHeight = "${host.height}";
+          # Screen
             ScreenWidth = "${host.width}";
+            ScreenHeight = "${host.height}";
+          # Background
+            Background = "${wallpaper.sddm}";
+          # Form
+            FormPosition = "left";  # left, center, right
+            PartialBlur = false;      # Form is blurred
+            FullBlur = true;          # Everything is blurred
+            Blur = 1.0;               # Default 2.0 | 0.0 - 3.0
+            BlurMax = 64;             # Default 48 | 2 - 64
+          # UI
+            ForceHideVirtualKeyboardButton = true;
           };
         };
       in [
@@ -68,6 +73,7 @@ in {
         icon.package                # Icon theme
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
         neovide                     # GUI launcher for neovim
+        #polonium                    # Window tiling
         sddm-astronaut-pkg          # SDDM theme
       ] ++ (with kdePackages; [
         kwallet                     # KDE Wallet
@@ -92,7 +98,7 @@ in {
             CursorTheme = cursor.name;
           };
         };
-        #theme = "sddm-astronaut-theme";
+        theme = "sddm-astronaut-theme";
         wayland.enable = true;
       };
 
@@ -178,7 +184,7 @@ in {
             # Disable file indexing
             "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
             "dolphinrc"."General" = {
-              "HomeUrl" = "/";
+              "HomeUrl" = "/home/${vars.user}";
               "RememberOpenedTabs" = false;
             };
             # Do not remember file history
@@ -387,6 +393,11 @@ in {
               "Switch to Desktop 8" = "Meta+8";
               "Switch to Desktop 9" = "Meta+9";
               "Switch to Desktop 10" = "Meta+0";
+              "Window Close" = [ "Meta+Q" "Alt+F4" ];
+              "Window Maximize" = "Meta+Up";
+              "Window Minimize" = "Meta+Down";
+              "Window Quick Tile Bottom" = "";
+              "Window Quick Tile Top" = "";
               "Window to Desktop 1" = "Meta+!";
               "Window to Desktop 2" = "Meta+@";
               "Window to Desktop 3" = "Meta+#";
@@ -397,7 +408,6 @@ in {
               "Window to Desktop 8" = "Meta+*";
               "Window to Desktop 9" = "Meta+(";
               "Window to Desktop 10" = "Meta+)";
-              "Window Close" = [ "Meta+Q" "Alt+F4" ];
             };
             "plasmashell" = {
               "activate task manager entry 1" = [ ];
@@ -414,6 +424,7 @@ in {
             };
             "services/${browser}.desktop"."_launch" = "Meta+W";
             "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
+            "services/darkman.desktop"."_launch" = "Meta+Shift+T";
             "services/org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };
 
@@ -430,8 +441,7 @@ in {
         lookandfeeltool = lib.getExe' pkgs.kdePackages.plasma-workspace "lookandfeeltool";
         qdbus = lib.getExe' pkgs.kdePackages.qttools "qdbus";
       in {
-        enable = false;
-        settings.usegeoclue = true;
+        enable = true;
         darkModeScripts = {
           kde = ''
             # Plasma Global Theme
@@ -439,13 +449,14 @@ in {
             # Wallpaper
             ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.dark}'")}'
           '';
-          terminal = ''
+          terminal = if (vars.terminal == "Alacritty") then ''
             # Alacritty
             ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+          '' else if (vars.terminal == "kitty") then ''
             # Kitty
             ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
-          '';
+          '' else '''';
         };
 
         lightModeScripts = {
@@ -455,13 +466,14 @@ in {
             # Wallpaper
             ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.light}'")}'
           '';
-          terminal = ''
+          terminal = if (vars.terminal == "Alacritty") then ''
             # Alacritty
             ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+          '' else if (vars.terminal == "kitty") then ''
             # Kitty
             ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
-          '';
+          '' else '''';
         };
       };
 
