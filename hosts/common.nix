@@ -34,6 +34,7 @@ in {
       cbonsai                     # Bonsai growing
 
     # Files
+      cryptomator                 # Encrypt cloud files
       exiftool                    # File metadata
       file                        # File information
       libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
@@ -46,6 +47,7 @@ in {
     # Hardware
       clinfo                      # OpenCL info | 'clinfo -l' or -a
       ffmpeg-full                 # Hardware video acceleration
+      glxinfo                     # OpenGL info
       lm_sensors                  # Hardware sensors | 'sensors-detect'
       lshw                        # Hardware config
       nvme-cli                    # Manage NVMe
@@ -55,7 +57,6 @@ in {
     # Images
       feh                         # Image viewer
       imagemagick                 # Image tools
-      qview                       # Image viewer
 
     # Monitoring
       btop                        # Resource manager
@@ -76,6 +77,7 @@ in {
 
     # Terminal
       bat                         # cat with syntax highlighting
+      comma                       # Search and run pkgs in nix-shell | ', pkg-name'
       coreutils                   # GNU utilities
       eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
