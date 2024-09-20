@@ -2,9 +2,10 @@
   browser = config.myOptions.browser;
 
   bpc = {
-    version = "3.8.4.0";
+    commit = "ead6b8ed5440387443da2cae474afe1a45e3aaad";
     sha256 = "sha256-b9TvyOqnp4XZt6InW3atMuM11JP8LtrYv1ERby+i3EU=";
     #sha256 = lib.fakeHash;
+    version = "3.8.4.0";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   myAddons = pkgs.callPackage ./addons.nix {
@@ -60,9 +61,9 @@ in {
 
           # Search extensions at: https://nur.nix-community.org/repos/rycee/
           extensions = with firefox-addons; let
-            bpc-pkg = bypass-paywalls-clean.override rec {
+            bpc-pkg = bypass-paywalls-clean.override {
               version = "${bpc.version}";
-              url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${version}.xpi";
+              url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${bpc.version}.xpi&inline=false&commit=${bpc.commit}";
               sha256 = "${bpc.sha256}";
             };
           in [
