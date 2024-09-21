@@ -1,8 +1,15 @@
 { config, lib, pkgs, vars, ... }: let
-  browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.gnome;
-  plex = config.myOptions.plex;
+  cfg-base = config.myOptions;
 
+  alacritty = {
+    dark = "catppuccin_mocha";
+    light = "catppuccin_latte";
+  };
+  kitty = {
+    dark = "Catppuccin-Mocha";
+    light = "Catppuccin-Latte";
+  };
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
     name = "Bibata-Modern-Classic";
@@ -22,23 +29,21 @@
   logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
 
-  themeChange = let
-    themeName = "everforest";
-  in pkgs.writeShellScriptBin "themeChange.sh" ''
+  themeChange = pkgs.writeShellScriptBin "themeChange" ''
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
       # Alacritty
-      ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
       #gsettings set org.gnome.desktop.background picture-uri '${vars.configPath}/assets/wallpapers/blobs-l.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Alacritty
-      ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
       #gsettings set org.gnome.desktop.background picture-uri-dark '${vars.configPath}/assets/wallpapers/blobs-d.png'
@@ -271,12 +276,12 @@ in {
           favorite-apps = [
             "${vars.terminal}.desktop"
             "org.gnome.Nautilus.desktop"
-            "${browser}.desktop"
+            "${cfg-base.browser}.desktop"
             "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
-            "${plex.shortcut}"
+            "${cfg-base.plex.shortcut}"
           ];
         };
         "org/gnome/shell/extensions/appindicator".icon-size = 16;
@@ -336,8 +341,6 @@ in {
         "org/gnome/shell/extensions/lockkeys".style = "show-hide-capslock";
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          #sunrise = "${themeChange}/bin/themeChange.sh";
-          #sunset = "${themeChange}/bin/themeChange.sh";
           sunrise = "${lib.getExe themeChange}";
           sunset = "${lib.getExe themeChange}";
         };
@@ -410,10 +413,6 @@ in {
       ];
 
       programs = {
-        # Set terminal themes
-        alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
-        kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
-
         # SSH agent
         /*bash.initExtra = ''
           eval $(/run/wrappers/bin/gnome-keyring-daemon --start --daemonize)

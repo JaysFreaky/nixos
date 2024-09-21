@@ -1,13 +1,13 @@
 [
   ./1password.nix
-  ./alacritty
+  ./alacritty.nix
   ./bash.nix
   ./fastfetch.nix
   ./firefox
   ./flatpak.nix
   ./gaming.nix
   ./git.nix
-  ./kitty
+  ./kitty.nix
   #./lf
   ./nvim
   ./plex.nix

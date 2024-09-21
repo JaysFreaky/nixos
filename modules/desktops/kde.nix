@@ -1,9 +1,16 @@
 { config, inputs, lib, pkgs, vars, ... }: let
-  browser = config.myOptions.browser;
   cfg = config.myOptions.desktops.kde;
+  cfg-base = config.myOptions;
   host = config.myHosts;
-  plex = config.myOptions.plex;
 
+  alacritty = {
+    dark = "catppuccin_mocha";
+    light = "catppuccin_latte";
+  };
+  kitty = {
+    dark = "Catppuccin-Mocha";
+    light = "Catppuccin-Latte";
+  };
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
     name = "Bibata-Modern-Classic";
@@ -172,10 +179,6 @@ in {
       };
 
       programs = {
-        # Set terminal themes
-        alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
-        kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
-
         plasma = {
           enable = true;
           # If true, resets all KDE settings not defined in this module @ boot/login
@@ -369,12 +372,12 @@ in {
                   iconTasks.launchers = [
                     "applications:${vars.terminal}.desktop"
                     "applications:org.kde.dolphin.desktop"
-                    "applications:${browser}.desktop"
+                    "applications:${cfg-base.browser}.desktop"
                     "applications:spotify.desktop"
                     #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
-                    "applications:${plex.shortcut}"
+                    "applications:${cfg-base.plex.shortcut}"
                   ];
                 }
               ];
@@ -423,7 +426,7 @@ in {
               "activate task manager entry 10" = [ ];
               "manage activities" = [ ];
             };
-            "services/${browser}.desktop"."_launch" = "Meta+W";
+            "services/${cfg-base.browser}.desktop"."_launch" = "Meta+W";
             "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
             "services/darkman.desktop"."_launch" = "Meta+Shift+T";
             "services/org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
@@ -438,43 +441,32 @@ in {
       };
 
       services.darkman = let
-        themeName = "everforest";
         lookandfeeltool = lib.getExe' pkgs.kdePackages.plasma-workspace "lookandfeeltool";
         qdbus = lib.getExe' pkgs.kdePackages.qttools "qdbus";
       in {
         enable = true;
         darkModeScripts = {
-          kde = ''
-            # Plasma Global Theme
-            ${lookandfeeltool} --apply "org.kde.breezedark.desktop"
-            # Wallpaper
+          alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          kitty = lib.mkIf (cfg-base.kitty.enable) ''
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          '';
+          plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breezedark.desktop"'';
+          wallpaper = ''
             ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.dark}'")}'
           '';
-          terminal = if (vars.terminal == "Alacritty") then ''
-            # Alacritty
-            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}-dark.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-          '' else if (vars.terminal == "kitty") then ''
-            # Kitty
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}-dark.conf /home/${vars.user}/.config/kitty/current-theme.conf
-            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
-          '' else '''';
         };
 
         lightModeScripts = {
-          kde = ''
-            # Plasma Global Theme
-            ${lookandfeeltool} --apply "org.kde.breeze.desktop"
-            # Wallpaper
+          alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          kitty = lib.mkIf (cfg-base.kitty.enable) ''
+            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
+          '';
+          plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breeze.desktop"'';
+          wallpaper = ''
             ${qdbus} org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript 'var allDesktops = desktops();print (allDesktops);for (i=0;i<allDesktops.length;i++) {d = allDesktops[i];d.wallpaperPlugin = "org.kde.image";d.currentConfigGroup = Array("Wallpaper", "org.kde.image", "General");d.writeConfig("Image", "file://'${wallpaper.light}'")}'
           '';
-          terminal = if (vars.terminal == "Alacritty") then ''
-            # Alacritty
-            ln -fs ${vars.configPath}/modules/programs/alacritty/themes/${themeName}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
-          '' else if (vars.terminal == "kitty") then ''
-            # Kitty
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${themeName}.conf /home/${vars.user}/.config/kitty/current-theme.conf
-            kill -SIGUSR1 $(pidof kitty) 2>/dev/null
-          '' else '''';
         };
       };
 

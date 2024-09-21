@@ -53,12 +53,6 @@ in {
       # Sets profile image
       home.file.".face".source = profileImg;
 
-      programs = {
-        # Set terminal themes
-        #alacritty.settings.import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
-        #kitty.extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
-      };
-
       # Set default applications
       xdg.mimeApps = {
         enable = true;

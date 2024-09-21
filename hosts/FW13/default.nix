@@ -162,7 +162,7 @@ in {
         '';
         "easyeffects/output/${eePreset}.json".source = builtins.fetchurl {
           url = "https://github.com/FrameworkComputer/linux-docs/blob/4bbf4c4361d43ab90ee83557e8b21dc4835e5337/easy-effects/${eePreset}.json";
-          sha256 = "sha256:187c18qy1h8axg7xmlgm7qfdl8xflgil1321rng17n7rs891nyqr";
+          sha256 = "sha256:1n5kysd19f4nnxxp9cxx1viqigfiiqgz34njw2kisi7kjc98vpks";
         };
       };
     };
