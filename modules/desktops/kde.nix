@@ -209,6 +209,8 @@ in {
               };
             };
             "krunnerrc" = {
+              # Center krunner on screen
+              "General"."FreeFloating" = true;
               # Disable search history
               "General"."historyBehavior" = "Disabled";
               # Disable file search from KRunner
@@ -429,7 +431,7 @@ in {
             "services/${cfg-base.browser}.desktop"."_launch" = "Meta+W";
             "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
             "services/darkman.desktop"."_launch" = "Meta+Shift+T";
-            "services/org.kde.krunner.desktop"."_launch" = [ "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
+            "services/org.kde.krunner.desktop"."_launch" = [ "" "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };
 
           # Setting cursor/icon themes via configFile
@@ -448,7 +450,7 @@ in {
         darkModeScripts = {
           alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
           kitty = lib.mkIf (cfg-base.kitty.enable) ''
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
           plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breezedark.desktop"'';
@@ -460,7 +462,7 @@ in {
         lightModeScripts = {
           alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
           kitty = lib.mkIf (cfg-base.kitty.enable) ''
-            ln -fs ${vars.configPath}/modules/programs/kitty/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
           plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breeze.desktop"'';
