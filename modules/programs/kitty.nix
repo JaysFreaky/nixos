@@ -14,10 +14,12 @@ in {
 
         settings = {
           # Blur not supported in GNOME
-          background_blur = 10;
-          background_opacity = mkDefault "0.8";
+          #background_blur = 1;
+          background_opacity = mkDefault "0.9";
           confirm_os_window_close = 0;
           copy_on_select = "clipboard";
+          #dim_opacity = "0.4";
+          dynamic_background_opacity = "yes";
           enable_audio_bell = "no";
           linux_display_server = "wayland";
           tab_bar_edge = "top";
