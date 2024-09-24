@@ -146,10 +146,10 @@ in {
       fancontrol = {
         enable = true;
         config = let
+          fanHw = "hwmon3";
           fanPath = "devices/platform/nct6687.2592";
-          fanName ="nct6686";
+          cpuHw = "hwmon1";
           cpuPath = "devices/pci0000:00/0000:00:18.3";
-          cpuName = "k10temp";
           # Value = percent * 2.55
           caseMin = "100"; # 40%
           caseMax = "102"; # 40%
@@ -157,19 +157,19 @@ in {
           cpuMax = "217"; # 85%
         in ''
           INTERVAL=10
-          DEVPATH=hwmon1=${cpuPath} hwmon2=${fanPath}
-          DEVNAME=hwmon1=${cpuName} hwmon2=${fanName}
-          FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon1/temp1_input
-          FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
-          MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
-          MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
+          DEVPATH=${cpuHw}=${cpuPath} ${fanHw}=${fanPath}
+          DEVNAME=${cpuHw}=k10temp ${fanHw}=nct6686
+          FCTEMPS=${fanHw}/pwm1=${cpuHw}/temp1_input ${fanHw}/pwm2=${cpuHw}/temp1_input
+          FCFANS=${fanHw}/pwm1=${fanHw}/fan1_input ${fanHw}/pwm2=${fanHw}/fan2_input
+          MINTEMP=${fanHw}/pwm1=40 ${fanHw}/pwm2=40
+          MAXTEMP=${fanHw}/pwm1=80 ${fanHw}/pwm2=80
           # Always spin @ MINPWM until MINTEMP
-          MINSTART=hwmon2/pwm1=30 hwmon2/pwm2=30
-          MINSTOP=hwmon2/pwm1=${cpuMin} hwmon2/pwm2=${caseMin}
+          MINSTART=${fanHw}/pwm1=30 ${fanHw}/pwm2=30
+          MINSTOP=${fanHw}/pwm1=${cpuMin} ${fanHw}/pwm2=${caseMin}
           # Fans @ 25%/40% until 40 degress
-          MINPWM=hwmon2/pwm1=${cpuMin} hwmon2/pwm2=${caseMin}
+          MINPWM=${fanHw}/pwm1=${cpuMin} ${fanHw}/pwm2=${caseMin}
           # Fans ramp to 85%/40% @ 80 degrees
-          MAXPWM=hwmon2/pwm1=${cpuMax} hwmon2/pwm2=${caseMax}
+          MAXPWM=${fanHw}/pwm1=${cpuMax} ${fanHw}/pwm2=${caseMax}
         '';
       };
 
