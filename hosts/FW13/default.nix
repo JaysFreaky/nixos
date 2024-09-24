@@ -105,7 +105,7 @@ in {
       spicetify = let spice-pkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
         enable = true;
         theme = spice-pkgs.themes.text;
-        colorScheme = "TokyoNightStorm";
+        colorScheme = "CatppuccinMacchiato";
         enabledExtensions = with spice-pkgs.extensions; [
           fullAlbumDate
           hidePodcasts
