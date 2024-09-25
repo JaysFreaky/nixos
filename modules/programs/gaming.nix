@@ -37,14 +37,15 @@ in {
       heroic          # Game launcher - Epic, GOG, Prime
       jdk             # Java games
       lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
+      protonplus      # Proton-GE updater
     ];
+
+    environment.variables."STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
 
     home-manager.users.${vars.user} = {
       home.file = {
         # Custom steam.desktop file with host's scaling applied
-        /*".local/share/applications/steam.desktop" = let
-          steam-pkg = config.programs.steam.package;
-        in {
+        /*".local/share/applications/steam.desktop" = let steam-pkg = config.programs.steam.package; in {
           executable = true;
           text = lib.replaceStrings [ "Exec=steam %U" ] [ "Exec=${lib.getExe steam-pkg} -forcedesktopscaling=${host.scale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
         };*/
@@ -146,7 +147,7 @@ in {
       steam = {
         enable = true;
         extest.enable = true;
-        extraCompatPackages = [ pkgs.proton-ge-bin ];
+        #extraCompatPackages = [ pkgs.proton-ge-bin ];
         gamescopeSession.enable = false;
 
         # Firewall options
@@ -155,7 +156,7 @@ in {
         remotePlay.openFirewall = true;
 
         package = pkgs.steam.override {
-          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so:$LD_PRELOAD";
+          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
@@ -178,8 +179,7 @@ in {
       domain = "@gamemode";
       type = "-";
       item = "nice";
-      # Range from -20 to 19
-      value = -20;
+      value = -20;  # Range from -20 to 19
     }];
 
     users.users.${vars.user}.extraGroups = [ "gamemode" ];
