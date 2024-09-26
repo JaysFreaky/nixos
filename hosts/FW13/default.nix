@@ -115,6 +115,8 @@ in {
       };
     };
 
+    system.stateVersion = "24.05";
+
 
     ##########################################################
     # Home Manager
@@ -138,6 +140,7 @@ in {
       };
 
       home.packages = with pkgs.gnomeExtensions; [ battery-health-charging ];
+      home.stateVersion = "24.05";
 
       # lspci -D | grep -i vga
       programs.mangohud.settings.pci_dev = "0:c1:00.0";
@@ -162,7 +165,7 @@ in {
         '';
         "easyeffects/output/${eePreset}.json".source = builtins.fetchurl {
           url = "https://github.com/FrameworkComputer/linux-docs/blob/4bbf4c4361d43ab90ee83557e8b21dc4835e5337/easy-effects/${eePreset}.json";
-          sha256 = "sha256:1n5kysd19f4nnxxp9cxx1viqigfiiqgz34njw2kisi7kjc98vpks";
+          sha256 = "sha256:0vdy9dyglfrxrdmrlbc3p7fn136xf8ryp8vk5mrq28r2vjgvhikh";
         };
       };
     };

@@ -58,6 +58,8 @@ in {
       variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:00:02.0-render";
     };
 
+    system.stateVersion = "24.05";
+
 
     ##########################################################
     # Home Manager
@@ -65,6 +67,8 @@ in {
     home-manager.users.${vars.user} = let
       hyprApps = cfg-hypr.hyprApps;
     in {
+      home.stateVersion = "24.05";
+
       programs = {
         plasma = lib.mkIf (cfg-kde.enable) {
           configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {

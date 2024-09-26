@@ -53,6 +53,8 @@
 
   services.xserver.displayManager.gdm.enable = lib.mkForce false;
 
+  system.stateVersion = "24.05";
+
 
   ##########################################################
   # Home Manager
@@ -83,6 +85,7 @@
     };
 
     home.packages = with pkgs.gnomeExtensions; [ dash-to-dock ];
+    home.stateVersion = "24.05";
   };
 
 

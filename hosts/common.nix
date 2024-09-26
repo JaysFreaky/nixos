@@ -121,7 +121,6 @@ in {
   };
 
   home-manager.users.${vars.user} = {
-    home.stateVersion = "23.11";
     #programs.home-manager.enable = true;
     xdg.userDirs.createDirectories = true;
   };
@@ -254,7 +253,6 @@ in {
     };
   };
 
-  system.stateVersion = "23.11";
   systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
 
   users = {

@@ -38,7 +38,7 @@ in {
         kde = {
           enable = true;
           gpuWidget = "gpu/gpu0/temperature";
-          gpuWidget2 = "gpu/gpu1/temperature";
+          #gpuWidget2 = "gpu/gpu1/temperature";
         };
       };
 
@@ -114,6 +114,8 @@ in {
       };
     };
 
+    system.stateVersion = "24.05";
+
     users.users.${vars.user}.extraGroups = [
       "fancontrol"
       "i2c"
@@ -124,6 +126,8 @@ in {
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = {
+      home.stateVersion = "24.05";
+
       # lspci -D | grep -i vga
       programs.mangohud.settings = {
         gpu_voltage = true;
@@ -190,7 +194,7 @@ in {
       nvidia.prime = {
         amdgpuBusId = "PCI:13:0:0";
         nvidiaBusId = "PCI:1:0:0";
-        sync.enable = true;
+        #sync.enable = true;
       };
 
       openrazer = {
@@ -217,14 +221,14 @@ in {
       };
 
       blacklistedKernelModules = [
-        #"amdgpu"  # Disable iGPU
+        "amdgpu"  # Disable iGPU
       ];
       kernelModules = [ "nct6687" ];
       extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
       # CachyOS kernel relies on chaotic.scx
-      kernelPackages = if (!config.chaotic.scx.enable)
-        then pkgs.linuxPackages_latest
-        else pkgs.linuxPackages_cachyos;
+      kernelPackages = if (config.chaotic.scx.enable)
+        then pkgs.linuxPackages_cachyos
+        else pkgs.linuxPackages_latest;
       kernelParams = [
         "amd_pstate=active"
         "quiet"  # Hides text prior to plymouth boot logo

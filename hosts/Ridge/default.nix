@@ -88,11 +88,15 @@
       };
     };
 
+    system.stateVersion = "24.05";
+
 
     ##########################################################
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = {
+      home.stateVersion = "24.05";
+
       # lspci -D | grep -i vga
       programs.mangohud.settings = {
         gpu_voltage = true;
