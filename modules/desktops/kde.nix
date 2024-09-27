@@ -125,8 +125,6 @@ in {
     '';
 
     home-manager.users.${vars.user} = {
-      imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
-
       home.file = {
         # Sets profile image
         ".face".source = profileImg;

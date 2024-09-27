@@ -121,6 +121,7 @@ in {
   };
 
   home-manager.users.${vars.user} = {
+    imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
     #programs.home-manager.enable = true;
     xdg.userDirs.createDirectories = true;
   };
