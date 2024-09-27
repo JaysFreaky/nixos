@@ -32,12 +32,10 @@ in {
     # Custom Options
     ##########################################################
     myOptions = {
-      desktops = {    # gnome, hyprland, kde
+      desktops = {    # cosmic, gnome, hyprland, kde
+        #cosmic.enable = true;
         #hyprland.enable = true;
-        kde = {
-          enable = true;
-          #gpuWidget = "gpu/gpu0/temperature";
-        };
+        kde.enable = true;
       };
 
       hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
