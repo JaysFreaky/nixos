@@ -163,10 +163,12 @@ in {
           Type=Application
           X-GNOME-Autostart-enabled=true
         '';
-        "easyeffects/output/${eePreset}.json".source = builtins.fetchurl {
-          url = "https://github.com/FrameworkComputer/linux-docs/blob/4bbf4c4361d43ab90ee83557e8b21dc4835e5337/easy-effects/${eePreset}.json";
-          sha256 = "sha256:0vdy9dyglfrxrdmrlbc3p7fn136xf8ryp8vk5mrq28r2vjgvhikh";
-        };
+        "easyeffects/output/${eePreset}.json".source = pkgs.fetchFromGitHub {
+          owner = "FrameworkComputer";
+          repo = "linux-docs";
+          rev = "e70bfc83dbdcbcd2cd47259a823a17d5ccce14c2";
+          sha256 = "sha256-o4unZQBGD6nejo1KeZ9x6zGOYOHbSq7WtarGOdiu5EM=";
+        } + "/easy-effects/${eePreset}.json";
       };
     };
 
