@@ -1,6 +1,5 @@
 { config, lib, pkgs, vars, ... }: let
-  cfg-hypr = config.myOptions.desktops.hyprland;
-  cfg-kde = config.myOptions.desktops.kde;
+  cfg = config.myOptions.desktops;
   host = config.myHosts;
 in {
   imports = [
@@ -63,12 +62,12 @@ in {
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = let
-      hyprApps = cfg-hypr.hyprApps;
+      hyprApps = cfg.hyprland.hyprApps;
     in {
       home.stateVersion = "24.05";
 
       programs = {
-        plasma = lib.mkIf (cfg-kde.enable) {
+        plasma = lib.mkIf (cfg.kde.enable) {
           configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {
             "ClickMethod" = 2;
             "NaturalScroll" = true;
@@ -78,7 +77,7 @@ in {
           };
         };
 
-        waybar.settings = lib.mkIf (cfg-hypr.enable) {
+        waybar.settings = lib.mkIf (cfg.hyprland.enable) {
           mainBar = {
             # CPU Temperature
             "temperature#cpu" = {
@@ -141,10 +140,10 @@ in {
         };
       };
 
-      wayland.windowManager.hyprland = lib.mkIf (cfg-hypr.enable) {
+      wayland.windowManager.hyprland = lib.mkIf (cfg.hyprland.enable) {
         settings = {
           # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
-          monitor = [ "eDP-1, ${host.width}x${host.height}@${host.refresh}, 0x0, ${host.scale}" ];
+          monitor = with host; [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
           bind = [
             ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
             #", XF86, exec, amixer sset Capture toggle"  # Mic disabled in firmware
