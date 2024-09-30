@@ -84,9 +84,9 @@ in {
         #polonium                    # Window tiling
         sddm-astronaut-pkg          # SDDM theme
       ] ++ (with kdePackages; [
-        kwallet                     # KDE Wallet
-        kwallet-pam                 # Unlock on login
-        kwalletmanager              # Wallet manager
+        #kwallet                     # KDE Wallet
+        #kwallet-pam                 # Unlock on login
+        #kwalletmanager              # Wallet manager
         qt5compat                   # Qt5 compatibility
         sddm-kcm                    # SDDM settings module
       ]);
