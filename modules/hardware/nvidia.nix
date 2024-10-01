@@ -1,15 +1,14 @@
 { config, lib, pkgs, ... }: let
   cfg = config.myOptions.hardware.nvidia;
-  cfg-hypr = config.myOptions.desktops.hyprland;
-  cfg-kde = config.myOptions.desktops.kde;
+  cfg-de = config.myOptions.desktops;
 in {
   options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia GPU";
 
   config = lib.mkMerge [
     (lib.mkIf (cfg.enable) {
-      environment.systemPackages = with pkgs; [
-        nvtopPackages.nvidia    # GPU stats
-      ];
+      boot.kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
+
+      environment.systemPackages = with pkgs; [ nvtopPackages.nvidia ];
 
       hardware = {
         graphics.enable = true;
@@ -33,14 +32,10 @@ in {
 
       programs.gamescope.args = [ "-F nis" ];
 
-      # Enabling these enables hardware.nvidia
-      services.xserver = {
-        enable = true;
-        videoDrivers = [ "nvidia" ];
-      };
+      services.xserver.videoDrivers = [ "nvidia" ];
     })
 
-    (lib.mkIf (cfg.enable && cfg-hypr.enable) {
+    (lib.mkIf (cfg.enable && cfg-de.hyprland.enable) {
       environment = {
         sessionVariables = {
           __GL_GSYNC_ALLOWED = 1;
@@ -53,17 +48,13 @@ in {
           NVD_BACKEND = "direct";
         };
 
-        systemPackages = with pkgs; [
-          egl-wayland
-        ];
+        systemPackages = with pkgs; [ egl-wayland ];
       };
     })
 
-    (lib.mkIf (cfg.enable && cfg-kde.enable) {
-      boot.kernelParams = [
-        # Disable GSP Mode - Smoother Plasma Wayland experience
-        "nvidia.NVreg_EnableGpuFirmware=0"
-      ];
+    (lib.mkIf (cfg.enable && cfg-de.kde.enable) {
+      # Disable GSP Mode - Smoother Plasma Wayland experience
+      boot.kernelParams = [ "nvidia.NVreg_EnableGpuFirmware=0" ];
     })
 
   ];
