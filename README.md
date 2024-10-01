@@ -7,9 +7,9 @@ The system's are entirely declarative, even using [disko](https://github.com/nix
 To deploy this flake, I'm booting from an .iso I built (hosts/iso), which includes the tools I need, and running these commands as root:
 
 ```
-nix run github:nix-community/disko -- --mode disko --flake github:JaysFreaky/nixos#<HOST>
+nix run github:nix-community/disko -- --mode disko --flake github:JaysFreaky/nixos#HOST
 mkdir -p /mnt/etc/ssh
-ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@<HOST>"
+ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -C "root@HOST"
 ssh-to-age -i /mnt/etc/ssh/ssh_host_ed25519_key.pub
 ```
 
@@ -22,7 +22,7 @@ ssh-to-age -i /mnt/etc/ssh/ssh_host_ed25519_key.pub
 mkdir -p /mnt/etc/nixos && cd $_
 git clone --origin nixos https://github.com/JaysFreaky/nixos.git /mnt/etc/nixos
 git remote set-url nixos git@github.com:JaysFreaky/nixos.git
-nixos-install --no-root-passwd --flake .#<HOST>
+nixos-install --no-root-passwd --flake .#HOST
 ```
 
 ## Breakdown
@@ -35,13 +35,7 @@ nixos-install --no-root-passwd --flake .#<HOST>
 ├── flake.nix
 ├── hosts
 │  ├── common.nix
-│  ├── Dekki
-│  ├── FW13
 │  ├── iso
-│  ├── Ridge
-│  ├── T1
-│  ├── T450s
-│  └── VM
 ├── modules
 │  ├── desktops
 │  ├── hardware
