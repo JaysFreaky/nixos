@@ -1,7 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: let
-  cfg-hypr = config.myOptions.desktops.hyprland;
+  cfg = config.myOptions.desktops;
   host = config.myHosts;
-
   fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
 in {
   imports = [
@@ -136,9 +135,9 @@ in {
         table_columns = lib.mkForce 6;
       };
 
-      wayland.windowManager.hyprland.settings = lib.mkIf (cfg-hypr.enable) {
+      wayland.windowManager.hyprland.settings = lib.mkIf (cfg.hyprland.enable) {
         # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
-        #monitor = lib.mkForce [ "eDP-1, ${host.width}x${host.height}@${host.refresh}, 0x0, ${host.scale}" ];
+        #monitor = with host; lib.mkForce [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
       };
     };
 
@@ -225,13 +224,11 @@ in {
       ];
       kernelModules = [ "nct6687" ];
       extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
-      # CachyOS kernel relies on chaotic.scx
-      kernelPackages = if (config.chaotic.scx.enable)
-        then pkgs.linuxPackages_cachyos
-        else pkgs.linuxPackages_latest;
+      # 6.10.11 until 6.11.x supports Nvidia sleep/resume
+      kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_6_10;
       kernelParams = [
         "amd_pstate=active"
-        "quiet"  # Hides text prior to plymouth boot logo
+        "quiet"
       ];
 
       loader = {
@@ -247,25 +244,23 @@ in {
           editor = false;
           memtest86.enable = true;
         };
-        timeout = 1;
+        timeout = 3;
       };
 
       plymouth = {
         enable = true;
+        # Theme previews: https://github.com/adi1090x/plymouth-themes
         theme = "loader";
-        themePackages = [
-          # Overriding installs a single theme instead of all 80, reducing the required size
-            # Theme previews: https://github.com/adi1090x/plymouth-themes
-          (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "loader" ]; })
-        ];
+        # Overriding installs a single theme instead of all 80, reducing the required size
+        themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
       };
 
       supportedFilesystems = [ "btrfs" ];
     };
 
     chaotic.scx = {
-      enable = true;
-      scheduler = "scx_lavd";
+      enable = false;
+      scheduler = "scx_rusty";
     };
 
   };
