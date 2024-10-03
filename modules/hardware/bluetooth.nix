@@ -21,6 +21,11 @@ in {
       };
 
       services.blueman.enable = true;
+
+      systemd.services = {
+        # Fixes directory mode error in journalctl
+        bluetooth.serviceConfig.ConfigurationDirectoryMode = lib.mkForce 0755;
+      };
     })
 
     # PS4 controller pairability
