@@ -10,6 +10,7 @@
   ./kitty.nix
   #./lf
   ./nvim
+  ./openrgb.nix
   ./plex.nix
   ./starship
   ./syncthing.nix

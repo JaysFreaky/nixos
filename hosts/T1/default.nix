@@ -46,9 +46,10 @@ in {
         nvidia.enable = true;
       };
 
-      # "1password", alacritty, flatpak, gaming, kitty, plex, syncthing, wezterm
+      # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, syncthing, wezterm
       "1password".enable = true;
       gaming.enable = true;
+      openrgb.enable = true;
       plex.enable = true;
       syncthing.enable = true;
     };
@@ -115,10 +116,7 @@ in {
 
     system.stateVersion = "24.05";
 
-    users.users.${vars.user}.extraGroups = [
-      "fancontrol"
-      "i2c"
-    ];
+    users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
 
     ##########################################################
@@ -188,8 +186,6 @@ in {
         ];
       };
 
-      i2c.enable = true;
-
       nvidia.prime = {
         amdgpuBusId = "PCI:13:0:0";
         nvidiaBusId = "PCI:1:0:0";
@@ -200,11 +196,6 @@ in {
         enable = true;
         users = [ "${vars.user}" ];
       };
-    };
-
-    services.hardware.openrgb = {
-      enable = true;
-      package = pkgs.openrgb-with-all-plugins;
     };
 
 
