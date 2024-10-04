@@ -5,12 +5,12 @@
       settings = {
         "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json";
         logo = {
-          #type = "kitty-direct";
-          #source = ../../assets/logo.png;
-          source = "NixOS_small";
+          type = "chafa";
+          source = ../../assets/logo.png;
+          #source = "NixOS_small";
           width = 20;
           padding = {
-            left = 6;
+            left = 4;
             top = 2;
           };
         };
@@ -62,7 +62,8 @@
           {
             type = "gpu";
             key = "󰢮";
-            format = "{1} {2} @ {12} GHz";
+            #format = "{1} {2} @ {12} GHz";
+            format = "{1} {2}";
           }
           {
             type = "memory";

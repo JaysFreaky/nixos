@@ -79,6 +79,7 @@ in {
 
     # Terminal
       bat                         # cat with syntax highlighting
+      chafa                       # Images in terminal
       coreutils                   # GNU utilities
       eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
