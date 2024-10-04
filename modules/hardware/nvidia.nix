@@ -6,14 +6,17 @@ in {
 
   config = lib.mkMerge [
     (lib.mkIf (cfg.enable) {
-      boot.kernelParams = [ "nvidia.NVreg_TemporaryFilePath=/var/tmp" ];
+      boot.kernelParams = [
+        "nvidia.NVreg_EnableResizableBar=1"
+        "nvidia.NVreg_TemporaryFilePath=/var/tmp"
+      ];
 
       environment.systemPackages = with pkgs; [ nvtopPackages.nvidia ];
 
       hardware = {
         graphics.enable = true;
         nvidia = {
-          # "nvidia-drm.modeset=1" / "nvidia-drm.fbdev=1" - Enable dedicated framebuffer - https://wiki.archlinux.org/title/NVIDIA#DRM_kernel_mode_setting
+          # "nvidia-drm.modeset=1" / "nvidia-drm.fbdev=1" enables dedicated framebuffer
           modesetting.enable = true;
           # Nvidia settings application
           nvidiaSettings = true;
@@ -22,7 +25,8 @@ in {
           # beta or stable
           package = config.boot.kernelPackages.nvidiaPackages.stable;
           powerManagement = {
-            # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" - enable if graphical corruption on resumption from sleep
+            # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" / enables nvidia-hibernate/resume/sleep.services
+              # enable if graphical corruption on resumption from sleep
             enable = true;
             # Experimental: Turns off GPU when not in use - cannot be used with nvidia.prime.sync
             finegrained = false;
