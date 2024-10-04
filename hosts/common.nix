@@ -20,9 +20,6 @@ in {
     keyMap = "us";
   };
 
-  i18n.defaultLocale = "en_US.UTF-8";
-  time.timeZone = "America/Chicago";
-
   environment = {
     # List packages installed in system profile. To search, run:
       # $ nix search wget
@@ -68,6 +65,11 @@ in {
       nfs-utils                   # NFS support
       nmap                        # Network discovery
 
+    # Nix
+      comma                       # Search and run pkgs in nix-shell | ', pkg-name'
+      home-manager                # Using because 'programs.home-manager.enable' doesn't work
+      nix-tree                    # Browse nix store
+
     # Notifications
       libnotify                   # Notification engine
 
@@ -77,16 +79,15 @@ in {
 
     # Terminal
       bat                         # cat with syntax highlighting
-      comma                       # Search and run pkgs in nix-shell | ', pkg-name'
       coreutils                   # GNU utilities
       eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
       killall                     # Process killer
-      nix-tree                    # Browse nix store
       shellcheck                  # Script formating checker
       superfile-pkg               # CLI file manager
       tldr                        # Abbreviated manual
       tmux                        # Multiplexor
+      toybox                      # Various commands
       tree                        # Directory layout
       wget                        # Retriever
       wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
@@ -94,7 +95,7 @@ in {
       zellij                      # Tmux alternative
 
     # Theming
-      #base16-schemes             # Presets
+      base16-schemes              # Presets
       #variety                    # Wallpapers
     ];
 
@@ -122,9 +123,10 @@ in {
 
   home-manager.users.${vars.user} = {
     imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
-    #programs.home-manager.enable = true;
     xdg.userDirs.createDirectories = true;
   };
+
+  i18n.defaultLocale = "en_US.UTF-8";
 
   myOptions = {
     git.ssh.enable = lib.mkDefault true;
@@ -162,6 +164,7 @@ in {
       options = "--delete-older-than 30d";
     };
     optimise.automatic = true;
+    registry.nixpkgs.flake = inputs.nixpkgs;
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
@@ -257,6 +260,8 @@ in {
   };
 
   systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
+
+  time.timeZone = "America/Chicago";
 
   users = {
     # All users/passwords setup via declaration
