@@ -4,7 +4,8 @@
 
   inputs = {
     chaotic = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      #url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      url = "github:chaotic-cx/nyx/68d822079a1b3e31db3cf1e30e32a69b46e6dfa3";
       inputs = {
         home-manager.follows = "home-manager";
         jovian.follows = "jovian";

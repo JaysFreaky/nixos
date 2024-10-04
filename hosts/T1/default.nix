@@ -250,7 +250,7 @@ in {
     };
 
     chaotic.scx = {
-      enable = false;
+      enable = true;
       scheduler = "scx_rusty";
     };
 
