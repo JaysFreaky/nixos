@@ -164,6 +164,10 @@ in {
           new-tab = true;
           terminal = "${vars.terminal}";
         };
+        "org/gnome/Console" = {
+          custom-font = "JetBrainsMonoNL Nerd Font Mono 12";
+          use-system-font = false;
+        };
         "org/gnome/desktop/interface" = {
           clock-show-date = true;
           clock-show-weekday = true;
@@ -297,9 +301,14 @@ in {
           blur = true;
           blur-on-overview = true;
           customize = true;
-          opacity = 255;
+          dynamic-opacity = false;
+          opacity = 230; # 90%
           sigma = 8;
-          whitelist = [ "Alacritty" "kitty" ];
+          whitelist = [
+            "Alacritty"
+            "kitty"
+            "org.gnome.Console"
+          ];
         };
         "org/gnome/shell/extensions/blur-my-shell/panel" = {
           blur = true;
