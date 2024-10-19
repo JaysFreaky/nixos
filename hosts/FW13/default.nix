@@ -41,10 +41,17 @@ in {
         #fp_reader.enable = true;
       };
 
-      # "1password", alacritty, flatpak, gaming, kitty, plex, syncthing, wezterm
+      # "1password", alacritty, flatpak, gaming, kitty, plex, stylix, syncthing, wezterm
       "1password".enable = true;
       gaming.enable = true;
       plex.enable = true;
+      stylix = {
+        enable = true;
+        wallpaper = {
+          #dark = "${vars.configPath}/assets/wallpapers/FW13/dark.png";
+          #light = "${vars.configPath}/assets/wallpapers/FW13/light.png";
+        };
+      };
       syncthing.enable = true;
       #wezterm.enable = true;
     };

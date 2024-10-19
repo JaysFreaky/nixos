@@ -1,5 +1,6 @@
 { config, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.alacritty;
+  stylix = config.stylix.enable;
 in {
   options.myOptions.alacritty.enable = lib.mkEnableOption "Alacritty";
 
@@ -16,7 +17,7 @@ in {
               style = mkDefault "Regular";
             };
           };
-          import = [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
+          import = lib.mkIf (!stylix) [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
           live_config_reload = true;
           mouse.hide_when_typing = false;
           selection.save_to_clipboard = true;

@@ -1,5 +1,6 @@
 { config, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.kitty;
+  stylix = config.stylix.enable;
 in {
   options.myOptions.kitty.enable = lib.mkEnableOption "Kitty";
 
@@ -8,7 +9,7 @@ in {
     home-manager.users.${vars.user} = {
       programs.kitty = with lib; {
         enable = true;
-        extraConfig = ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
+        extraConfig = lib.mkIf (!stylix) ''include /home/${vars.user}/.config/kitty/current-theme.conf'';
         font.name = mkDefault "JetBrainsMono Nerd Font Mono";
         font.size = mkDefault 12;
 

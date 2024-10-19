@@ -13,6 +13,7 @@
   ./openrgb.nix
   ./plex.nix
   ./starship
+  ./stylix
   ./syncthing.nix
   ./wezterm.nix
 ]

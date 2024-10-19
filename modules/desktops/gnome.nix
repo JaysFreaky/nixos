@@ -1,6 +1,7 @@
 { config, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.desktops.gnome;
   cfg-base = config.myOptions;
+  stylix = config.stylix.enable;
 
   alacritty = {
     dark = "catppuccin_mocha";
@@ -28,7 +29,7 @@
   };
   logoImg = ../../assets/logo.png;
   profileImg = ../../assets/profile.png;
-
+  switch-mode = pkgs.callPackage ../programs/stylix/switch-mode.nix { };
   themeChange = pkgs.writeShellScriptBin "themeChange" ''
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
@@ -64,6 +65,8 @@ in {
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
         nautilus-open-any-terminal  # Open custom terminals in nautilus
         neovide                     # GUI launcher for neovim
+      ] ++ lib.optionals (stylix) [
+        switch-mode                 # HM theme switcher
       ];
 
       gnome.excludePackages = with pkgs; [
@@ -350,8 +353,8 @@ in {
         "org/gnome/shell/extensions/lockkeys".style = "show-hide-capslock";
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          sunrise = "${lib.getExe themeChange}";
-          sunset = "${lib.getExe themeChange}";
+          sunrise = if (stylix) then "${lib.getExe switch-mode} light" else "${lib.getExe themeChange}";
+          sunset = if (stylix) then "${lib.getExe switch-mode} dark" else "${lib.getExe themeChange}";
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;

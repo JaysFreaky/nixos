@@ -1,10 +1,10 @@
 {
   description = "NixOS Systems Flake";
 
-
   inputs = {
     chaotic = {
       #url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      # CachyOS Kernel 6.10.10
       url = "github:chaotic-cx/nyx/68d822079a1b3e31db3cf1e30e32a69b46e6dfa3";
       inputs = {
         home-manager.follows = "home-manager";
@@ -83,14 +83,16 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-    /*stylix = {
+    stylix = {
       url = "github:danth/stylix";
       inputs = {
         flake-compat.follows = "flake-compat";
+        flake-utils.follows = "flake-utils";
         home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
+        systems.follows = "systems";
       };
-    };*/
+    };
     superfile = {
       url = "github:yorukot/superfile";
       inputs = {
@@ -150,7 +152,7 @@
       inputs.nur.nixosModules.nur
       inputs.sops-nix.nixosModules.sops
       inputs.spicetify-nix.nixosModules.spicetify
-      #inputs.stylix.nixosModules.stylix
+      inputs.stylix.nixosModules.stylix
     ];
   in {
     # 'nixos-rebuild switch --flake .#your-hostname'
