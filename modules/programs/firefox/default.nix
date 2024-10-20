@@ -19,8 +19,6 @@ in {
 
   config = {
     home-manager.users.${vars.user} = {
-      imports = [ ./floorp-hm.nix ];
-
       programs.${browser} = {
         enable = true;
 
