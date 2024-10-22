@@ -10,22 +10,31 @@ in {
 
     services.hardware.openrgb = {
       enable = true;
-      package = pkgs.openrgb;
-
-      /*package = pkgs.openrgb.overrideAttrs (_: {
-        version = "pipeline";
+      package = pkgs.openrgb.overrideAttrs (_: {
+        version = "pipeline-v0.91";
         src = pkgs.fetchFromGitLab {
           owner = "CalcProgrammer1";
           repo = "OpenRGB";
-          rev = "98eab49e999635cdf4764e3e8f986d6faa84e173";
-          sha256 = "sha256-MDDcZamDo7dMEwVsLftXYZLmz+FD6ALbf00t987Woj4=";
+          rev = "a7cdbb384490ad15010754f0d7b8baef3864eff4";
+          sha256 = "sha256-+spXyT4Roc6pLAfzTBBPoHIgc69lJ+gYMpiTs+NdTdY=";
         };
         postPatch = ''
           patchShebangs scripts/build-udev-rules.sh
           substituteInPlace scripts/build-udev-rules.sh \
             --replace "/usr/bin/env chmod" "${pkgs.coreutils}/bin/chmod"
         '';
-      });*/
+      });
+    };
+
+    systemd.user.services.openrgb = {
+      enable = false;
+      description = "Launch OpenRGB after logon";
+      serviceConfig = {
+        ExecStart = "${lib.getExe config.services.hardware.openrgb.package} --startminimized";
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+      wantedBy = [ "graphical-session.target" ];
     };
 
     users.users.${vars.user}.extraGroups = [ "i2c" ];
