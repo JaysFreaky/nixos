@@ -64,7 +64,7 @@ in {
               sha256 = "${bpc.sha256}";
             };
           in [
-            bpc-pkg                         # Previous releases get deleted, so overriding with latest version
+            bpc-pkg                       # Previous releases get deleted regularly
             canvasblocker
             darkreader
             enhancer-for-youtube

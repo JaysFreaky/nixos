@@ -1,6 +1,8 @@
-{ config, lib, pkgs, ... }: let
+{ config, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.hardware.nvidia;
-  cfg-de = config.myOptions.desktops;
+
+  browser = config.myOptions.browser;
+  desktops = config.myOptions.desktops;
 in {
   options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia GPU";
 
@@ -11,7 +13,20 @@ in {
         "nvidia.NVreg_TemporaryFilePath=/var/tmp"
       ];
 
-      environment.systemPackages = with pkgs; [ nvtopPackages.nvidia ];
+      environment = {
+        systemPackages = with pkgs; [ nvtopPackages.nvidia ];
+        variables = {
+          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+          # GBM could possibily cause Firefox to crash - comment out if so
+          GBM_BACKEND = "nvidia-drm";
+          # Hardware Accelaration - 'nvidia' or 'vdpau'
+          LIBVA_DRIVER_NAME = "nvidia";
+          # Disables the Firefox sandbox for the RDD process that the decoder runs in
+          MOZ_DISABLE_RDD_SANDBOX = "1";
+          # Library backend - 'direct' or 'egl'
+          NVD_BACKEND = "direct";
+        };
+      };
 
       hardware = {
         graphics.enable = true;
@@ -34,29 +49,27 @@ in {
         };
       };
 
-      programs.gamescope.args = [ "-F nis" ];
+      home-manager.users.${vars.user}.programs.${browser}.profiles.${vars.user}.settings = {
+        "gfx.x11-egl.force-enabled" = true;
+        "media.rdd-ffmpeg.enabled" = true;
+        "widget.dmabuf.force-enabled" = true;
+      };
 
+      programs.gamescope.args = [ "-F nis" ];
       services.xserver.videoDrivers = [ "nvidia" ];
     })
 
-    (lib.mkIf (cfg.enable && cfg-de.hyprland.enable) {
+    (lib.mkIf (cfg.enable && desktops.hyprland.enable) {
       environment = {
         sessionVariables = {
           __GL_GSYNC_ALLOWED = 1;
           __GL_VRR_ALLOWED = 1;
-          __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          # GBM could possibily cause Firefox to crash - comment out if so
-          GBM_BACKEND = "nvidia_drm";
-          # Hardware Accelaration - 'nvidia' or 'vdpau'
-          LIBVA_DRIVER_NAME = "nvidia";
-          NVD_BACKEND = "direct";
         };
-
         systemPackages = with pkgs; [ egl-wayland ];
       };
     })
 
-    (lib.mkIf (cfg.enable && cfg-de.kde.enable) {
+    (lib.mkIf (cfg.enable && desktops.kde.enable) {
       # Disable GSP Mode - Smoother Plasma Wayland experience
       boot.kernelParams = [ "nvidia.NVreg_EnableGpuFirmware=0" ];
     })

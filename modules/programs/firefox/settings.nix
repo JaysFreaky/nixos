@@ -538,7 +538,7 @@
   ****************************************************************************/
 
   /****************************************************************************
-   * FLOORP SPECIFIC                                                          *
+   * FLOORP                                                                   *
   ****************************************************************************/
   "browser.newtabpage.activity-stream.floorp.newtab.imagecredit.hide" = true;
   "browser.newtabpage.activity-stream.floorp.newtab.releasenote.hide" = true;
@@ -561,4 +561,5 @@
   "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
   "services.sync.prefs.sync.floorp.browser.note.memos" = true;
   "sidebar.position_start" = false;
+
 }
