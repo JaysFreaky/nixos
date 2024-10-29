@@ -114,8 +114,8 @@ in {
       };
     };
 
+    services.fwupd.enable = true;
     system.stateVersion = "24.05";
-
     users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
 
