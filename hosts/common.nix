@@ -43,6 +43,7 @@ in {
 
     # Hardware
       clinfo                      # OpenCL info | 'clinfo -l' or -a
+      dmidecode                   # Firmware | 'dmidecode -s bios-version'
       ffmpeg-full                 # Hardware video acceleration
       glxinfo                     # OpenGL info
       lm_sensors                  # Hardware sensors | 'sensors-detect'

@@ -67,11 +67,9 @@ in {
         thunderbird             # Email client
 
       # Framework Hardware
-        dmidecode               # Firmware | 'dmidecode -s bios-version'
         framework-tool          # Swiss army knife for FWs
         fw-ectool               # Embedded controller | 'ectool'
         iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
-        lshw                    # Firmware
         sbctl                   # Secure boot key manager
 
       # Messaging
@@ -163,13 +161,10 @@ in {
       systemd.user.services.easyeffects.Service.ExecStartPost = [ "${lib.getExe ee-pkg} --load-preset ${eePreset}" ];
 
       xdg.configFile = {
-        "autostart/ProtonMailBridge.desktop".text = ''
-          [Desktop Entry]
-          Exec="/run/current-system/sw/bin/protonmail-bridge-gui" "--no-window"
-          Name=ProtonMailBridge
-          Type=Application
-          X-GNOME-Autostart-enabled=true
-        '';
+        "autostart/ProtonMailBridge.desktop".text = lib.strings.concatLines [
+          (lib.replaceStrings [ "Exec=protonmail-bridge-gui" ] [ "Exec=${lib.getExe pkgs.protonmail-bridge-gui} --no-window" ] (lib.fileContents "${pkgs.protonmail-bridge-gui}/share/applications/proton-bridge-gui.desktop"))
+          "X-GNOME-Autostart-enabled=true"
+        ];
         "easyeffects/output/${eePreset}.json".source = pkgs.fetchFromGitHub {
           owner = "FrameworkComputer";
           repo = "linux-docs";
