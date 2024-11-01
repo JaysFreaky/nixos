@@ -2,9 +2,9 @@
   browser = config.myOptions.browser;
 
   bpc = {
-    commit = "53b513e03297b0e5fb1d2fa953ecef86a0ede468";
-    sha256 = "sha256-YA5S5DyKLyugiP5PpQgwDPMaDrAjIje+hrteuL9ISf0=";
-    version = "3.8.8.0";
+    commit = "634a41681d9e2df036177f0577039bcf58cb4a68";
+    sha256 = "sha256-DLhryk7rdglguLEUscvZgveC2adyTDTyC0mp2eTuvBs=";
+    version = "3.9.0.0";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   myAddons = pkgs.callPackage ./addons.nix {
@@ -26,6 +26,7 @@ in {
           DisableFirefoxStudies = true;
           DisablePocket = true;
           DisableTelemetry = true;
+          #ExtensionUpdate = false;
           FirefoxHome = {
             Search = false;
             TopSites = false;
@@ -64,6 +65,7 @@ in {
               sha256 = "${bpc.sha256}";
             };
           in [
+            augmented-steam
             bpc-pkg                       # Previous releases get deleted regularly
             canvasblocker
             darkreader
