@@ -12,44 +12,43 @@ in {
       "vm.max_map_count" = lib.mkForce 2147483642;
     };
 
-    environment.systemPackages = with pkgs; let
-      gs-renice-pkg = pkgs.writeShellScriptBin "gs-renice" ''
-        (sleep 1; pgrep gamescope | xargs renice -n -20 -p)&
-        exec gamescope "$@"
-      '';
+    environment = {
+      systemPackages = with pkgs; let
+        gs-renice-pkg = pkgs.writeShellScriptBin "gs-renice" ''
+          (sleep 1; pgrep gamescope | xargs renice -n -20 -p)&
+          exec gamescope "$@"
+        '';
 
-      lutris-pkg = pkgs.lutris.override {
-        extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-          then extraPackages
-          else extraPackages32
-        );
-        extraPkgs = pkgs: with pkgs; [
-          dxvk
-          vkd3d
-          winetricks
-          # wineWow has both x86/64 - stable, staging, or wayland
-          wineWowPackages.wayland
-        ];
+        lutris-pkg = pkgs.lutris.override {
+          extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
+            then extraPackages
+            else extraPackages32
+          );
+          extraPkgs = pkgs: with pkgs; [
+            dxvk
+            vkd3d
+            winetricks
+            # wineWow has both x86/64 - stable, staging, or wayland
+            wineWowPackages.wayland
+          ];
+        };
+      in [
+        gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
+        gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
+        heroic          # Game launcher - Epic, GOG, Prime
+        jdk             # Java games
+        lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
+        protonplus      # Proton-GE updater
+      ];
+
+      variables = {
+        "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
+        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${host.scale}";
       };
-    in [
-      gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
-      gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
-      heroic          # Game launcher - Epic, GOG, Prime
-      jdk             # Java games
-      lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
-      protonplus      # Proton-GE updater
-    ];
-
-    environment.variables."STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
+    };
 
     home-manager.users.${vars.user} = {
       home.file = {
-        # Custom steam.desktop file with host's scaling applied
-        /*".local/share/applications/steam.desktop" = let steam-pkg = config.programs.steam.package; in {
-          executable = true;
-          text = lib.replaceStrings [ "Exec=steam %U" ] [ "Exec=${lib.getExe steam-pkg} -forcedesktopscaling=${host.scale} %U" ] (lib.fileContents "${pkgs.steamPackages.steam}/share/applications/steam.desktop");
-        };*/
-
         "Games/Severed_Chains_Linux/launch" = {
           executable = true;
           text = ''
