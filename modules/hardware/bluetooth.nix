@@ -1,4 +1,4 @@
-{ config, lib, ... }: let
+{ config, lib, pkgs, ... }: let
   cfg = config.myOptions.hardware.bluetooth;
   cfg-gaming = config.myOptions.gaming;
 in {
@@ -25,6 +25,29 @@ in {
       systemd.services = {
         # Fixes directory mode error in journalctl
         bluetooth.serviceConfig.ConfigurationDirectoryMode = lib.mkForce 0755;
+
+        # 6.11.x Bluetooth suspend/resume fixes
+        "bluetooth-suspend" = {
+          before = [ "sleep.target" ];
+          description = "Soft block Bluetooth on suspend/hibernate";
+          wantedBy = [ "hibernate.target" "suspend.target" "suspend-then-hibernate.target" ];
+          serviceConfig = {
+            ExecStart = ''${lib.getExe' pkgs.util-linux "rfkill"} block bluetooth'';
+            ExecStartPost = ''${lib.getExe' pkgs.coreutils "sleep"} 3'';
+            RemainAfterExit = true;
+            Type = "oneshot";
+          };
+          unitConfig.StopWhenUnneeded = true;
+        };
+        "bluetooth-resume" = {
+          after = [ "hibernate.target" "suspend.target" "suspend-then-hibernate.target" ];
+          description = "Unblock Bluetooth on resume";
+          wantedBy = [ "hibernate.target" "suspend.target" "suspend-then-hibernate.target" ];
+          serviceConfig = {
+            ExecStart = ''${lib.getExe' pkgs.util-linux "rfkill"} unblock bluetooth'';
+            Type = "oneshot";
+          };
+        };
       };
     })
 
