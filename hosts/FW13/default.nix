@@ -99,6 +99,9 @@ in {
       variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
     };
 
+    # QT 6.8 support
+    nixpkgs.overlays = [ (import ./protonbridge.nix) ];
+
     programs = {
       # lspci -nn | grep -i vga
       gamescope.args = [
@@ -141,6 +144,11 @@ in {
           current-bal-end-threshold = 85;
           indicator-position = 4;
           show-system-indicator = false;
+        };
+        "org/gnome/shell/extensions/power-profile-switcher" = {
+          # performance, balanced, power-saver
+          ac = "performance";
+          bat = "power-saver";
         };
       };
 
@@ -234,26 +242,30 @@ in {
 
       thermald.enable = true;
 
-      # GPU perfarmance adjusts when plugged into power - power_dpm_force_performance_level is auto by default
+      # System performance adjusts when plugged into power - power_dpm_force_performance_level is auto by default
       udev.extraRules = let
-        gpuPower = pkgs.writeShellScriptBin "dpm_level.sh" ''
+        powerMode = pkgs.writeShellScriptBin "power-mode" ''
           #!/usr/bin/env bash
           # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
-          GPU_DEVICE=/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0
+          GPU_DEVICE='/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0'
           DPM_PERF_LEVEL=low
+          PPD=power-saver
 
-          if [ $1 -eq 1 ] ; then
+          if [ "$1" -eq 1 ] ; then
             DPM_PERF_LEVEL=high
+            PPD=performance
           else
             DPM_PERF_LEVEL=low
+            PPD=power-saver
           fi
 
           echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
+          #${lib.getExe pkgs.power-profiles-daemon} set "$PPD"
         '';
       in ''
-        SUBSYSTEM=="power_supply" RUN+="${gpuPower}/bin/dpm_level.sh %E{POWER_SUPPLY_ONLINE}"
+        SUBSYSTEM=="power_supply" RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"
       '';
-      
+
       upower = {
         enable = true;
         percentageLow = 10;
