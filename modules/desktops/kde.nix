@@ -68,10 +68,10 @@ in {
             Background = "${wallpaper.sddm}";
           # Form
             FormPosition = "left";  # left, center, right
-            PartialBlur = false;      # Form is blurred
-            FullBlur = true;          # Everything is blurred
-            Blur = 1.0;               # Default 2.0 | 0.0 - 3.0
-            BlurMax = 64;             # Default 48 | 2 - 64
+            PartialBlur = false;    # Form is blurred
+            FullBlur = true;        # Everything is blurred
+            Blur = 1.0;             # Default 2.0 | 0.0 - 3.0
+            BlurMax = 64;           # Default 48 | 2 - 64
           # UI
             ForceHideVirtualKeyboardButton = true;
           };
@@ -84,6 +84,7 @@ in {
         #polonium                    # Window tiling
         sddm-astronaut-pkg          # SDDM theme
       ] ++ (with kdePackages; [
+        dragon                      # Media player
         #kwallet                     # KDE Wallet
         #kwallet-pam                 # Unlock on login
         #kwalletmanager              # Wallet manager
