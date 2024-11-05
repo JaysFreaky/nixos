@@ -277,7 +277,7 @@ in {
                       };
                       icon = "view-media-track";
                     };
-                    preferredSource = "any";
+                    playbackSource = "auto";
                     musicControls = {
                       showPlaybackControls = true;
                       volumeStep = 5;
@@ -342,6 +342,7 @@ in {
                 {
                   systemTray.items = {
                     hidden = [
+                      "blueman"
                       "org.kde.plasma.bluetooth"
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
@@ -350,7 +351,6 @@ in {
                     shown = [
                       "chrome_status_icon_1"              # 1Password
                       "org.kde.plasma.volume"
-                      "blueman"
                       "org.kde.plasma.networkmanagement"
                       "org.kde.plasma.battery"
                     ];

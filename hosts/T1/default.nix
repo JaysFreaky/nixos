@@ -42,7 +42,6 @@ in {
       };
 
       hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
-        bluetooth.enable = true;
         nvidia.enable = true;
       };
 
