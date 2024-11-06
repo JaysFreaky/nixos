@@ -1,5 +1,5 @@
 { config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops;
+  cfg = config.myOptions;
   host = config.myHosts;
 in {
   imports = [
@@ -31,17 +31,17 @@ in {
     # Custom Options
     ##########################################################
     myOptions = {
-      desktops = {    # cosmic, gnome, hyprland, kde
+      desktops = {    # cosmic, hyprland, kde
         #cosmic.enable = true;
         #hyprland.enable = true;
         kde.enable = true;
       };
 
-      hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
+      hardware = {    # amdgpu, audio, bluetooth
         #bluetooth.enable = true;
       };
 
-      # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+      # "1password", alacritty, flatpak, kitty, wezterm
       "1password".enable = true;
     };
 
@@ -55,19 +55,19 @@ in {
       variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:00:02.0-render";
     };
 
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
 
     ##########################################################
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = let
-      hyprApps = cfg.hyprland.hyprApps;
+      hyprApps = cfg.desktops.hyprland.hyprApps;
     in {
-      home.stateVersion = "24.05";
+      home.stateVersion = "24.11";
 
       programs = {
-        plasma = lib.mkIf (cfg.kde.enable) {
+        plasma = lib.mkIf (cfg.desktops.kde.enable) {
           configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {
             "ClickMethod" = 2;
             "NaturalScroll" = true;
@@ -77,7 +77,7 @@ in {
           };
         };
 
-        waybar.settings = lib.mkIf (cfg.hyprland.enable) {
+        waybar.settings = lib.mkIf (cfg.desktops.hyprland.enable) {
           mainBar = {
             # CPU Temperature
             "temperature#cpu" = {
@@ -140,7 +140,7 @@ in {
         };
       };
 
-      wayland.windowManager.hyprland = lib.mkIf (cfg.hyprland.enable) {
+      wayland.windowManager.hyprland = lib.mkIf (cfg.desktops.hyprland.enable) {
         settings = {
           # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
           monitor = with host; [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
@@ -170,7 +170,7 @@ in {
     # Hardware
     ##########################################################
     hardware.graphics = {
-      # extraPackages imported from nixos-hardware/lenovo/T450s through nixos-hardware/common/gpu/intel
+      # Imported from nixos-hardware/lenovo/T450s through nixos-hardware/common/gpu/intel
       extraPackages = [ ];
       extraPackages32 = with pkgs.driversi686Linux; [
         intel-media-driver
@@ -186,17 +186,13 @@ in {
       initrd = {
         availableKernelModules = [ ];
         kernelModules = [ "nfs" ];
-        # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
 
       kernelModules = [ ];
       extraModulePackages = [ ];
       kernelPackages = pkgs.linuxPackages_latest;
-      kernelParams = [
-        "quiet"
-        "splash"
-      ];
+      kernelParams = [ "quiet" ];
 
       loader = {
         efi = {
@@ -206,7 +202,6 @@ in {
         systemd-boot = {
           enable = true;
           configurationLimit = 5;
-          # Console resolution
           consoleMode = "auto";
           editor = false;
           memtest86.enable = true;

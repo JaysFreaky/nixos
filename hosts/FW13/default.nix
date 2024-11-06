@@ -35,7 +35,7 @@ in {
         gnome.enable = true;
       };
 
-      hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
+      hardware = {    # amdgpu, audio, bluetooth, fp_reader
         amdgpu.enable = true;
         bluetooth.enable = true;
         #fp_reader.enable = true;
@@ -123,7 +123,7 @@ in {
       };
     };
 
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
 
     ##########################################################
@@ -153,7 +153,7 @@ in {
       };
 
       home.packages = with pkgs.gnomeExtensions; [ battery-health-charging ];
-      home.stateVersion = "24.05";
+      home.stateVersion = "24.11";
 
       # lspci -D | grep -i vga
       programs.mangohud.settings.pci_dev = "0:c1:00.0";
@@ -290,7 +290,6 @@ in {
       initrd = {
         availableKernelModules = [ "cryptd" ];
         kernelModules = [ ];
-        # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
 
@@ -337,7 +336,6 @@ in {
         systemd-boot = {
           enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
           configurationLimit = 5;
-          # Console resolution
           consoleMode = "auto";
           editor = false;
           memtest86.enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;

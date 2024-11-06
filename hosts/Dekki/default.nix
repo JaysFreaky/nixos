@@ -1,4 +1,4 @@
-{ lib, pkgs, vars, ... }: {
+{ config, lib, pkgs, vars, ... }: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -8,16 +8,16 @@
   # Custom Options
   ##########################################################
   myOptions = {
-    desktops = {    # gnome, hyprland, kde
+    desktops = {    # gnome, kde
       gnome.enable = true;
     };
 
-    hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
+    hardware = {    # amdgpu, audio, bluetooth
       #amdgpu.enable = true;
       #bluetooth.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+    # "1password", alacritty, flatpak, gaming, kitty, plex, syncthing
     #gaming.enable = true;
   };
 
@@ -52,8 +52,7 @@
   };
 
   services.xserver.displayManager.gdm.enable = lib.mkForce false;
-
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 
 
   ##########################################################
@@ -85,7 +84,7 @@
     };
 
     home.packages = with pkgs.gnomeExtensions; [ dash-to-dock ];
-    home.stateVersion = "24.05";
+    home.stateVersion = "24.11";
   };
 
 
@@ -113,13 +112,11 @@
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [ ];
-      # Required for Plymouth (password prompt)
       systemd.enable = true;
     };
 
     kernelModules = [ ];
-    kernelPackages = pkgs.linuxPackages_latest;
-    #kernelPackages = pkgs.jovian-chaotic.linux_jovian;
+    kernelPackages = if (config.jovian.devices.steamdeck.enable) then pkgs.jovian-chaotic.linux_jovian else pkgs.linuxPackages_latest;
     kernelParams = [
       "quiet"
       "splash"
@@ -144,8 +141,7 @@
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
-        # Console resolution
-        consoleMode = "auto";
+        consoleMode = "5";
         editor = false;
         memtest86.enable = true;
       };

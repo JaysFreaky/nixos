@@ -8,15 +8,15 @@
   # Custom Options
   ##########################################################
   myOptions = {
-    desktops = {  # gnome, hyprland, kde
+    desktops = {  # gnome, kde
       gnome.enable = true;
     };
 
-    hardware = {  # amdgpu, audio, bluetooth, fp_reader, nvidia
+    hardware = {  # audio
       audio.enable = false;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+    # "1password", alacritty, flatpak, kitty, syncthing, wezterm
   };
 
 
@@ -34,14 +34,14 @@
     user = "${vars.user}";
   };
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
 
 
   ##########################################################
   # Home Manager
   ##########################################################
   home-manager.users.${vars.user} = {
-    home.stateVersion = "24.05";
+    home.stateVersion = "24.11";
   };
 
 
@@ -67,7 +67,6 @@
     initrd = {
       availableKernelModules = [ ];
       kernelModules = [ ];
-      # Required for Plymouth (password prompt)
       systemd.enable = true;
     };
 
@@ -84,7 +83,6 @@
       systemd-boot = {
         enable = true;
         configurationLimit = 5;
-        # Console resolution
         consoleMode = "auto";
         editor = false;
         memtest86.enable = true;

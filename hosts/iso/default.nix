@@ -51,8 +51,6 @@ in {
     }
 
     (lib.mkIf (nvidia) {
-      boot.kernelParams = [ "nvidia-drm.fbdev=1" ];
-
       hardware = {
         graphics.enable = true;
         nvidia = {

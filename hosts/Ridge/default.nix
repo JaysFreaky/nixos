@@ -28,18 +28,21 @@
     # Custom Options
     ##########################################################
     myOptions = {
-      desktops = {    # gnome, hyprland, kde
+      desktops = {    # gnome, kde
         #gnome.enable = true;
       };
 
-      hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
+      hardware = {    # amdgpu, audio, bluetooth
         amdgpu.enable = true;
         bluetooth.enable = true;
       };
 
-      # "1password", alacritty, flatpak, gaming, kitty, syncthing, wezterm
+      # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, syncthing
       #"1password".enable = true;
       gaming.enable = true;
+      openrgb.enable = true;
+      #plex.enable = true;
+      #syncthing.enable = true;
     };
 
 
@@ -88,14 +91,14 @@
       };
     };
 
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
 
 
     ##########################################################
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = {
-      home.stateVersion = "24.05";
+      home.stateVersion = "24.11";
 
       # lspci -D | grep -i vga
       programs.mangohud.settings = {
@@ -113,26 +116,32 @@
     hardware = {
       # Control CPU / case fans
       fancontrol = let 
-        gpuHW = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-        fanHW = "devices/platform/nct6775.656";
-        cpuHW = "devices/pci0000:00/0000:00:18.3";
+        cpuMon = "hwmon3";
+        cpuName = "zenpower";
+        cpuPath = "devices/pci0000:00/0000:00:18.3";
+        fanMon = "hwmon2";
+        fanName = "nct6798";
+        fanPath = "devices/platform/nct6775.656";
+        gpuMon = "hwmon1";
+        gpuName = "amdgpu";
+        gpuPath = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
       in {
         enable = true;
         config = ''
           INTERVAL=10
-          DEVPATH=hwmon1=${gpuHW} hwmon2=${fanHW} hwmon3=${cpuHW}
-          DEVNAME=hwmon1=amdgpu hwmon2=nct6798 hwmon3=zenpower
-          FCTEMPS=hwmon2/pwm1=hwmon1/temp1_input hwmon2/pwm2=hwmon3/temp2_input
-          FCFANS=hwmon2/pwm1=hwmon2/fan1_input hwmon2/pwm2=hwmon2/fan2_input
-          MINTEMP=hwmon2/pwm1=40 hwmon2/pwm2=40
-          MAXTEMP=hwmon2/pwm1=80 hwmon2/pwm2=80
+          DEVPATH=${gpuMon}=${gpuPath} ${fanMon}=${fanPath} ${cpuMon}=${cpuPath}
+          DEVNAME=${gpuMon}=${gpuName} ${fanMon}=${fanName} ${cpuMon}=${cpuName}
+          FCTEMPS=${fanMon}/pwm1=${gpuMon}/temp1_input ${fanMon}/pwm2=${cpuMon}/temp2_input
+          FCFANS=${fanMon}/pwm1=${fanMon}/fan1_input ${fanMon}/pwm2=${fanMon}/fan2_input
+          MINTEMP=${fanMon}/pwm1=40 ${fanMon}/pwm2=40
+          MAXTEMP=${fanMon}/pwm1=80 ${fanMon}/pwm2=80
           # Always spin @ MINPWM until MINTEMP
-          MINSTART=hwmon2/pwm1=0 hwmon2/pwm2=0
-          MINSTOP=hwmon2/pwm1=64 hwmon2/pwm2=64
+          MINSTART=${fanMon}/pwm1=0 ${fanMon}/pwm2=0
+          MINSTOP=${fanMon}/pwm1=64 ${fanMon}/pwm2=64
           # Fans @ 25% until 40 degress
-          MINPWM=hwmon2/pwm1=64 hwmon2/pwm2=64
+          MINPWM=${fanMon}/pwm1=64 ${fanMon}/pwm2=64
           # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-          MAXPWM=hwmon2/pwm1=140 hwmon2/pwm2=217
+          MAXPWM=${fanMon}/pwm1=140 ${fanMon}/pwm2=217
         '';
       };
 
@@ -153,14 +162,12 @@
 
     # Restart GPU undervolt service upon resume
     powerManagement.resumeCommands = ''
-      systemctl restart gpu_uv.service
+      systemctl restart gpu-uv.service
     '';
 
-    #services.hardware.openrgb.enable = true;
-
     # Create a service to undervolt GPU
-    systemd.services.gpu_uv = let
-      gpuUV = pkgs.writeShellScriptBin "gpu_uv.sh" ''
+    systemd.services.gpu-uv = let
+      gpuUV = pkgs.writeShellScriptBin "gpu-uv" ''
         #!/usr/bin/env bash
         # Find persistant GPU path: readlink -f /sys/class/drm/card#/device
         GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
@@ -206,8 +213,8 @@
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = "yes";
-        ExecStart = ''${gpuUV}/bin/gpu_uv.sh'';
-        ExecReload = ''${gpuUV}/bin/gpu_uv.sh'';
+        ExecStart = ''${lib.getExe gpuUV}'';
+        ExecReload = ''${lib.getExe gpuUV}'';
       };
     };
 
@@ -219,7 +226,6 @@
       initrd = {
         availableKernelModules = [ ];
         kernelModules = [ "nfs" ];
-        # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
 
@@ -230,8 +236,7 @@
         "zenpower"
       ];
       extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
-      # CachyOS kernel relies on chaotic.scx
-      kernelPackages = pkgs.linuxPackages_cachyos;
+      kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
       kernelParams = [
         "amd_pstate=active"
         # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
@@ -261,12 +266,10 @@
 
       plymouth = {
         enable = true;
+        # Theme previews: https://github.com/adi1090x/plymouth-themes
         theme = "rog_2";
-        themePackages = [
-          # Overriding installs the one theme instead of all 80, reducing the required size
-          # Theme previews: https://github.com/adi1090x/plymouth-themes
-          (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "rog_2" ]; })
-        ];
+        # Overriding installs the one theme instead of all 80, reducing the required size
+        themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
       };
 
       supportedFilesystems = [ "btrfs" ];
