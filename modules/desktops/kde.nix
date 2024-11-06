@@ -343,15 +343,18 @@ in {
                 {
                   systemTray.items = {
                     hidden = [
-                      "blueman"
-                      "org.kde.plasma.bluetooth"
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
                       "org.kde.plasma.mediacontroller"
+                    ] ++ lib.optionals (config.hardware.bluetooth.enable) [
+                      "org.kde.plasma.bluetooth"
                     ];
                     shown = [
                       "chrome_status_icon_1"              # 1Password
                       "org.kde.plasma.volume"
+                    ] ++ lib.optionals (config.hardware.bluetooth.enable) [
+                      "blueman"
+                    ] ++ [
                       "org.kde.plasma.networkmanagement"
                       "org.kde.plasma.battery"
                     ];
