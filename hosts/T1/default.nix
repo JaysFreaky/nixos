@@ -1,5 +1,5 @@
 { config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops;
+  cfg = config.myOptions;
   host = config.myHosts;
   fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
 in {
@@ -48,7 +48,6 @@ in {
       # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, syncthing, wezterm
       "1password".enable = true;
       gaming.enable = true;
-      openrgb.enable = true;
       plex.enable = true;
       syncthing.enable = true;
     };
@@ -68,7 +67,6 @@ in {
 
       # Multimedia
         haruna                  # MPV frontend
-        kdePackages.dragon      # Media player
         mpc-qt                  # MPV frontend
         #mpv                     # Media player
         #smplayer                # MPV frontend
@@ -82,8 +80,7 @@ in {
     };
 
     programs = {
-      # PWM fan control
-      #coolercontrol.enable = true;
+      coolercontrol.enable = lib.mkIf (!config.hardware.fancontrol.enable) true;
 
       gamescope = {
         # lspci -nn | grep -i vga
@@ -114,7 +111,7 @@ in {
     };
 
     services.fwupd.enable = true;
-    system.stateVersion = "24.05";
+    system.stateVersion = "24.11";
     users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
 
@@ -122,7 +119,7 @@ in {
     # Home Manager
     ##########################################################
     home-manager.users.${vars.user} = {
-      home.stateVersion = "24.05";
+      home.stateVersion = "24.11";
 
       # lspci -D | grep -i vga
       programs.mangohud.settings = {
@@ -132,7 +129,7 @@ in {
         table_columns = lib.mkForce 6;
       };
 
-      wayland.windowManager.hyprland.settings = lib.mkIf (cfg.hyprland.enable) {
+      wayland.windowManager.hyprland.settings = lib.mkIf (cfg.desktops.hyprland.enable) {
         # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
         #monitor = with host; lib.mkForce [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
       };
@@ -150,7 +147,7 @@ in {
           cpuMon = "hwmon1";
           cpuName = "k10temp";
           cpuPath = "devices/pci0000:00/0000:00:18.3";
-          fanMon = "hwmon2";
+          fanMon = "hwmon3";
           fanName = "nct6686";
           fanPath = "devices/platform/nct6687.2592";
         # Fan speeds -- value = percent * 2.55
@@ -207,17 +204,13 @@ in {
       initrd = {
         availableKernelModules = [ ];
         kernelModules = [ "nfs" ];
-        # Required for Plymouth (password prompt)
         systemd.enable = true;
       };
 
-      blacklistedKernelModules = [
-        "amdgpu"  # Disable iGPU
-      ];
+      blacklistedKernelModules = [ "amdgpu" ]; # Disable iGPU
       kernelModules = [ "nct6687" ];
       extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
-      # 6.10.11 until 6.11.x supports Nvidia sleep/resume
-      kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_6_10;
+      kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
       kernelParams = [
         "amd_pstate=active"
         "quiet"
@@ -231,7 +224,6 @@ in {
         systemd-boot = {
           enable = true;
           configurationLimit = 5;
-          # Console resolution
           consoleMode = "auto";
           editor = false;
           memtest86.enable = true;
@@ -252,7 +244,8 @@ in {
 
     chaotic.scx = {
       enable = true;
-      scheduler = "scx_rusty";
+      package = pkgs.scx.full;
+      scheduler = "scx_lavd"; # "scx_rusty" currently not available
     };
 
   };

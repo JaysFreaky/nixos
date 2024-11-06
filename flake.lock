@@ -68,7 +68,6 @@
     },
     "chaotic": {
       "inputs": {
-        "fenix": "fenix",
         "flake-schemas": "flake-schemas",
         "home-manager": [
           "home-manager"
@@ -81,17 +80,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1726403681,
-        "narHash": "sha256-G922au3LygfpO+4CsAzQmtlg+KXjx8dSwehDwkCFMjQ=",
+        "lastModified": 1730674629,
+        "narHash": "sha256-bT4l/nrUvGK5wvUCkq2I5oWphjg3kZXthYcqG7K0uBs=",
         "owner": "chaotic-cx",
         "repo": "nyx",
-        "rev": "68d822079a1b3e31db3cf1e30e32a69b46e6dfa3",
+        "rev": "09f0dcfa6a8932850f2291717a271598d3098aad",
         "type": "github"
       },
       "original": {
         "owner": "chaotic-cx",
+        "ref": "nyxpkgs-unstable",
         "repo": "nyx",
-        "rev": "68d822079a1b3e31db3cf1e30e32a69b46e6dfa3",
         "type": "github"
       }
     },
@@ -156,28 +155,6 @@
       "original": {
         "owner": "JaysFreaky",
         "repo": "fancontrol-gui",
-        "type": "github"
-      }
-    },
-    "fenix": {
-      "inputs": {
-        "nixpkgs": [
-          "chaotic",
-          "nixpkgs"
-        ],
-        "rust-analyzer-src": "rust-analyzer-src"
-      },
-      "locked": {
-        "lastModified": 1726230467,
-        "narHash": "sha256-YyMNF7IFyysZ2KeqEO6AmV3nQeaDSxyNXLdHp1ghO60=",
-        "owner": "nix-community",
-        "repo": "fenix",
-        "rev": "43efa7a3a97f290441bd75b18defcd4f7b8df220",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "fenix",
         "type": "github"
       }
     },
@@ -633,23 +610,6 @@
         "superfile": "superfile",
         "systems": "systems",
         "wezterm": "wezterm"
-      }
-    },
-    "rust-analyzer-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1725985110,
-        "narHash": "sha256-0HKj+JI6rtxaE6Kzcd6HyFNbEFJRsLy5DoNgVF1pyRM=",
-        "owner": "rust-lang",
-        "repo": "rust-analyzer",
-        "rev": "bcc708992104c2059f310fbc3ac00bfc377f9ea8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rust-lang",
-        "ref": "nightly",
-        "repo": "rust-analyzer",
-        "type": "github"
       }
     },
     "rust-overlay": {
