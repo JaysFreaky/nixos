@@ -248,5 +248,11 @@ in {
       scheduler = "scx_lavd"; # "scx_rusty" currently not available
     };
 
+
+    ##########################################################
+    # Network
+    ##########################################################
+    networking.hostName = "T1";
+
   };
 }

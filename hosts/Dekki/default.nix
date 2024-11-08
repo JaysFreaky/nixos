@@ -116,7 +116,7 @@
     };
 
     kernelModules = [ ];
-    kernelPackages = if (config.jovian.devices.steamdeck.enable) then pkgs.jovian-chaotic.linux_jovian else pkgs.linuxPackages_latest;
+    kernelPackages = if (config.jovian.devices.steamdeck.enable) then pkgs.linuxPackages_jovian else pkgs.linuxPackages_latest;
     kernelParams = [
       "quiet"
       "splash"
@@ -150,5 +150,11 @@
 
     supportedFilesystems = [ "btrfs" ];
   };
+
+
+  ##########################################################
+  # Network
+  ##########################################################
+  networking.hostName = "Dekki";
 
 }

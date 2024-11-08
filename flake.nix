@@ -161,7 +161,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "Dekki"; }
           ./hosts/Dekki
           inputs.chaotic.nixosModules.default
           inputs.jovian.nixosModules.jovian
@@ -174,7 +173,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "FW13"; }
           ./hosts/FW13
           inputs.hardware.nixosModules.framework-13-7040-amd
           inputs.lanzaboote.nixosModules.lanzaboote
@@ -193,7 +191,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "Ridge"; }
           ./hosts/Ridge
           inputs.chaotic.nixosModules.default
         ];
@@ -205,7 +202,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "T1"; }
           ./hosts/T1
           inputs.chaotic.nixosModules.default
         ];
@@ -217,7 +213,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "T450s"; }
           ./hosts/T450s
           inputs.hardware.nixosModules.lenovo-thinkpad-t450s
         ];
@@ -229,7 +224,6 @@
           inherit inputs stable vars;
         };
         modules = standardModules ++ [
-          { networking.hostName = "VM"; }
           ./hosts/VM
         ];
       };

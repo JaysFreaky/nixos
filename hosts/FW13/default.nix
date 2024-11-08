@@ -360,6 +360,7 @@ in {
     ##########################################################
     networking = {
       enableIPv6 = false;
+      hostName = "FW13";
       networkmanager.wifi = {
         # iwd provides more stability/throughput on AMD FW models
         backend = "iwd";
