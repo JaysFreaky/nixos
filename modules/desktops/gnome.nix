@@ -55,20 +55,6 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     environment = {
-      systemPackages = with pkgs; [
-        cursor.package              # For GDM login screen
-        dconf-editor                # GUI dconf editor
-        gnome-tweaks                # Gnome tweaks
-        nautilus-python             # Allow custom nautilus scripts/open-any-terminal
-        gnome-extension-manager     # Gnome extensions
-        libappindicator             # Allow tray icons to be displayed in GNOME
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
-        nautilus-open-any-terminal  # Open custom terminals in nautilus
-        neovide                     # GUI launcher for neovim
-      ] ++ lib.optionals (stylix) [
-        switch-mode                 # HM theme switcher
-      ];
-
       gnome.excludePackages = with pkgs; [
         cheese                      # "fun" webcam app
         epiphany                    # Web browser
@@ -89,6 +75,24 @@ in {
         totem                       # Video player
         yelp                        # Help
       ];
+
+      systemPackages = with pkgs; [
+        cursor.package              # For GDM login screen
+        dconf-editor                # GUI dconf editor
+        gdm-settings                # Login screen settings
+        gnome-extension-manager     # Gnome extensions
+        gnome-tweaks                # Gnome tweaks
+        libappindicator             # Allow tray icons to be displayed in GNOME
+        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+        nautilus-open-any-terminal  # Open custom terminals in nautilus
+        nautilus-python             # Allow custom nautilus scripts/open-any-terminal
+        neovide                     # GUI launcher for neovim
+      ] ++ lib.optionals (stylix) [
+        switch-mode                 # HM theme switcher
+      ];
+
+      # Fix black borders around windows until amdvlk patch
+      variables.GSK_RENDERER = "gl";
     };
 
     programs = {
@@ -106,7 +110,10 @@ in {
             tap-to-click = true;
           };
           "org/gnome/login-screen".logo = builtins.toString logoImg;
-          "org/gnome/mutter".experimental-features = [ "scale-monitor-framebuffer" ];
+          "org/gnome/mutter".experimental-features = [
+            "scale-monitor-framebuffer"
+            "xwayland-native-scaling"
+          ];
         };
       }];
     };
@@ -172,6 +179,7 @@ in {
           use-system-font = false;
         };
         "org/gnome/desktop/interface" = {
+          accent-color = "purple";
           clock-show-date = true;
           clock-show-weekday = true;
           #color-scheme = "prefer-dark";
