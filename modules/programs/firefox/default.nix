@@ -72,6 +72,7 @@ in {
             enhancer-for-youtube
             multi-account-containers
             onepassword-password-manager
+            proton-vpn
             simplelogin
             sponsorblock
             tabliss

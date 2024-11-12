@@ -529,9 +529,9 @@
   # PREF: sharpen scrolling
   "general.smoothScroll" = true; # DEFAULT
   "mousewheel.min_line_scroll_amount" = 5; # 10-40; adjust this number to your liking; default=5
-  "general.smoothScroll.mouseWheel.durationMinMS" = 80; # default=50
-  "general.smoothScroll.currentVelocityWeighting" = "0.15"; # default=.25
-  "general.smoothScroll.stopDecelerationWeighting" = "0.6"; # default=.4
+  "general.smoothScroll.mouseWheel.durationMinMS" = 50; # default=50
+  "general.smoothScroll.currentVelocityWeighting" = "0.25"; # default=.25
+  "general.smoothScroll.stopDecelerationWeighting" = "0.4"; # default=.4
 
   /****************************************************************************
    * END: BETTERFOX                                                           *
