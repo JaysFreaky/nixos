@@ -12,6 +12,7 @@
   ./nvim
   ./openrgb.nix
   ./plex.nix
+  ./spicetify.nix
   ./starship
   ./stylix
   ./syncthing.nix

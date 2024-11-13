@@ -28,10 +28,11 @@ in {
       #fp_reader.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, plex, stylix, syncthing, wezterm
+    # "1password", alacritty, flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, wezterm
     "1password".enable = true;
     gaming.enable = true;
     plex.enable = true;
+    spicetify.enable = true;
     stylix = {
       enable = true;
       wallpaper = {
@@ -89,26 +90,12 @@ in {
   # QT 6.8 support
   nixpkgs.overlays = [ (import ./protonbridge.nix) ];
 
-  programs = {
-    # lspci -nn | grep -i vga
-    gamescope.args = [
-      #"--prefer-vk-device \"1002:15bf\""
-      "--fullscreen"
-      #"--borderless"
-    ];
-
-    spicetify = let spice-pkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
-      enable = true;
-      theme = spice-pkgs.themes.text;
-      colorScheme = "CatppuccinMacchiato";
-      enabledExtensions = with spice-pkgs.extensions; [
-        fullAlbumDate
-        hidePodcasts
-        savePlaylists
-        wikify
-      ];
-    };
-  };
+  # lspci -nn | grep -i vga
+  programs.gamescope.args = [
+    "--prefer-vk-device \"1002:15bf\""
+    "--fullscreen"
+    #"--borderless"
+  ];
 
   system.stateVersion = "24.11";
 
