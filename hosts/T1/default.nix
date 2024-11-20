@@ -232,7 +232,7 @@ in {
   chaotic.scx = {
     enable = true;
     package = pkgs.scx.full;
-    scheduler = "scx_lavd"; # "scx_rusty" currently not available
+    scheduler = "scx_rusty"; # or "scx_lavd"
   };
 
 
