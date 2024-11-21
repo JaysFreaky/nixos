@@ -2,9 +2,9 @@
   browser = config.myOptions.browser;
 
   bpc = {
-    commit = "634a41681d9e2df036177f0577039bcf58cb4a68";
-    sha256 = "sha256-DLhryk7rdglguLEUscvZgveC2adyTDTyC0mp2eTuvBs=";
-    version = "3.9.0.0";
+    commit = "59f9eb4f856bf6bdecd6f2be63c6b27d0522fab4";
+    sha256 = "sha256-JwcB9xlB8416pV2m4dSL0w0x5ejaRJQTcgNhq2OD+9Q=";
+    version = "3.9.3.0";
   };
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   myAddons = pkgs.callPackage ./addons.nix {
