@@ -46,20 +46,23 @@ in {
   environment = {
     systemPackages = with pkgs; [
     # Hardware
-      fancontrol-gui          # Fancontrol GUI for lm-sensors
-      polychromatic           # Razer lighting GUI
+      fancontrol-gui    # Fancontrol GUI for lm-sensors
+      polychromatic     # Razer lighting GUI
 
     # Messaging
-      discord                 # Discord
+      discord           # Discord
+
+    # Misc
+      calibre           # Book organization
 
     # Multimedia
-      haruna                  # MPV frontend
-      mpc-qt                  # MPV frontend
-      #mpv                     # Media player
-      #smplayer                # MPV frontend
+      haruna            # MPV frontend
+      mpc-qt            # MPV frontend
+      #mpv              # Media player
+      #smplayer         # MPV frontend
 
     # Notes
-      obsidian                # Markdown notes
+      obsidian          # Markdown notes
     ];
 
     # Set Firefox to use GPU for video codecs
