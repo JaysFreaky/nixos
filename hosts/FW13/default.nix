@@ -263,26 +263,24 @@ in {
   boot = {
     initrd = {
       availableKernelModules = [ "cryptd" ];
-      kernelModules = [ ];
       systemd.enable = true;
     };
 
-    # Allow 5GHz wifi
-    extraModprobeConfig = ''
-      options cfg80211 ieee80211_regdom="US"
-    '';
-    # Zenpower uses same PCI device as k10temp, so disabling k10temp
+    # Zenpower uses same PCI device as k10temp
     blacklistedKernelModules = [ "k10temp" ];
-    kernelModules = [
-      "framework_laptop"
-      "zenpower"
-    ];
+    # Allow 5GHz wifi
+    extraModprobeConfig = ''options cfg80211 ieee80211_regdom="US"'';
     extraModulePackages = (with config.boot.kernelPackages; [
       cpupower
       framework-laptop-kmod
       zenpower
     ]) ++ [
       (fw-usbpd-charger.overrideAttrs (_: { patches = [ ./usbpd/usbpd_charger.patch ]; }))
+    ];
+    kernelModules = [
+      "framework_laptop"
+      "nfs"
+      "zenpower"
     ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
@@ -325,7 +323,10 @@ in {
       themePackages = [ framework-plymouth ];
     };
 
-    supportedFilesystems = [ "btrfs" ];
+    supportedFilesystems = [
+      "btrfs"
+      "nfs"
+    ];
   };
 
 

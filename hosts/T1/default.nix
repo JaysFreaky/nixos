@@ -191,15 +191,14 @@ in {
   # Boot
   ##########################################################
   boot = {
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [ "nfs" ];
-      systemd.enable = true;
-    };
+    initrd.systemd.enable = true;
 
     blacklistedKernelModules = [ "amdgpu" ]; # Disable iGPU
-    kernelModules = [ "nct6687" ];
     extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
+    kernelModules = [
+      "nct6687"
+      "nfs"
+    ];
     kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
@@ -229,7 +228,10 @@ in {
       themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
     };
 
-    supportedFilesystems = [ "btrfs" ];
+    supportedFilesystems = [
+      "btrfs"
+      "nfs"
+    ];
   };
 
   chaotic.scx = {

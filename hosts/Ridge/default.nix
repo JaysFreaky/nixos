@@ -210,19 +210,16 @@
   # Boot
   ##########################################################
   boot = {
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [ "nfs" ];
-      systemd.enable = true;
-    };
+    initrd.systemd.enable = true;
 
-    # Zenpower uses same PCI device as k10temp, so disabling k10temp
+    # Zenpower uses same PCI device as k10temp
     blacklistedKernelModules = [ "k10temp" ];
+    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelModules = [
       "nct6775"
+      "nfs"
       "zenpower"
     ];
-    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
     kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
@@ -259,7 +256,10 @@
       themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
     };
 
-    supportedFilesystems = [ "btrfs" ];
+    supportedFilesystems = [
+      "btrfs"
+      "nfs"
+    ];
   };
 
   chaotic.scx = {

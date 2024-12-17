@@ -170,14 +170,9 @@ in {
   # Boot
   ##########################################################
   boot = {
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [ "nfs" ];
-      systemd.enable = true;
-    };
+    initrd.systemd.enable = true;
 
-    kernelModules = [ ];
-    extraModulePackages = [ ];
+    kernelModules = [ "nfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "quiet" ];
 
@@ -202,7 +197,10 @@ in {
       themePackages = [ pkgs.nixos-bgrt-plymouth ];
     };
 
-    supportedFilesystems = [ "btrfs" ];
+    supportedFilesystems = [
+      "btrfs"
+      "nfs"
+    ];
   };
 
 
