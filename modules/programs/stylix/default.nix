@@ -60,8 +60,8 @@ in {
 
       fonts = {
         monospace = {
-          name = "JetBrainsMono Nerd Font Mono";
-          package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
+          name = "JetBrainsMonoNL Nerd Font Mono";
+          package = pkgs.nerd-fonts.jetbrains-mono;
         };
         sizes = {
           #applications = 12;

@@ -61,7 +61,10 @@
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
-    nur.url = "github:nix-community/NUR";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs = {
@@ -146,7 +149,8 @@
       }
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.nixos-cosmic.nixosModules.default
-      inputs.nur.nixosModules.nur
+      #inputs.nur.nixosModules.nur
+      inputs.nur.modules.nixos.default
       inputs.sops-nix.nixosModules.sops
       inputs.spicetify-nix.nixosModules.spicetify
       inputs.stylix.nixosModules.stylix

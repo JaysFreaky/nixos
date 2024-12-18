@@ -109,14 +109,11 @@ in {
 
   fonts.packages = with pkgs; [
     cantarell-fonts               # GNOME
-    (nerdfonts.override {
-      fonts = [
-        "JetBrainsMono"
-        "NerdFontsSymbolsOnly"
-        "Noto"
-      ];
-    })
-  ];
+  ] ++ (with nerd-fonts; [
+    jetbrains-mono
+    noto
+    symbols-only
+  ]);
   
   hardware.graphics = {
     enable = true;
@@ -184,7 +181,7 @@ in {
 
   nixpkgs = {
     config.allowUnfree = true;
-    overlays = [ inputs.nur.overlay ];
+    overlays = [ inputs.nur.overlays.default ];
   };
 
   programs = {

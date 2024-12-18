@@ -87,9 +87,6 @@ in {
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
   };
 
-  # QT 6.8 support
-  nixpkgs.overlays = [ (import ./protonbridge.nix) ];
-
   # lspci -nn | grep -i vga
   programs.gamescope.args = [
     "--prefer-vk-device \"1002:15bf\""
