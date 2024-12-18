@@ -528,10 +528,14 @@
 
   # PREF: sharpen scrolling
   "general.smoothScroll" = true; # DEFAULT
-  "mousewheel.min_line_scroll_amount" = 5; # 10-40; adjust this number to your liking; default=5
   "general.smoothScroll.mouseWheel.durationMinMS" = 50; # default=50
   "general.smoothScroll.currentVelocityWeighting" = "0.25"; # default=.25
   "general.smoothScroll.stopDecelerationWeighting" = "0.4"; # default=.4
+  # Touchpad scrolling slowed down
+  "mousewheel.default.delta_multiplier_x" = 30; # default=100
+  "mousewheel.default.delta_multiplier_y" = 30; # default=300
+  # Mousewheel scrolling to match touchpad
+  "mousewheel.min_line_scroll_amount" = 120; # default=5
 
   /****************************************************************************
    * END: BETTERFOX                                                           *
