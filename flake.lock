@@ -80,17 +80,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1731285722,
-        "narHash": "sha256-y3b92klVEfMOGxB7viahtsneyt1CrjYwnZ6fyIJuh5o=",
+        "lastModified": 1734346739,
+        "narHash": "sha256-Um5yY36idRodddotyBaI9sQjw/xw5SV6tt3jPRgL330=",
         "owner": "chaotic-cx",
         "repo": "nyx",
-        "rev": "18ce11ef64c0d89b48bc9ee73f9b82d7e8f3abc9",
+        "rev": "7228d7032f0316dbc69b69584ec07707efbd38c9",
         "type": "github"
       },
       "original": {
         "owner": "chaotic-cx",
+        "ref": "nyxpkgs-unstable",
         "repo": "nyx",
-        "rev": "18ce11ef64c0d89b48bc9ee73f9b82d7e8f3abc9",
         "type": "github"
       }
     },

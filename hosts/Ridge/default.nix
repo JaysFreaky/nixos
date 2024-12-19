@@ -54,6 +54,10 @@
       enable = lib.mkForce true;
       user = "${vars.user}";
     };
+    scx = {
+      enable = true;
+      scheduler = "scx_rusty"; # or "scx_lavd"
+    };
     xserver = {
       enable = true;
       displayManager.gdm.enable = true;
@@ -220,7 +224,7 @@
       "nfs"
       "zenpower"
     ];
-    kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
+    kernelPackages = if (config.services.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
@@ -260,12 +264,6 @@
       "btrfs"
       "nfs"
     ];
-  };
-
-  chaotic.scx = {
-    enable = true;
-    package = pkgs.scx.full;
-    scheduler = "scx_lavd";
   };
 
 

@@ -100,7 +100,13 @@ in {
     };
   };
 
-  services.fwupd.enable = true;
+  services = {
+    fwupd.enable = true;
+    scx = {
+      enable = true;
+      scheduler = "scx_rusty"; # or "scx_lavd"
+    };
+  };
   system.stateVersion = "24.11";
   users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
@@ -199,7 +205,7 @@ in {
       "nct6687"
       "nfs"
     ];
-    kernelPackages = if (config.chaotic.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
+    kernelPackages = if (config.services.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
       "quiet"
@@ -232,12 +238,6 @@ in {
       "btrfs"
       "nfs"
     ];
-  };
-
-  chaotic.scx = {
-    enable = true;
-    package = pkgs.scx.full;
-    scheduler = "scx_rusty"; # or "scx_lavd"
   };
 
 
