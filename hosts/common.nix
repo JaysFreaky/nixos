@@ -31,7 +31,7 @@ in {
       cbonsai                     # Bonsai growing
 
     # Files
-      stable.cryptomator          # Encrypt cloud files - unstable refuses to build on last flake update
+      cryptomator                 # Encrypt cloud files - unstable refuses to build on last flake update
       exiftool                    # File metadata
       file                        # File information
       libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
@@ -67,8 +67,7 @@ in {
       nmap                        # Network discovery
 
     # Nix
-      comma                       # Search and run pkgs in nix-shell | ', pkg-name'
-      home-manager                # Using because 'programs.home-manager.enable' doesn't work
+      home-manager                # 'programs.home-manager.enable' doesn't install
       nix-tree                    # Browse nix store
 
     # Notifications
@@ -80,7 +79,7 @@ in {
 
     # Terminal
       bat                         # cat with syntax highlighting
-      chafa                       # Images in terminal
+      chafa                       # Terminal images
       coreutils                   # GNU utilities
       eza                         # ls/tree replacement | 'eza' or 'exa'
       fastfetch                   # Faster system info
@@ -121,7 +120,6 @@ in {
   };
 
   home-manager.users.${vars.user} = {
-    imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
     xdg.userDirs.createDirectories = true;
   };
 
@@ -166,7 +164,10 @@ in {
     registry.nixpkgs.flake = inputs.nixpkgs;
     settings = {
       auto-optimise-store = true;
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "flakes"
+        "nix-command"
+      ];
       substituters = [
         "https://nix-community.cachix.org"
         "https://cosmic.cachix.org/"
@@ -186,22 +187,17 @@ in {
 
   programs = {
     dconf.enable = true;
-    /*direnv = {
+  /*direnv = {
       enable = true;
       enableBashIntegration = true;
       nix-direnv.enable = true;
     };*/
-    #ssh.startAgent = true;
   };
 
   security = {
     polkit.enable = true;
-
     sudo = {
-      # Rollbacks would result in sudo lectures after each reboot
-      extraConfig = ''
-        Defaults lecture = never
-      '';
+      extraConfig = ''Defaults lecture = never'';
       wheelNeedsPassword = true;
     };
   };
@@ -212,10 +208,8 @@ in {
       interval = "weekly";
       fileSystems = [ "/" "/home" "/nix" ];
     };
-
     # SSD trim
     fstrim.enable = lib.mkDefault true;
-
     libinput = {
       enable = true;
       touchpad = {
@@ -224,7 +218,6 @@ in {
         tappingDragLock = true;
       };
     };
-
     openssh = {
       enable = true;
       knownHosts = {
@@ -240,33 +233,26 @@ in {
         UseDns = true;
       };
     };
-
     xserver.xkb.layout = "us";
   };
 
   sops = {
-    age = {
-      #generateKey = true;
-      #keyFile = "/var/lib/sops-nix/key.txt";
-      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    };
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     defaultSopsFile = "${vars.configPath}/secrets/secrets.yaml";
-    validateSopsFiles = false;
     secrets = {
       "user/password".neededForUsers = true;
       "wifi.env" = { };
     };
+    validateSopsFiles = false;
   };
 
   systemd.services.NetworkManager-wait-online.enable = lib.mkDefault false;
-
   time.timeZone = "America/Chicago";
 
   users = {
     # All users/passwords setup via declaration
     mutableUsers = false;
     users = {
-      # Single-user system, so user is a variable
       ${vars.user} = {
         description = "${vars.name}";
         extraGroups = [
@@ -286,8 +272,6 @@ in {
       root = {
         # Disables root login
         initialHashedPassword = "!";
-        # Disables 'sudo su'
-        #shell = "/run/current-system/sw/bin/nologin";
       };
     };
   };
