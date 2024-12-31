@@ -58,8 +58,6 @@ This is where all modules imported via their directory through /hosts/common.nix
     * can be enabled/disabled
     * the contents didn't seem like a good fit and/or the code was too long to be inside /hosts/common.nix
 
-I'm not very experienced with neovim yet, so I haven't bothered to translate (and I'm not sure that I will) [Kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) into Nix's format; I'm just importing the lua files & directories via Home Manager's xdg.configFile."directory/file".source feature.
-
 # Credits
 The flake itself was based off of [Matthias Benaets' config](https://github.com/MatthiasBenaets/nixos-config). When I was first looking into converting my config into a flake, practically all of the flakes I came across were using separate system and home directories/files for the same module (I understand it makes more sense to separate them, especially with a non-NixOS system using the Nix package manager, but I wasn't a fan of it). I finally came across Matthias' config, and after looking through their repo, I decided to follow suite. I liked the idea of a base configuration for all hosts, and most importantly, modules declared in a single file, instead of spread throughout both the hosts and home directories.
 
