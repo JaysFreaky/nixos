@@ -107,7 +107,8 @@ in {
           transparentBackground.main = true;
         };
         #rofi.enable = true;
-        spicetify.enable = true;
+        # Disabling Spicetify to troubleshoot
+        #spicetify.enable = true;
         #tmux.enable = true;
         #waybar.enable = true;
         #wezterm.enable = true;
