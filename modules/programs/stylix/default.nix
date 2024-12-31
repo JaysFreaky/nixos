@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vars, ... }: let
+{ config, inputs, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.stylix;
 
   base16 = "${pkgs.base16-schemes}/share/themes";
@@ -11,6 +11,8 @@
     light = config.myOptions.stylix.wallpaper.light;
   };
 in {
+  imports = [ inputs.stylix.nixosModules.stylix ];
+
   options.myOptions.stylix = with lib; {
     enable = mkEnableOption "Stylix";
     theme = {
@@ -93,19 +95,19 @@ in {
     home-manager.users.${vars.user} = {
       stylix.targets = {
         alacritty.enable = true;
-        #bat.enable = true;
-        #btop.enable = true;
+        bat.enable = true;
+        btop.enable = true;
         #hyprland.enable = true;
         #kde.enable = true;
         kitty.enable = true;
         #mako.enable = true;
-        #mangohud.enable = true;
+        mangohud.enable = true;
         neovim = {
-          #enable = true;
-          #transparentBackground.main = true;
+          enable = true;
+          transparentBackground.main = true;
         };
         #rofi.enable = true;
-        #spicetify.enable = true;
+        spicetify.enable = true;
         #tmux.enable = true;
         #waybar.enable = true;
         #wezterm.enable = true;

@@ -4,6 +4,8 @@
 
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
 in {
+  imports = [ inputs.spicetify-nix.nixosModules.spicetify ];
+
   options.myOptions.spicetify.enable = lib.mkEnableOption "Spicetify";
 
   config = lib.mkIf (cfg.enable) {

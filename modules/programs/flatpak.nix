@@ -1,6 +1,8 @@
-{ config, lib, ... }: let
+{ config, inputs, lib, ... }: let
   cfg = config.myOptions.flatpak;
 in {
+  imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
+
   options.myOptions.flatpak.enable = lib.mkEnableOption "Flatpak";
 
   config = lib.mkIf (cfg.enable) {

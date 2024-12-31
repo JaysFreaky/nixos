@@ -24,6 +24,8 @@
     night = "${vars.configPath}/assets/wallpapers/blobs-d.png";
   };
 in {
+  imports = [ inputs.nixos-cosmic.nixosModules.default ];
+
   options.myOptions.desktops.cosmic.enable = lib.mkEnableOption "Cosmic desktop";
 
   config = lib.mkIf (cfg.enable) {

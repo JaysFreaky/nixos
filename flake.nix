@@ -59,6 +59,14 @@
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -145,13 +153,8 @@
           useUserPackages = true;
         };
       }
-      inputs.nix-flatpak.nixosModules.nix-flatpak
-      inputs.nixos-cosmic.nixosModules.default
-      #inputs.nur.nixosModules.nur
       inputs.nur.modules.nixos.default
       inputs.sops-nix.nixosModules.sops
-      inputs.spicetify-nix.nixosModules.spicetify
-      inputs.stylix.nixosModules.stylix
     ];
   in {
     # 'nixos-rebuild switch --flake .#your-hostname'
