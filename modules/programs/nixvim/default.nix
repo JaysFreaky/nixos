@@ -26,8 +26,14 @@ in {
           group = "kickstart-highlight-yank";
         }
       ];
-
       autoGroups.kickstart-highlight-yank.clear = true;
+
+      # Sync clipboard between OS and Neovim.
+      # See `:help 'clipboard'`
+      clipboard = {
+        providers.wl-copy.enable = true;
+        register = "unnamedplus";
+      };
 
       colorschemes = lib.mkIf (!stylix) {
         catppuccin = {
@@ -58,13 +64,6 @@ in {
 
         # Don't show the mode, since it's already in the status line
         showmode = false;
-
-        # Sync clipboard between OS and Neovim.
-        # See `:help 'clipboard'`
-        clipboard = {
-          providers.wl-copy.enable = true;
-          register = "unnamedplus";
-        };
 
         # Enable break indent
         breakindent = true;
