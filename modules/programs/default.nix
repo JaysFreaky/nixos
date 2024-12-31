@@ -9,7 +9,7 @@
   ./git.nix
   ./kitty.nix
   #./lf
-  ./nvim
+  ./nixvim
   ./openrgb.nix
   ./plex.nix
   ./spicetify.nix
