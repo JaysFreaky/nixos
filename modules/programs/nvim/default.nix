@@ -1,18 +1,19 @@
 { pkgs, vars, ... }: {
   home-manager.users.${vars.user} = {
-    home.packages = with pkgs; [
-      gcc
-      gnumake
-      ripgrep
-    ];
-
     programs.neovim = {
       enable = true;
-      viAlias = true;
-      vimAlias = true;
+      viAlias = false;
+      vimAlias = false;
       extraPackages = with pkgs; [
-        nil    # Nix language
+      # LSP
+        nil       # Nix
+
+      # Tools
+        gcc
+        gnumake
+        ripgrep
       ];
+      plugins = with pkgs.vimPlugins; [ ];
     };
 
     xdg.configFile = {
