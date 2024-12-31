@@ -41,6 +41,7 @@
       url = "github:nix-community/lanzaboote/v0.4.1";
       inputs = {
         flake-compat.follows = "flake-compat";
+        flake-parts.follows = "flake-parts";
         flake-utils.follows = "flake-utils";
         nixpkgs.follows = "nixpkgs";
         pre-commit-hooks-nix.follows = "";
@@ -58,18 +59,24 @@
       };
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs = {
         flake-compat.follows = "flake-compat";
+        flake-parts.follows = "flake-parts";
         home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
       };
     };
     nur = {
       url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+      };
     };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
@@ -118,6 +125,10 @@
 
     # Follows-only
     flake-compat.url = "github:edolstra/flake-compat";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
@@ -127,6 +138,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     systems.url = "github:nix-systems/default-linux";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
 

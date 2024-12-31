@@ -182,7 +182,10 @@ in {
 
   nixpkgs = {
     config.allowUnfree = true;
-    overlays = [ inputs.nur.overlays.default ];
+    overlays = [
+      inputs.nur.overlays.default
+      (self: super: { electron_31 = self.electron; })
+    ];
   };
 
   programs = {
