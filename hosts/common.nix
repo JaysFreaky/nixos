@@ -164,6 +164,7 @@ in {
     registry.nixpkgs.flake = inputs.nixpkgs;
     settings = {
       auto-optimise-store = true;
+      #download-buffer-size = 67108864; # Default 67108864
       experimental-features = [
         "flakes"
         "nix-command"
@@ -184,7 +185,6 @@ in {
     config.allowUnfree = true;
     overlays = [
       inputs.nur.overlays.default
-      (self: super: { electron_31 = self.electron; })
     ];
   };
 

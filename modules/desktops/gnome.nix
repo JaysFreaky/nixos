@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vars, ... }: let
+{ config, lib, pkgs, stable, vars, ... }: let
   cfg = config.myOptions.desktops.gnome;
   cfg-base = config.myOptions;
   stylix = config.stylix.enable;
@@ -80,7 +80,7 @@ in {
         cursor.package              # For GDM login screen
         dconf-editor                # GUI dconf editor
         gdm-settings                # Login screen settings
-        gnome-extension-manager     # Gnome extensions
+        stable.gnome-extension-manager     # Gnome extensions
         gnome-tweaks                # Gnome tweaks
         libappindicator             # Allow tray icons to be displayed in GNOME
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet

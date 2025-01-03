@@ -8,21 +8,23 @@ in {
       #pwvucontrol    # Pipewire audio control
     ];
 
-    # Required for pipewire
-    hardware.pulseaudio.enable = false;
-
     # Real-time audio
     security.rtkit.enable = true;
 
-    services.pipewire = {
-      enable = true;
-      jack.enable = true;
-      pulse.enable = true;
-      wireplumber.enable = true;
-      alsa = {
+    services = {
+      pipewire = {
         enable = true;
-        support32Bit = true;
+        jack.enable = true;
+        pulse.enable = true;
+        wireplumber.enable = true;
+        alsa = {
+          enable = true;
+          support32Bit = true;
+        };
       };
+
+      # Required for pipewire
+      pulseaudio.enable = false;
     };
 
   };
