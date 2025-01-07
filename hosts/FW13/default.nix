@@ -1,6 +1,7 @@
 { config, inputs, lib, pkgs, stable, vars, ... }: let
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
+  protonMB = pkgs.protonmail-bridge-gui;
 in {
   imports = [
     ./filesystems.nix
@@ -51,7 +52,7 @@ in {
   environment = {
     systemPackages = with pkgs; [
     # Email
-      stable.protonmail-bridge-gui   # GUI bridge for Thunderbird
+      protonMB                # GUI bridge for Thunderbird
       thunderbird             # Email client
 
     # Framework Hardware
@@ -104,6 +105,8 @@ in {
     ee-pkg = config.services.easyeffects.package;
     eePreset = config.services.easyeffects.preset;
   in {
+    #imports = [ ./fetch-logo.nix ];
+
     dconf.settings = {
       # Automatic screen brightness
       "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;
@@ -143,8 +146,8 @@ in {
       "autostart/ProtonMailBridge.desktop".text = lib.strings.concatLines [
         (lib.strings.replaceStrings
           [ "Exec=protonmail-bridge-gui" ]
-          [ "Exec=${lib.getExe stable.protonmail-bridge-gui} --no-window" ]
-          (lib.strings.fileContents "${stable.protonmail-bridge-gui}/share/applications/proton-bridge-gui.desktop")
+          [ "Exec=${lib.getExe protonMB} --no-window" ]
+          (lib.strings.fileContents "${protonMB}/share/applications/proton-bridge-gui.desktop")
         )
         "X-GNOME-Autostart-enabled=true"
       ];

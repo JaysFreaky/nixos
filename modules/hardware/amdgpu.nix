@@ -26,8 +26,7 @@ in {
         # initrd.kernelModules: "amdgpu"
         initrd.enable = true;
         # pkgs.rocmPackages.clr/.icd
-        #opencl.enable = true; # Currently broken
-        opencl.enable = false;
+        opencl.enable = true;
       };
       # Not currently enabled via amdgpu.amdvlk
       graphics.enable32Bit = true;
