@@ -55,7 +55,6 @@
         flake-compat.follows = "flake-compat";
         nixpkgs.follows = "nixpkgs";
         nixpkgs-stable.follows = "nixpkgs-stable";
-        rust-overlay.follows = "rust-overlay";
       };
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -65,8 +64,10 @@
       inputs = {
         flake-compat.follows = "flake-compat";
         flake-parts.follows = "flake-parts";
+        git-hooks.follows = "git-hooks";
         home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
+        nuschtosSearch.follows = "nuschtosSearch";
         treefmt-nix.follows = "treefmt-nix";
       };
     };
@@ -101,6 +102,7 @@
       inputs = {
         flake-compat.follows = "flake-compat";
         flake-utils.follows = "flake-utils";
+        git-hooks.follows = "git-hooks";
         home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
         systems.follows = "systems";
@@ -132,6 +134,25 @@
     flake-utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
+    };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+        gitignore.follows = "gitignore";
+      };
+    };
+    gitignore = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nuschtosSearch = {
+      url = "github:NuschtOS/search";
+      inputs = {
+        flake-utils.follows = "flake-utils";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
