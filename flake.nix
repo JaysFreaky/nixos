@@ -145,23 +145,56 @@
   };
 
 
-  outputs = { self, nixpkgs, nixpkgs-stable, ... } @ inputs: let
-    system = "x86_64-linux";
+  outputs = { self, nixpkgs, ... } @ inputs: let
+    hostSystems = {
+      Dekki.modules = [
+        inputs.chaotic.nixosModules.default
+        inputs.jovian.nixosModules.jovian
+      ];
 
-    stable = import nixpkgs-stable {
+      FW13.modules = [
+        inputs.hardware.nixosModules.framework-13-7040-amd
+        inputs.lanzaboote.nixosModules.lanzaboote
+      ];
+
+      # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
+      iso = {
+        bareSystem = true;
+        modules = [ ./hosts/iso ];
+      };
+
+      Ridge.modules = [
+        inputs.chaotic.nixosModules.default
+        #inputs.jovian.nixosModules.jovian
+      ];
+
+      T1.modules = [ inputs.chaotic.nixosModules.default ];
+
+      T450s.modules = [ inputs.hardware.nixosModules.lenovo-thinkpad-t450s ];
+
+      VM.modules = [ ];
+    };
+
+    mkSystem = hostName: hostOpts: let
+      bareSystem = hostOpts.bareSystem or false;
+      sysModules = hostOpts.modules;
+      system = hostOpts.system or "x86_64-linux";
+    in nixpkgs.lib.nixosSystem {
       inherit system;
-      config.allowUnfree = true;
+      modules = (if (bareSystem) then ([ ]) else (stdModules hostName)) ++ sysModules;
+      specialArgs = let
+        stable = import inputs.nixpkgs-stable {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      in {
+        inherit inputs stable vars;
+      };
     };
 
-    vars = {
-      user = "jays";
-      name = "Jason";
-      configPath = "/etc/nixos";
-      # Alacritty, kitty, or wezterm
-      terminal = "kitty";
-    };
-
-    stdModules = [
+    stdModules = hostName: [
+      { networking.hostName = hostName; }
+      ./hosts/${hostName}
       ./hosts/common.nix
       inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager {
@@ -174,49 +207,16 @@
       inputs.sops-nix.nixosModules.sops
     ];
 
-    mkSystem = sysModules: nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = stdModules ++ sysModules;
-      specialArgs = { inherit inputs stable vars; };
+    vars = {
+      user = "jays";
+      name = "Jason";
+      configPath = "/etc/nixos";
+      # Alacritty, kitty, or wezterm
+      terminal = "kitty";
     };
   in {
     # 'nixos-rebuild switch --flake .#your-hostname'
-    nixosConfigurations = {
-      Dekki = mkSystem [
-        ./hosts/Dekki
-        inputs.chaotic.nixosModules.default
-        inputs.jovian.nixosModules.jovian
-      ];
-
-      FW13 = mkSystem [
-        ./hosts/FW13
-        inputs.hardware.nixosModules.framework-13-7040-amd
-        inputs.lanzaboote.nixosModules.lanzaboote
-      ];
-
-      # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
-      iso = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [ ./hosts/iso ];
-      };
-
-      Ridge = mkSystem [
-        ./hosts/Ridge
-        inputs.chaotic.nixosModules.default
-      ];
-
-      T1 = mkSystem [
-        ./hosts/T1
-        inputs.chaotic.nixosModules.default
-      ];
-
-      T450s = mkSystem [
-        ./hosts/T450s
-        inputs.hardware.nixosModules.lenovo-thinkpad-t450s
-      ];
-
-      VM = mkSystem [ ./hosts/VM ];
-    };
-
+    nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
   };
+
 }
