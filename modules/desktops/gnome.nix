@@ -432,39 +432,47 @@ in {
         weather-or-not
       ];
 
-      programs = {
-        # SSH agent
-        /*bash.initExtra = ''
-          eval $(/run/wrappers/bin/gnome-keyring-daemon --start --daemonize)
-          export SSH_AUTH_SOCK
-        '';*/
+      /*
+      # https://home-manager-options.extranix.com/?query=neovide&release=master
+      programs.neovide = {
+        enable = true;
+        settings = {
+          neovim-bin = if (config.programs.nixvim.enable) then "${lib.getExe config.programs.nixvim.package}" else "${lib.getExe pkgs.neovim}";
+        };
       };
+      */
 
-      # Set Nautilus bookmarks
-      xdg.configFile = {
-        "gtk-3.0/bookmarks".text = ''
+      xdg = {
+        # Set Nautilus bookmarks
+        configFile."gtk-3.0/bookmarks".text = ''
           file:/// /
           file:///etc/nixos nixos
           file:///mnt/nas nas
         '';
-      };
 
-      # Hide apps from app grid
-      xdg.desktopEntries = {
-        nvim = {
+        # Hide neovim icon from app grid
+        desktopEntries.nvim = {
           name = "Neovim wrapper";
           noDisplay = true;
         };
-      };
 
-      # Set default applications
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "image/gif" = [ "org.gnome.Loupe.desktop" ];
-          "image/jpg" = [ "org.gnome.Loupe.desktop" ];
-          "image/png" = [ "org.gnome.Loupe.desktop" ];
-          "text/plain" = [ "neovide.desktop" ];
+        # Set default application file associations
+        mimeApps = let
+          mime = {
+            audio = [ "com.github.rafostar.Clapper.desktop" ];
+            calendar = [ "org.gnome.Calendar.desktop" ];
+            image = [ "org.gnome.Loupe.desktop" ];
+            pdf = [ "${cfg-base.browser}.desktop" ];
+            text = [
+              "org.gnome.TextEditor.desktop"
+              #"neovide.desktop"
+            ];
+            video = [ "io.github.celluloid_player.Celluloid.desktop" ];
+          };
+        in {
+          enable = true;
+          associations.added = config.xdg.mimeApps.defaultApplications;
+          defaultApplications = import ./mimeapps.nix { inherit mime; };
         };
       };
     };
