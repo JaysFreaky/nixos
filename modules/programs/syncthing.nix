@@ -13,19 +13,21 @@ in {
       overrideDevices = true;
       overrideFolders = true;
       user = "${vars.user}";
-
       settings = {
-        options.urAccepted = -1;
-
-        devices = {
-          "NAS" = { id = "FN25ISC-P52A3WA-GRV4SIR-YI4KBMM-2I5BECF-32SLV5B-5DADP5B-YSMVIQ4"; };
-        };
-
+        devices."NAS".id = "FN25ISC-P52A3WA-GRV4SIR-YI4KBMM-2I5BECF-32SLV5B-5DADP5B-YSMVIQ4";
         folders = {
+          "music" = {
+            enable = lib.mkIf (config.networking.hostName == "FW13") true;
+            devices = [ "NAS" ];
+            label = "Music";
+            path = "/home/${vars.user}/Music";
+          };
+
           "obsidian" = {
+            enable = true;
             devices = [ "NAS" ];
             label = "Obsidian";
-            path = "/home/${vars.user}/Sync/Obsidian";
+            path = "/home/${vars.user}/Obsidian";
             versioning = {
               type = "simple";
               params = {
@@ -36,10 +38,11 @@ in {
             };
           };
         };
+        options.urAccepted = -1;
       };
     };
 
     users.users.${vars.user}.extraGroups = [ "syncthing" ];
-
   };
+
 }
