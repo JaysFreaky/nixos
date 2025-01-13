@@ -18,10 +18,9 @@ in {
   };
 
   myOptions = {
-    desktops = {    # cosmic, hyprland, kde
-      #cosmic.enable = true;
+    desktops = {    # cosmic, hyprland
+      cosmic.enable = true;
       #hyprland.enable = true;
-      kde.enable = true;
     };
 
     hardware = {    # amdgpu, audio, bluetooth

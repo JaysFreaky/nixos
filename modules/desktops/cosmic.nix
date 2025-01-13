@@ -1,6 +1,6 @@
 { config, inputs, lib, pkgs, vars, ... }: let
   cfg = config.myOptions.desktops.cosmic;
-  #host = config.myHosts;
+  cfg-base = config.myOptions;
 
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -50,15 +50,23 @@ in {
       # Sets profile image
       home.file.".face".source = profileImg;
 
-      # Set default applications
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          #"image/gif" = [ "org.kde.gwenview.desktop" ];
-          #"image/jpg" = [ "org.kde.gwenview.desktop" ];
-          #"image/png" = [ "org.kde.gwenview.desktop" ];
-          #"text/plain" = [ "neovide.desktop" ];
+      # Set default application file associations
+      xdg.mimeApps = let
+        mime = {
+          audio = [ "" ];
+          calendar = [ "" ];
+          image = [ "" ];
+          pdf = [ "${cfg-base.browser}.desktop" ];
+          text = [
+            ""
+            #"neovide.desktop"
+          ];
+          video = [ "" ];
         };
+      in {
+        enable = false;
+        associations.added = config.xdg.mimeApps.defaultApplications;
+        defaultApplications = import ./mimeapps.nix { inherit mime; };
       };
     };
 
