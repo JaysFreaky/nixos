@@ -1,4 +1,4 @@
-{ config, lib, pkgs, vars, ... }: let
+{ config, inputs, lib, pkgs, vars, ... }: let
   cfg = config.myOptions;
   host = config.myHosts;
 in {
@@ -50,6 +50,8 @@ in {
   home-manager.users.${vars.user} = let
     hyprApps = cfg.desktops.hyprland.hyprApps;
   in {
+    imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
+
     home.stateVersion = "24.11";
 
     programs = {
