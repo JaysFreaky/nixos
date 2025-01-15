@@ -136,7 +136,7 @@ in {
       echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\n" > /var/lib/AccountsService/users/${vars.user}
     '';
 
-    home-manager.users.${vars.user} = {
+    home-manager.users.${vars.user} = { config, osConfig, ... }: {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
 
       home.file = {
@@ -359,13 +359,13 @@ in {
                       "org.kde.plasma.brightness"
                       "org.kde.plasma.clipboard"
                       "org.kde.plasma.mediacontroller"
-                    ] ++ lib.optionals (config.hardware.bluetooth.enable) [
+                    ] ++ lib.optionals (osConfig.hardware.bluetooth.enable) [
                       "org.kde.plasma.bluetooth"
                     ];
                     shown = [
                       "chrome_status_icon_1"              # 1Password
                       "org.kde.plasma.volume"
-                    ] ++ lib.optionals (config.hardware.bluetooth.enable) [
+                    ] ++ lib.optionals (osConfig.hardware.bluetooth.enable) [
                       "blueman"
                     ] ++ [
                       "org.kde.plasma.networkmanagement"
@@ -488,7 +488,7 @@ in {
       };
 
       # Set default application file associations
-      mimeApps = let
+      xdg.mimeApps = let
         mime = {
           archive = [ "org.kde.ark.desktop" ];
           audio = [ "org.kde.elisa.desktop" ];
