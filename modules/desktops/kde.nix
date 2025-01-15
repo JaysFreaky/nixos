@@ -77,12 +77,23 @@ in {
           };
         };
       in [
+      # Theming
         cursor.package              # For SDDM login screen
         icon.package                # Icon theme
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
-        neovide                     # GUI launcher for neovim
-        #polonium                    # Window tiling
         sddm-astronaut-pkg          # SDDM theme
+
+      # Misc
+        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+
+      # Multimedia
+        haruna            # MPV frontend
+        mpc-qt            # MPV frontend
+
+      # Text
+        neovide                     # GUI launcher for neovim
+
+      # Window Management
+        #polonium                    # Window tiling
       ] ++ (with kdePackages; [
         dragon                      # Media player
         #kwallet                     # KDE Wallet
@@ -476,15 +487,25 @@ in {
         };
       };
 
-      # Set default applications
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "image/gif" = [ "org.kde.gwenview.desktop" ];
-          "image/jpg" = [ "org.kde.gwenview.desktop" ];
-          "image/png" = [ "org.kde.gwenview.desktop" ];
-          #"text/plain" = [ "neovide.desktop" ];
+      # Set default application file associations
+      mimeApps = let
+        mime = {
+          archive = [ "org.kde.ark.desktop" ];
+          audio = [ "org.kde.elisa.desktop" ];
+          calendar = [ "" ];
+          image = [ "org.kde.gwenview.desktop" ];
+          pdf = [ "okularApplication_pdf.desktop" ];
+          text = [ "org.kde.kate.desktop" ];
+          video = [
+            "mpc-qt.desktop"
+            #"org.kde.haruna.desktop"
+            #"org.kde.dragonplayer.desktop"
+          ];
         };
+      in {
+        enable = true;
+        associations.added = config.xdg.mimeApps.defaultApplications;
+        defaultApplications = import ./mimeapps.nix { inherit mime; };
       };
     };
 

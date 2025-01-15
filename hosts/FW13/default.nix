@@ -69,10 +69,8 @@ in {
       zenmonitor              # CPU stats
 
     # Multimedia
-      celluloid               # MPV GTK frontend w/ Wayland
-      clapper                 # GTK media player
-      mpv                     # Media player
-      smplayer                # MPV frontend
+      #mpv                     # Media player
+      #smplayer                # MPV frontend
 
     # Notes
       obsidian                # Markdown notes

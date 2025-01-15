@@ -53,15 +53,16 @@ in {
       # Set default application file associations
       xdg.mimeApps = let
         mime = {
-          audio = [ "" ];
+          archive = [ "org.gnome.FileRoller.desktop" ];
+          audio = [ "com.system76.CosmicPlayer.desktop" ];
           calendar = [ "" ];
-          image = [ "" ];
-          pdf = [ "${cfg-base.browser}.desktop" ];
+          image = [ "org.gnome.eog.desktop" ];
+          pdf = [ "org.gnome.Evince.desktop" ];
           text = [
-            ""
+            "com.system76.CosmicEdit.desktop"
             #"neovide.desktop"
           ];
-          video = [ "" ];
+          video = [ "com.system76.CosmicPlayer.desktop" ];
         };
       in {
         enable = false;

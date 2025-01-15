@@ -1,6 +1,71 @@
 { mime, ... }: {
-  "application/pdf" = mime.pdf;
+  # Archive
+  "application/arj" = mime.archive;
+  "application/gzip" = mime.archive;
+  "application/vnd.ms-cab-compressed" = mime.archive;
+  "application/vnd.rar" = mime.archive;
+  "application/x-7z-compressed" = mime.archive;
+  "application/x-7z-compressed-tar" = mime.archive;
+  "application/x-ace" = mime.archive;
+  "application/x-alz" = mime.archive;
+  "application/x-ar" = mime.archive;
+  "application/x-arj" = mime.archive;
+  "application/x-archive" = mime.archive;
+  "application/x-bcpio" = mime.archive;
+  "application/x-bzip" = mime.archive;
+  "application/x-bzip-compressed-tar" = mime.archive;
+  "application/x-bzip1" = mime.archive;
+  "application/x-bzip1-compressed-tar" = mime.archive;
+  "application/x-bzip2" = mime.archive;
+  "application/x-bzip2-compressed-tar" = mime.archive;
+  "application/x-cabinet" = mime.archive;
+  "application/x-cd-image" = mime.archive;
+  "application/x-compress" = mime.archive;
+  "application/x-compressed-tar" = mime.archive;
+  "application/x-cpio" = mime.archive;
+  "application/x-cpio-compressed" = mime.archive;
+  "application/x-deb" = mime.archive;
+  "application/x-ear" = mime.archive;
+  "application/x-gtar" = mime.archive;
+  "application/x-gzip" = mime.archive;
+  "application/x-iso9660-appimage" = mime.archive;
+  "application/x-lha" = mime.archive;
+  "application/x-lhz" = mime.archive;
+  "application/x-lrzip" = mime.archive;
+  "application/x-lrzip-compressed-tar" = mime.archive;
+  "application/x-lz4" = mime.archive;
+  "application/x-lz4-compressed-tar" = mime.archive;
+  "application/x-lzip" = mime.archive;
+  "application/x-lzip-compressed-tar" = mime.archive;
+  "application/x-lzma" = mime.archive;
+  "application/x-lzma-compressed-tar" = mime.archive;
+  "application/x-lzop" = mime.archive;
+  "application/x-lzop-compressed-tar" = mime.archive;
+  "application/x-rar" = mime.archive;
+  "application/x-rar-compressed" = mime.archive;
+  "application/x-rpm" = mime.archive;
+  "application/x-rzip" = mime.archive;
+  "application/x-source-rpm" = mime.archive;
+  "application/x-stuffit" = mime.archive;
+  "application/x-sv4cpio" = mime.archive;
+  "application/x-sv4crc" = mime.archive;
+  "application/x-tar" = mime.archive;
+  "application/x-tarz" = mime.archive;
+  "application/x-tzo" = mime.archive;
+  "application/x-war" = mime.archive;
+  "application/x-xar" = mime.archive;
+  "application/x-xz" = mime.archive;
+  "application/x-xz-compressed-tar" = mime.archive;
+  "application/x-zstd-compressed-tar" = mime.archive;
+  "application/x-zip" = mime.archive;
+  "application/x-zip-compressed" = mime.archive;
+  "application/x-zoo" = mime.archive;
+  "application/zip" = mime.archive;
+  "application/zlib" = mime.archive;
+  "application/zstd" = mime.archive;
+  "multipart/x-zip" = mime.archive;
 
+  # Audio
   "audio/3gpp" = mime.audio;
   "audio/3gpp2" = mime.audio;
   "audio/aac" = mime.audio;
@@ -22,6 +87,7 @@
   "audio/mpg" = mime.audio;
   "audio/ogg" = mime.audio;
   "audio/opus" = mime.audio;
+  "audio/rn-mpeg" = mime.audio;
   "audio/scpls" = mime.audio;
   "audio/vnd.dolby.heaac.1" = mime.audio;
   "audio/vnd.dolby.heaac.2" = mime.audio;
@@ -29,6 +95,8 @@
   "audio/vnd.dts" = mime.audio;
   "audio/vnd.dts.hd" = mime.audio;
   "audio/vnd.rn-realaudio" = mime.audio;
+  "audio/vnd.wave" = mime.audio;
+  "audio/vorbis" = mime.audio;
   "audio/wav" = mime.audio;
   "audio/webm" = mime.audio;
   "audio/x-aac" = mime.audio;
@@ -49,6 +117,8 @@
   "audio/x-ms-asf" = mime.audio;
   "audio/x-ms-wma" = mime.audio;
   "audio/x-musepack" = mime.audio;
+  "audio/x-oggflac" = mime.audio;
+  "audio/x-pls" = mime.audio;
   "audio/x-pn-aiff" = mime.audio;
   "audio/x-pn-au" = mime.audio;
   "audio/x-pn-realaudio" = mime.audio;
@@ -66,37 +136,78 @@
   "audio/x-wavpack" = mime.audio;
   "audio/x-xm" = mime.audio;
 
+  # Browser
+  #"x-scheme-handler/http" = mime.browser;
+  #"x-scheme-handler/https" = mime.browser;
+
+  # Calendar
+  #"text/calendar" = mime.calendar;
+
+  # Email
+  #"x-scheme-handler/mailto" = mime.email;
+
+  # File Manager
+  #"inode/directory" = mime.fileManager;
+
+  # Image
   "image/avif" = mime.image;
   "image/bmp" = mime.image;
   "image/gif" = mime.image;
   "image/heic" = mime.image;
+  "image/heif" = mime.image;
   "image/jpeg" = mime.image;
   "image/jpg" = mime.image;
   "image/jxl" = mime.image;
+  "image/pjpeg" = mime.image;
   "image/png" = mime.image;
   "image/svg+xml" = mime.image;
   "image/svg+xml-compressed" = mime.image;
   "image/tiff" = mime.image;
-  "image/vnd.microsoft.icon" = mime.image;
   "image/vnd.radiance" = mime.image;
+  "image/vnd.wap.wbmp" = mime.image;
   "image/vnd-ms.dds" = mime.image;
   "image/webp" = mime.image;
+  "image/x-bmp" = mime.image;
   "image/x-dds" = mime.image;
+  "image/x-eps" = mime.image;
   "image/x-exr" = mime.image;
+  "image/x-gray" = mime.image;
+  "image/x-icb" = mime.image;
+  "image/x-icns" = mime.image;
+  "image/x-ico" = mime.image;
+  "image/x-icon" = mime.image;
+  "image/x-pcx" = mime.image;
+  "image/x-png" = mime.image;
   "image/x-portable-anymap" = mime.image;
   "image/x-portable-bitmap" = mime.image;
   "image/x-portable-graymap" = mime.image;
   "image/x-portable-pixmap" = mime.image;
   "image/x-qoi" = mime.image;
   "image/x-tga" = mime.image;
+  "image/x-xbitmap" = mime.image;
+  "image/x-xcf" = mime.image;
+  "image/x-xpixmap" = mime.image;
+  "image/x-webp" = mime.image;
 
-  "text/calendar" = mime.calendar;
+  # PDF / Reader
+  #"application/epub+zip" = mime.ebook;
+  #"application/ereader" = mime.ebook;
+  "application/pdf" = mime.pdf;
+  "application/x-cb7" = mime.pdf;
+  "application/x-cbc" = mime.pdf;
+  "application/x-cbr" = mime.pdf;
+  "application/x-cbt" = mime.pdf;
+  "application/x-cbz" = mime.pdf;
 
+  # Text
   "text/plain" = mime.text;
 
+  # Video
+  "application/x-matroska" = mime.video;
   "video/3gp" = mime.video;
   "video/3gpp" = mime.video;
   "video/3gpp2" = mime.video;
+  "video/avi" = mime.video;
   "video/divx" = mime.video;
   "video/dv" = mime.video;
   "video/fli" = mime.video;
@@ -109,24 +220,30 @@
   "video/msvideo" = mime.video;
   "video/ogg" = mime.video;
   "video/quicktime" = mime.video;
+  "video/vnd.avi" = mime.video;
+  "video/vnd.divx" = mime.video;
   "video/vnd.mpegurl" = mime.video;
   "video/vnd.rn-realvideo" = mime.video;
   "video/webm" = mime.video;
   "video/x-avi" = mime.video;
   "video/x-flc" = mime.video;
   "video/x-fli" = mime.video;
+  "video/x-flic" = mime.video;
   "video/x-flv" = mime.video;
   "video/x-m4v" = mime.video;
   "video/x-matroska" = mime.video;
   "video/x-mpeg" = mime.video;
-  "video/x-mpeg-system" = mime.video;
   "video/x-mpeg2" = mime.video;
+  "video/x-mpeg-system" = mime.video;
+  "video/x-ms-afs" = mime.video;
   "video/x-ms-asf" = mime.video;
   "video/x-ms-wm" = mime.video;
   "video/x-ms-wmv" = mime.video;
   "video/x-ms-wmx" = mime.video;
+  "video/x-ms-wvxvideo" = mime.video;
   "video/x-msvideo" = mime.video;
   "video/x-nsv" = mime.video;
+  "video/x-ogm" = mime.video;
   "video/x-ogm+ogg" = mime.video;
   "video/x-theora" = mime.video;
   "video/x-theora+ogg" = mime.video;

@@ -56,8 +56,6 @@ in {
       calibre           # Book organization
 
     # Multimedia
-      haruna            # MPV frontend
-      mpc-qt            # MPV frontend
       #mpv              # Media player
       #smplayer         # MPV frontend
 

@@ -87,13 +87,6 @@ in {
           name = "Vanilla";
         };
       };
-
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "application/pdf" = [ "${browser}.desktop" ];
-        };
-      };
     };
 
   };

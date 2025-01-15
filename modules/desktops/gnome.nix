@@ -64,7 +64,7 @@ in {
         gnome-characters            # Character map
         gnome-contacts              # Contact app
         gnome-initial-setup         # First time setup
-        gnome-music                 # Music
+        #gnome-music                 # Music
         #gnome-maps                 # Maps
         #gnome-photos               # Image viewer
         #gnome-terminal             # Console
@@ -77,16 +77,27 @@ in {
       ];
 
       systemPackages = with pkgs; [
-        cursor.package              # For GDM login screen
+      # GNOME
         dconf-editor                # GUI dconf editor
         gdm-settings                # Login screen settings
         stable.gnome-extension-manager     # Gnome extensions
         gnome-tweaks                # Gnome tweaks
         libappindicator             # Allow tray icons to be displayed in GNOME
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
         nautilus-open-any-terminal  # Open custom terminals in nautilus
         nautilus-python             # Allow custom nautilus scripts/open-any-terminal
+
+      # Misc
+        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
+
+      # Multimedia
+        celluloid                   # MPV GTK frontend w/ Wayland
+        clapper                     # GTK media player
+
+      # Text
         neovide                     # GUI launcher for neovim
+
+      # Theming
+        cursor.package              # For GDM login screen
       ] ++ lib.optionals (stylix) [
         switch-mode                 # HM theme switcher
       ];
@@ -459,14 +470,12 @@ in {
         # Set default application file associations
         mimeApps = let
           mime = {
-            audio = [ "com.github.rafostar.Clapper.desktop" ];
+            archive = [ "org.gnome.FileRoller.desktop" ];
+            audio = [ "org.gnome.Music.desktop" ];
             calendar = [ "org.gnome.Calendar.desktop" ];
             image = [ "org.gnome.Loupe.desktop" ];
-            pdf = [ "${cfg-base.browser}.desktop" ];
-            text = [
-              "org.gnome.TextEditor.desktop"
-              #"neovide.desktop"
-            ];
+            pdf = [ "org.gnome.Evince.desktop" ];
+            text = [ "org.gnome.TextEditor.desktop" ];
             video = [ "io.github.celluloid_player.Celluloid.desktop" ];
           };
         in {
