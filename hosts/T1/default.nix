@@ -1,4 +1,11 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   cfg = config.myOptions;
   host = config.myHosts;
   fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
@@ -28,7 +35,7 @@ in {
       };
     };
 
-    hardware = {    # amdgpu, audio, bluetooth, fp_reader, nvidia
+    hardware = {    # amdgpu, bluetooth, nvidia
       nvidia.enable = true;
     };
 
@@ -45,12 +52,12 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
+    # Communication
+      discord           # Discord
+
     # Hardware
       fancontrol-gui    # Fancontrol GUI for lm-sensors
       polychromatic     # Razer lighting GUI
-
-    # Messaging
-      discord           # Discord
 
     # Misc
       calibre           # Book organization
@@ -59,10 +66,9 @@ in {
       #mpv              # Media player
       #smplayer         # MPV frontend
 
-    # Notes
+    # Productivity
       obsidian          # Markdown notes
     ];
-
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:01:00.0-render";
   };
@@ -105,6 +111,7 @@ in {
       scheduler = "scx_rusty"; # or "scx_lavd"
     };
   };
+
   system.stateVersion = "24.11";
   users.users.${vars.user}.extraGroups = [ "fancontrol" ];
 
