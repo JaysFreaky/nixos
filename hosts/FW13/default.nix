@@ -1,6 +1,11 @@
-{ config, inputs, lib, pkgs, stable, vars, ... }: let
-  # Patch kernel to log usbpd instead of warn
-  fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   protonMB = pkgs.protonmail-bridge-gui;
 in {
   imports = [
@@ -19,14 +24,12 @@ in {
   };
 
   myOptions = {
-    desktops = {    # cosmic, gnome, hyprland, kde
-      gnome.enable = true;
-    };
+    # cosmic, gnome, hyprland, kde
+    desktops.gnome.enable = true;
 
-    hardware = {    # amdgpu, audio, bluetooth, fp_reader
+    hardware = {    # amdgpu, bluetooth
       amdgpu.enable = true;
       bluetooth.enable = true;
-      #fp_reader.enable = true;
     };
 
     # "1password", alacritty, flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, wezterm
@@ -51,37 +54,35 @@ in {
   ##########################################################
   environment = {
     systemPackages = with pkgs; [
-    # Email
+    # Communication
+      discord                 # Discord
       protonMB                # GUI bridge for Thunderbird
       thunderbird             # Email client
 
     # Framework Hardware
+      fprintd                 # Fingerprint daemon
       framework-tool          # Swiss army knife for FWs
-      fw-ectool               # Embedded controller | 'ectool'
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       sbctl                   # Secure boot key manager
 
-    # Messaging
-      discord                 # Discord
+    # Misc
+      android-udev-rules      # Android flashing
 
     # Monitoring
       powertop                # Power stats
       zenmonitor              # CPU stats
 
     # Multimedia
-      #mpv                     # Media player
-      #smplayer                # MPV frontend
+      #mpv                    # Media player
+      #smplayer               # MPV frontend
 
-    # Notes
-      obsidian                # Markdown notes
+    # Networking
+      protonvpn-gui           # VPN client
 
     # Productivity
       libreoffice             # Office suite
-
-    # VPN
-      protonvpn-gui           # VPN client
+      obsidian                # Markdown notes
     ];
-
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
   };
@@ -109,11 +110,16 @@ in {
       # Automatic screen brightness
       "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;
       "org/gnome/shell".enabled-extensions = [ "Battery-Health-Charging@maniacx.github.com" ];
-      "org/gnome/shell/extensions/Battery-Health-Charging" = {
+      "org/gnome/shell/extensions/Battery-Health-Charging" = let
+        bal = 85;
+        ful = 90;
+      in {
         amend-power-indicator = true;
-        bal-end-threshold = 85;
-        charging-mode = "bal";
-        current-bal-end-threshold = 85;
+        bal-end-threshold = bal;
+        charging-mode = "ful";
+        current-bal-end-threshold = bal;
+        current-ful-end-threshold = ful;
+        ful-end-threshold = ful;
         indicator-position = 4;
         show-system-indicator = false;
       };
@@ -166,6 +172,7 @@ in {
     bluetooth.powerOnBoot = lib.mkForce false;
     enableAllFirmware = true;
     firmware = [ pkgs.linux-firmware ];
+    #framework.laptop13.audioEnhancement.enable = true;
 
     graphics = {
       extraPackages = with pkgs; [
@@ -183,28 +190,23 @@ in {
     wirelessRegulatoryDatabase = true;
   };
 
-  # Auto-tune on startup
   powerManagement = {
     enable = true;
     cpuFreqGovernor = "powersave";
-    # Auto-tuning - to use powertop bin, pkg must be declared above
+    # Auto-tuning - to use powertop bin, pkg must be declared in systemPackages
     powertop.enable = true;
   };
 
   services = {
-    # Firmware updater
+    fprintd = {
+      enable = true;
+      #tod.enable = true;
+      #tod.driver = pkgs.libfprint-2-tod1-goodix;
+    };
+
     fwupd = {
       enable = true;
-      # Downgrading fwupd is required to modify the fingerprint sensor firmware
-        # https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/7040-amd
-      /*package = (import (builtins.fetchTarball {
-        # v1.8.14
-        url = "https://github.com/NixOS/nixpkgs/archive/bb2009ca185d97813e75736c2b8d1d8bb81bde05.tar.gz";
-        sha256 = "sha256:003qcrsq5g5lggfrpq31gcvj82lb065xvr7bpfa8ddsw8x4dnysk";
-        # v1.9.7
-        #url = "https://github.com/NixOS/nixpkgs/archive/21ef15cc55ec43c4a5f8d952f58e87d964480b0a.tar.gz";
-        #sha256 = "sha256:0q71dz2fivpz7s6n74inrq27y8s6y80z7hhj5b8p0090j4xllia7";
-      }) { inherit (pkgs) system; }).fwupd;*/
+      #extraRemotes = ["lvfs-testing"];
     };
 
     logind = {
@@ -223,30 +225,25 @@ in {
       powerMode = pkgs.writeShellScriptBin "power-mode" ''
         #!/usr/bin/env bash
         # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
-        GPU_DEVICE='/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0'
+        GPU='/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0'
         DPM_PERF_LEVEL=low
         PPD=power-saver
 
-        if [ "$1" -eq 1 ] ; then
+        if [ "$1" -eq 1 ]; then
           DPM_PERF_LEVEL=high
           PPD=performance
-        else
-          DPM_PERF_LEVEL=low
-          PPD=power-saver
         fi
 
-        echo "$DPM_PERF_LEVEL" > "$GPU_DEVICE"/power_dpm_force_performance_level
+        echo "$DPM_PERF_LEVEL" > "$GPU"/power_dpm_force_performance_level
         #${lib.getExe pkgs.power-profiles-daemon} set "$PPD"
       '';
-    in ''
-      SUBSYSTEM=="power_supply" RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"
-    '';
+    in ''SUBSYSTEM=="power_supply" RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"'';
 
     upower = {
       enable = true;
-      percentageLow = 10;
-      percentageCritical = 5;
-      percentageAction = 2;
+      percentageLow = 15;
+      percentageCritical = 10;
+      percentageAction = 5;
       criticalPowerAction = "Hibernate";
     };
   };
@@ -272,14 +269,14 @@ in {
     blacklistedKernelModules = [ "k10temp" ];
     # Allow 5GHz wifi
     extraModprobeConfig = ''options cfg80211 ieee80211_regdom="US"'';
-    extraModulePackages = (with config.boot.kernelPackages; [
+    extraModulePackages = with config.boot.kernelPackages; [
       cpupower
       framework-laptop-kmod
       zenpower
-    ]) ++ [
-      (fw-usbpd-charger.overrideAttrs (_: { patches = [ ./usbpd/usbpd_charger.patch ]; }))
     ];
     kernelModules = [
+      "cros_ec"
+      "cros_ec_lpcs"
       "framework_laptop"
       "nfs"
       "zenpower"
@@ -314,7 +311,7 @@ in {
         editor = false;
         memtest86.enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
       };
-      timeout = 1;
+      timeout = 3;
     };
 
     plymouth = let
