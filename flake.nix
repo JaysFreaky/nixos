@@ -186,7 +186,7 @@
 
       Ridge.modules = [
         inputs.chaotic.nixosModules.default
-        #inputs.jovian.nixosModules.jovian
+        inputs.jovian.nixosModules.jovian
       ];
 
       T1.modules = [ inputs.chaotic.nixosModules.default ];

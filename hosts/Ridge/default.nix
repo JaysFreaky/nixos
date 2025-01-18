@@ -1,4 +1,4 @@
-{ config, inputs, lib, pkgs, vars, ... }: {
+{ config, inputs, pkgs, vars, ... }: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -15,20 +15,24 @@
   };
 
   myOptions = {
-    desktops = {    # gnome, kde
-      #gnome.enable = true;
-    };
-
-    hardware = {    # amdgpu, audio, bluetooth
-      amdgpu.enable = true;
+    hardware = {
+      amdgpu = {
+        enable = true;
+        undervolt = {
+          enable = true;
+          gpu = "/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0"; # RX 6950 XT
+          clockMin = 2100; # Default: 500
+          clockMax = 2200; # Default: 2664
+          powerLimit = 300000000; # Default: 284W
+          voltOffset = -150; # Default: 1200mV; drops to 1050
+          vramClock = 1124; # Default: 1124
+        };
+      };
       bluetooth.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, syncthing
     #"1password".enable = true;
-    gaming.enable = true;
     openrgb.enable = true;
-    #plex.enable = true;
     #syncthing.enable = true;
   };
 
@@ -37,36 +41,48 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; [ ];
+    #systemPackages = with pkgs; [ ];
     # Set Firefox to use GPU for video codecs
-    variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+    variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:0a:00.0-render";
   };
 
+  jovian = {
+    decky-loader = {
+      enable = true;
+      user = "${vars.user}";
+    };
+
+    hardware = {
+      amd.gpu.enableBacklightControl = false;
+      has.amd.gpu = true;
+    };
+
+    steam = {
+      # Enable SteamOS UI
+      enable = true;
+      # Boot into SteamOS UI
+      autoStart = true;
+      # Which DE to switch to
+      desktopSession = "plasma";
+      user = "${vars.user}";
+    };
+  };
+
+  /*
   # lspci -nn | grep -i vga
   programs.gamescope.args = [
-    #"--prefer-vk-device \"1002:73a5\""
+    "--prefer-vk-device \"1002:73a5\""
     #"--borderless"
     "--fullscreen"
   ];
+  */
 
   services = {
-    displayManager.autoLogin = {
-      enable = lib.mkForce true;
-      user = "${vars.user}";
-    };
+    desktopManager.plasma6.enable = true;
     scx = {
       enable = true;
       scheduler = "scx_rusty"; # or "scx_lavd"
     };
-    xserver = {
-      enable = true;
-      displayManager.gdm.enable = true;
-    };
-  };
-
-  systemd.services = {
-    "autovt@tty1".enable = false;
-    "getty@tty1".enable = false;
   };
 
   system.autoUpgrade = {
@@ -91,6 +107,7 @@
   home-manager.users.${vars.user} = {
     home.stateVersion = "24.11";
 
+    /*
     # lspci -D | grep -i vga
     programs.mangohud.settings = {
       gpu_voltage = true;
@@ -98,6 +115,7 @@
       pci_dev = "0:0a:00.0";
       table_columns = lib.mkForce 6;
     };
+    */
   };
 
 
@@ -105,20 +123,25 @@
   # Hardware
   ##########################################################
   hardware = {
-    # Control CPU / case fans
-    fancontrol = let 
-      cpuMon = "hwmon3";
-      cpuName = "zenpower";
-      cpuPath = "devices/pci0000:00/0000:00:18.3";
-      fanMon = "hwmon2";
-      fanName = "nct6798";
-      fanPath = "devices/platform/nct6775.656";
-      gpuMon = "hwmon1";
-      gpuName = "amdgpu";
-      gpuPath = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
-    in {
+    fancontrol = {
       enable = true;
-      config = ''
+      config = let 
+      # Hardware
+        cpuMon = "hwmon3";
+        cpuName = "zenpower";
+        cpuPath = "devices/pci0000:00/0000:00:18.3";
+        fanMon = "hwmon2";
+        fanName = "nct6798";
+        fanPath = "devices/platform/nct6775.656";
+        gpuMon = "hwmon1";
+        gpuName = "amdgpu";
+        gpuPath = "devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0";
+      # Fan speeds -- value = percent * 2.55
+        caseMin = "66"; # 25%
+        caseMax = "140"; # 55%
+        cpuMin = "64"; # 25%
+        cpuMax = "217"; # 85%
+      in ''
         INTERVAL=10
         DEVPATH=${gpuMon}=${gpuPath} ${fanMon}=${fanPath} ${cpuMon}=${cpuPath}
         DEVNAME=${gpuMon}=${gpuName} ${fanMon}=${fanName} ${cpuMon}=${cpuName}
@@ -126,13 +149,12 @@
         FCFANS=${fanMon}/pwm1=${fanMon}/fan1_input ${fanMon}/pwm2=${fanMon}/fan2_input
         MINTEMP=${fanMon}/pwm1=40 ${fanMon}/pwm2=40
         MAXTEMP=${fanMon}/pwm1=80 ${fanMon}/pwm2=80
-        # Always spin @ MINPWM until MINTEMP
-        MINSTART=${fanMon}/pwm1=0 ${fanMon}/pwm2=0
-        MINSTOP=${fanMon}/pwm1=64 ${fanMon}/pwm2=64
+        MINSTART=${fanMon}/pwm1=30 ${fanMon}/pwm2=30
+        MINSTOP=${fanMon}/pwm1=${caseMin} ${fanMon}/pwm2=${cpuMin}
         # Fans @ 25% until 40 degress
-        MINPWM=${fanMon}/pwm1=64 ${fanMon}/pwm2=64
+        MINPWM=${fanMon}/pwm1=${caseMin} ${fanMon}/pwm2=${cpuMin}
         # Fans ramp to set max @ 80 degrees - Case: 55% / CPU: 85%
-        MAXPWM=${fanMon}/pwm1=140 ${fanMon}/pwm2=217
+        MAXPWM=${fanMon}/pwm1=${caseMax} ${fanMon}/pwm2=${cpuMax}
       '';
     };
 
@@ -149,64 +171,6 @@
     };
 
     xone.enable = true;
-  };
-
-  # Restart GPU undervolt service upon resume
-  powerManagement.resumeCommands = ''
-    systemctl restart gpu-uv.service
-  '';
-
-  # Create a service to undervolt GPU
-  systemd.services.gpu-uv = let
-    gpuUV = pkgs.writeShellScriptBin "gpu-uv" ''
-      #!/usr/bin/env bash
-      # Find persistant GPU path: readlink -f /sys/class/drm/card#/device
-      GPU=/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0
-
-      # GPU min clock - default min is 500
-      echo "Setting GPU min clock"
-      echo s 0 2100 | tee "$GPU"/pp_od_clk_voltage
-      # GPU max clock - default max is 2664
-      echo "Setting GPU max clock"
-      echo s 1 2200 | tee "$GPU"/pp_od_clk_voltage
-      # Voltage offset - default mV is 1200
-      echo "Setting voltage offset"
-      echo vo -150 | tee "$GPU"/pp_od_clk_voltage
-      # VRAM max clock - default max is 1124 - not adjusting
-      #echo "Setting VRAM clock"
-      #echo m 1 1124 | tee "$GPU"/pp_od_clk_voltage
-      # Apply values
-      echo "Applying undervolt settings"
-      echo c | tee "$GPU"/pp_od_clk_voltage
-
-      # Power usage limit - default wattage is 284 (first 3 numbers are watts)
-      echo "Setting power usage limit"
-      echo 300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
-
-      # Performance level: auto, low, high, manual
-      echo "Setting performance level"
-      echo manual | tee "$GPU"/power_dpm_force_performance_level
-      # Power level mode: cat pp_power_profile_mode
-      echo "Setting power level mode to 3D Fullscreen"
-      echo 1 | tee "$GPU"/pp_power_profile_mode
-      # GPU power states: cat pp_dpm_sclk
-      echo "Enabling all GPU power states"
-      echo 2 | tee "$GPU"/pp_dpm_sclk
-      # VRAM power states: cat pp_dpm_mclk
-      echo "Enabling all VRAM power states"
-      echo 3 | tee "$GPU"/pp_dpm_mclk
-    '';
-  in {
-    after = [ "multi-user.target" "rc-local.service" "systemd-user-sessions.service" ];
-    description = "Set AMDGPU Undervolt";
-    wantedBy = [ "multi-user.target" ];
-    wants = [ "modprobe@amdgpu.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStart = ''${lib.getExe gpuUV}'';
-      ExecReload = ''${lib.getExe gpuUV}'';
-    };
   };
 
 
@@ -227,8 +191,6 @@
     kernelPackages = if (config.services.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_pstate=active"
-      # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
-      "amdgpu.ppfeaturemask=0xffffffff"
       # Hides text prior to plymouth boot logo
       "quiet"
     ];
@@ -254,8 +216,7 @@
 
     plymouth = {
       enable = true;
-      # Theme previews: https://github.com/adi1090x/plymouth-themes
-      theme = "rog_2";
+      theme = "rog_2"; # Previews: https://github.com/adi1090x/plymouth-themes
       # Overriding installs the one theme instead of all 80, reducing the required size
       themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
     };
