@@ -62,8 +62,8 @@ in {
         sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
           themeConfig = {
           # Screen
-            ScreenWidth = "${host.width}";
-            ScreenHeight = "${host.height}";
+            ScreenWidth = "${builtins.toString host.width}";
+            ScreenHeight = "${builtins.toString host.height}";
           # Background
             Background = "${wallpaper.sddm}";
           # Form

@@ -8,10 +8,10 @@
   # Custom Options
   ##########################################################
   myHosts = {
-    width = "2560";
-    height = "1440";
-    refresh = "144";
-    scale = "1.25";
+    width = 2560;
+    height = 1440;
+    refresh = 144;
+    scale = 1.25;
   };
 
   myOptions = {

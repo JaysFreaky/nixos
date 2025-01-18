@@ -12,10 +12,10 @@ in {
   # Custom Options
   ##########################################################
   myHosts = {
-    width = "2256";
-    height = "1504";
-    refresh = "60";
-    scale = "1.5";
+    width = 2256;
+    height = 1504;
+    refresh = 60;
+    scale = 1.5;
   };
 
   myOptions = {

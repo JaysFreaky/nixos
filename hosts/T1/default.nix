@@ -12,10 +12,10 @@ in {
   # Custom Options
   ##########################################################
   myHosts = {
-    width = "2560";
-    height = "1440";
-    refresh = "144";
-    scale = "1.25";
+    width = 2560;
+    height = 1440;
+    refresh = 144;
+    scale = 1.25;
   };
 
   myOptions = {
@@ -125,7 +125,7 @@ in {
 
     wayland.windowManager.hyprland.settings = lib.mkIf (cfg.desktops.hyprland.enable) {
       # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
-      #monitor = with host; lib.mkForce [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
+      #monitor = with host; lib.mkForce [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
     };
   };
 

@@ -1,25 +1,24 @@
 { lib, ... }: {
   options.myHosts = with lib; {
     width = mkOption {
-      default = null;
       description = "Width of monitor resolution";
-      type = types.nullOr types.str;
+      example = 1920;
+      type = types.nullOr types.int;
     };
     height = mkOption {
-      default = null;
       description = "Height of monitor resolution";
-      type = types.nullOr types.str;
+      example = 1080;
+      type = types.nullOr types.int;
     };
     refresh = mkOption {
-      default = null;
       description = "Refresh rate of monitor resolution";
-      type = types.nullOr types.str;
+      example = 60;
+      type = types.nullOr types.int;
     };
     scale = mkOption {
-      default = null;
       description = "Scale of monitor resolution";
-      type = types.nullOr types.str;
+      example = 1.25;
+      type = types.nullOr types.float;
     };
   };
-
 }

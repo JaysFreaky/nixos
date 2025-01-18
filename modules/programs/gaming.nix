@@ -43,7 +43,7 @@ in {
 
       variables = {
         "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
-        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${host.scale}";
+        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${builtins.toString host.scale}";
       };
     };
 
@@ -130,13 +130,13 @@ in {
       gamescope = {
         enable = true;
         args = [
-          "-W ${host.width}"
-          "-H ${host.height}"
-          "-r ${host.refresh}"                 # Focused refresh rate
-          "-o 30"                              # Unfocused refresh rate
-          "--adaptive-sync"                    # VRR (if available)
-          "--framerate-limit ${host.refresh}"  # Sync framerate to refresh rate
-          "--rt"                               # Real-time scheduling
+          "-W ${builtins.toString host.width}"
+          "-H ${builtins.toString host.height}"
+          "-r ${builtins.toString host.refresh}"                  # Focused refresh rate
+          "-o 30"                                                 # Unfocused refresh rate
+          "--adaptive-sync"                                       # VRR (if available)
+          "--framerate-limit ${builtins.toString host.refresh}"   # Sync framerate to refresh rate
+          "--rt"                                                  # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
           # Current workaround is using 'gs-renice' to replace gamescope in launch options mentioned above

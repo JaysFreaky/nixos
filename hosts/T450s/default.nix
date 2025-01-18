@@ -11,10 +11,10 @@ in {
   # Custom Options
   ##########################################################
   myHosts = {
-    width = "1920";
-    height = "1080";
-    refresh = "60";
-    scale = "1.25";
+    width = 1920;
+    height = 1080;
+    refresh = 60;
+    scale = 1.25;
   };
 
   myOptions = {
@@ -131,7 +131,7 @@ in {
     wayland.windowManager.hyprland = lib.mkIf (cfg.desktops.hyprland.enable) {
       settings = {
         # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
-        monitor = with host; [ "eDP-1, ${width}x${height}@${refresh}, 0x0, ${scale}" ];
+        monitor = with host; [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
         bind = [
           ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
           #", XF86, exec, amixer sset Capture toggle"  # Mic disabled in firmware
