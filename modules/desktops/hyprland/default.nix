@@ -1,6 +1,12 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops.hyprland;
-  cfg-base = config.myOptions;
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.hyprland;
   host = config.myHosts;
 
   cursor = {
@@ -234,7 +240,7 @@ in {
             audio = [ "" ];
             calendar = [ "" ];
             image = [ "feh.desktop" ];
-            pdf = [ "${cfg-base.browser}.desktop" ];
+            pdf = [ "${cfgOpts.browser}.desktop" ];
             text = [ "neovide.desktop" ];
             video = [ "" ];
           };
@@ -329,6 +335,5 @@ in {
       ];
       wlr.enable = true;
     };
-
   };
 }

@@ -1,5 +1,12 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.openrgb;
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.openrgb;
 in {
   options.myOptions.openrgb.enable = lib.mkEnableOption "OpenRGB";
 
@@ -38,6 +45,5 @@ in {
     };
 
     users.users.${vars.user}.extraGroups = [ "i2c" ];
-
   };
 }

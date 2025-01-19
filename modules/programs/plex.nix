@@ -1,12 +1,16 @@
-{ config, lib, pkgs, ... }: let
-  cfg = config.myOptions.plex;
-  cfg-desktops = config.myOptions.desktops;
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = cfgOpts.plex;
 in {
   options.myOptions.plex = {
     enable = lib.mkEnableOption "Plex";
     shortcut = with lib; mkOption {
       default = "plex-desktop.desktop";
-      description = "Whether to use the plex-desktop or plexmediaplayer shortcut";
+      description = "Which desktop shortcut to use";
       type = types.str;
     };
   };
@@ -19,12 +23,11 @@ in {
 
     xdg.portal = {
       extraPortals = [
-        (lib.mkIf (!cfg-desktops.kde.enable) pkgs.kdePackages.xdg-desktop-portal-kde)
-        (lib.mkIf (!cfg-desktops.gnome.enable)  pkgs.xdg-desktop-portal-gtk)
+        (lib.mkIf (!cfgOpts.desktops.kde.enable) pkgs.kdePackages.xdg-desktop-portal-kde)
+        (lib.mkIf (!cfgOpts.desktops.gnome.enable) pkgs.xdg-desktop-portal-gtk)
       ];
       wlr.enable = true;
       xdgOpenUsePortal = true;
     };
-
   };
 }

@@ -1,6 +1,13 @@
-{ config, lib, pkgs, stable, vars, ... }: let
-  cfg = config.myOptions.desktops.gnome;
-  cfg-base = config.myOptions;
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  stable,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.gnome;
   stylix = config.stylix.enable;
 
   alacritty = {
@@ -302,12 +309,12 @@ in {
           favorite-apps = [
             "${vars.terminal}.desktop"
             "org.gnome.Nautilus.desktop"
-            "${cfg-base.browser}.desktop"
+            "${cfgOpts.browser}.desktop"
             "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
-            "${cfg-base.plex.shortcut}"
+            "${cfgOpts.plex.shortcut}"
           ];
         };
         "org/gnome/shell/extensions/appindicator".icon-size = 16;

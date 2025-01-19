@@ -1,6 +1,10 @@
-{ config, lib, pkgs, ... }: let
-  cfg = config.myOptions.hardware.bluetooth;
-  cfg-gaming = config.myOptions.gaming;
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = cfgOpts.hardware.bluetooth;
 in {
   options.myOptions.hardware.bluetooth.enable = lib.mkEnableOption "Bluetooth";
 
@@ -52,7 +56,7 @@ in {
     })
 
     # PS4 controller pairability
-    (lib.mkIf (cfg.enable && cfg-gaming.enable) {
+    (lib.mkIf (cfg.enable && cfgOpts.gaming.enable) {
       hardware.bluetooth.input.General = {
         ClassicBondedOnly = false;
         #IdleTimeout = 20;           # Minutes
@@ -60,6 +64,5 @@ in {
         #UserspaceHID = true;
       };
     })
-
   ];
 }

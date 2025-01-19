@@ -1,5 +1,10 @@
-{ config, inputs, lib, ... }: let
-  cfg = config.myOptions.flatpak;
+{
+  cfgOpts,
+  inputs,
+  lib,
+  ...
+}: let
+  cfg = cfgOpts.flatpak;
 in {
   imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
 
@@ -24,6 +29,5 @@ in {
         onCalendar = "weekly";
       };
     };
-
   };
 }

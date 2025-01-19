@@ -1,5 +1,12 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.wezterm;
+{
+  cfgOpts,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.wezterm;
 in {
   options.myOptions.wezterm.enable = lib.mkEnableOption "Wezterm";
 
@@ -47,6 +54,5 @@ in {
         '';
       };
     };
-
   };
 }

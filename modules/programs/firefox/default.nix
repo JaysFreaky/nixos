@@ -1,15 +1,20 @@
-{ config, lib, pkgs, vars, ... }: let
-  browser = config.myOptions.browser;
-
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   bpc = {
     commit = "2556d9294db54a5702bec84941930dc1b67506f4";
     sha256 = "sha256-/kCsronF4zXe0PFuR8EGu/GwOr28KQ9PCcMRPym95tU=";
     version = "3.9.9.0";
   };
+
+  browser = cfgOpts.browser;
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
-  myAddons = pkgs.callPackage ./addons.nix {
-    inherit (pkgs.nur.repos.rycee.firefox-addons) buildFirefoxXpiAddon;
-  };
+  myAddons = pkgs.callPackage ./addons.nix { inherit (firefox-addons) buildFirefoxXpiAddon; };
 in {
   options.myOptions.browser = with lib; mkOption {
     default = "floorp";
@@ -88,6 +93,5 @@ in {
         };
       };
     };
-
   };
 }

@@ -1,11 +1,12 @@
 {
+  cfgOpts,
   config,
   lib,
   pkgs,
   vars,
   ...
 }: let
-  cfg = config.myOptions.gaming;
+  cfg = cfgOpts.gaming;
   host = config.myHosts;
 in {
   options.myOptions.gaming.enable = lib.mkEnableOption "Gaming";

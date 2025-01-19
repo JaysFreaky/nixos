@@ -1,7 +1,11 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.git;
-  cfg-pwd = config.myOptions."1password";
-
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.git;
   gitHubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC/+CvZ9Cnq3Y4my0UtpH19dSNBJeT1wCPK7BAJyAvMA";
 in {
   options.myOptions.git = {
@@ -43,19 +47,18 @@ in {
           commit.gpgsign = true;
           gpg = {
             format = "ssh";
-            ssh.program = if (cfg-pwd.enable)
+            ssh.program = if (cfgOpts."1password".enable)
               then "${getExe' pkgs._1password-gui "op-ssh-sign"}"
               else "${getExe' pkgs.openssh "ssh-agent"}";
           };
           user.signingkey = gitHubKey;
         };
 
-        ssh.extraConfig = mkIf (cfg-pwd.enable) ''
+        ssh.extraConfig = mkIf (cfgOpts."1password".enable) ''
           Host github.com
             IdentityAgent ~/.1password/agent.sock
         '';
       };
     })
-
   ];
 }

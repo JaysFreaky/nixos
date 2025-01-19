@@ -1,6 +1,13 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops.cosmic;
-  cfg-base = config.myOptions;
+{
+  cfgOpts,
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.cosmic;
 
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -70,6 +77,5 @@ in {
         defaultApplications = import ./mimeapps.nix { inherit mime; };
       };
     };
-
   };
 }

@@ -1,14 +1,21 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.stylix;
+{
+  cfgOpts,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.stylix;
 
   base16 = "${pkgs.base16-schemes}/share/themes";
   theme = {
-    dark = config.myOptions.stylix.theme.dark;
-    light = config.myOptions.stylix.theme.light;
+    dark = cfg.theme.dark;
+    light = cfg.theme.light;
   };
   wallpaper = {
-    dark = config.myOptions.stylix.wallpaper.dark;
-    light = config.myOptions.stylix.wallpaper.light;
+    dark = cfg.wallpaper.dark;
+    light = cfg.wallpaper.light;
   };
 in {
   imports = [ inputs.stylix.nixosModules.stylix ];
@@ -133,6 +140,5 @@ in {
         };
       };
     };
-
   };
 }

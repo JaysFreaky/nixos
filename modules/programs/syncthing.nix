@@ -1,5 +1,11 @@
-{ config, lib, vars, ... }: let
-  cfg = config.myOptions.syncthing;
+{
+  cfgOpts,
+  config,
+  lib,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.syncthing;
 in {
   options.myOptions.syncthing.enable = lib.mkEnableOption "Syncthing";
 
@@ -44,5 +50,4 @@ in {
 
     users.users.${vars.user}.extraGroups = [ "syncthing" ];
   };
-
 }

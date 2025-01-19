@@ -1,6 +1,13 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops.kde;
-  cfg-base = config.myOptions;
+{
+  cfgOpts,
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.kde;
   host = config.myHosts;
 
   alacritty = {
@@ -389,12 +396,12 @@ in {
                   iconTasks.launchers = [
                     "applications:${vars.terminal}.desktop"
                     "applications:org.kde.dolphin.desktop"
-                    "applications:${cfg-base.browser}.desktop"
+                    "applications:${cfgOpts.browser}.desktop"
                     "applications:spotify.desktop"
                     #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
-                    "applications:${cfg-base.plex.shortcut}"
+                    "applications:${cfgOpts.plex.shortcut}"
                   ];
                 }
               ];
@@ -443,7 +450,7 @@ in {
               "activate task manager entry 10" = [ ];
               "manage activities" = [ ];
             };
-            "services/${cfg-base.browser}.desktop"."_launch" = "Meta+W";
+            "services/${cfgOpts.browser}.desktop"."_launch" = "Meta+W";
             "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
             "services/darkman.desktop"."_launch" = "Meta+Shift+T";
             "services/org.kde.krunner.desktop"."_launch" = [ "" "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
@@ -463,8 +470,8 @@ in {
       in {
         enable = true;
         darkModeScripts = {
-          alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
-          kitty = lib.mkIf (cfg-base.kitty.enable) ''
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
@@ -475,8 +482,8 @@ in {
         };
 
         lightModeScripts = {
-          alacritty = lib.mkIf (cfg-base.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
-          kitty = lib.mkIf (cfg-base.kitty.enable) ''
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
@@ -508,6 +515,5 @@ in {
         defaultApplications = import ./mimeapps.nix { inherit mime; };
       };
     };
-
   };
 }

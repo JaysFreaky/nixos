@@ -214,7 +214,12 @@
     };
 
     stdModules = hostName: [
-      { networking.hostName = hostName; }
+      ({ config, ... }: {
+        _module.args = {
+          cfgOpts = config.myOptions;
+        };
+        networking.hostName = hostName;
+      })
       ./hosts/${hostName}
       ./hosts/common.nix
       inputs.disko.nixosModules.disko

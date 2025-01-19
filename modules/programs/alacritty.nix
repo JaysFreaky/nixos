@@ -1,11 +1,19 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.alacritty;
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.alacritty;
   stylix = config.stylix.enable;
 in {
   options.myOptions.alacritty.enable = lib.mkEnableOption "Alacritty";
 
   config = lib.mkIf (cfg.enable) {
     environment.systemPackages = [ pkgs.alacritty-theme ];
+
     home-manager.users.${vars.user} = {
       programs.alacritty = with lib; {
         enable = true;
@@ -60,6 +68,5 @@ in {
         white =   "{color15}"
       '';
     };
-
   };
 }

@@ -1,6 +1,10 @@
-{ config, lib, pkgs, ... }: let
-  cfg = config.myOptions.hardware.amdgpu;
-  cfg-uv = config.myOptions.hardware.amdgpu.undervolt;
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = cfgOpts.hardware.amdgpu;
 in {
   options.myOptions.hardware.amdgpu = with lib; {
     enable = mkEnableOption "AMDGPU";
@@ -77,7 +81,7 @@ in {
       };
     })
 
-    (lib.mkIf (cfg.enable && cfg-uv.enable) {
+    (lib.mkIf (cfg.enable && cfg.undervolt.enable) {
       # Undervolt GPU - https://wiki.archlinux.org/title/AMDGPU#Boot_parameter
       boot.kernelParams = [ "amdgpu.ppfeaturemask=0xffffffff" ];
 
@@ -88,20 +92,20 @@ in {
       systemd.services.amdgpu-undervolt = let
         gpuScript = pkgs.writeShellScriptBin "amdgpu-uv" ''
           #!/usr/bin/env bash
-          GPU=${cfg-uv.gpu}
+          GPU=${cfg.undervolt.gpu}
 
           echo "Setting GPU min clock"
-          echo s 0 ${builtins.toString cfg-uv.clockMin} | tee "$GPU"/pp_od_clk_voltage
+          echo s 0 ${builtins.toString cfg.undervolt.clockMin} | tee "$GPU"/pp_od_clk_voltage
           echo "Setting GPU max clock"
-          echo s 1 ${builtins.toString cfg-uv.clockMax} | tee "$GPU"/pp_od_clk_voltage
+          echo s 1 ${builtins.toString cfg.undervolt.clockMax} | tee "$GPU"/pp_od_clk_voltage
           echo "Setting voltage offset"
-          echo vo ${builtins.toString cfg-uv.voltOffset}-150 | tee "$GPU"/pp_od_clk_voltage
+          echo vo ${builtins.toString cfg.undervolt.voltOffset}-150 | tee "$GPU"/pp_od_clk_voltage
           #echo "Setting VRAM max clock"
-          #echo m 1 ${builtins.toString cfg-uv.vramClock}1124 | tee "$GPU"/pp_od_clk_voltage
+          #echo m 1 ${builtins.toString cfg.undervolt.vramClock}1124 | tee "$GPU"/pp_od_clk_voltage
           echo "Applying undervolt settings"
           echo c | tee "$GPU"/pp_od_clk_voltage
           echo "Setting power usage limit"
-          echo ${builtins.toString cfg-uv.powerLimit}300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
+          echo ${builtins.toString cfg.undervolt.powerLimit}300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
 
           # Performance level: auto, low, high, manual
           echo "Setting performance level"

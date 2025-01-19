@@ -1,7 +1,14 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.spicetify;
+{
+  cfgOpts,
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.spicetify;
   stylix = config.stylix.enable;
-
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system};
 in {
   imports = [ inputs.spicetify-nix.nixosModules.spicetify ];
@@ -30,7 +37,8 @@ in {
       };
     };
 
-    /*programs.spicetify = {
+    /*
+    programs.spicetify = {
       enable = true;
       theme = spicePkgs.themes.text;
       colorScheme = "CatppuccinMacchiato";
@@ -40,7 +48,7 @@ in {
         savePlaylists
         wikify
       ];
-    };*/
-
+    };
+    */
   };
 }

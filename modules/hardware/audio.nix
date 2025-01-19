@@ -1,5 +1,10 @@
-{ config, lib, pkgs, ... }: let
-  cfg = config.myOptions.hardware.audio;
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = cfgOpts.hardware.audio;
 in {
   options.myOptions.hardware.audio.enable = lib.mkEnableOption "Audio";
 
@@ -26,6 +31,5 @@ in {
       # Required for pipewire
       pulseaudio.enable = false;
     };
-
   };
 }

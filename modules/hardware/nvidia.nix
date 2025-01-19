@@ -1,8 +1,12 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.hardware.nvidia;
-
-  browser = config.myOptions.browser;
-  desktops = config.myOptions.desktops;
+{
+  cfgOpts,
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.hardware.nvidia;
 in {
   options.myOptions.hardware.nvidia.enable = lib.mkEnableOption "Nvidia GPU";
 
@@ -14,7 +18,10 @@ in {
       ];
 
       environment = {
-        systemPackages = with pkgs; [ nvtopPackages.nvidia ];
+        systemPackages = with pkgs; [
+          egl-wayland
+          nvtopPackages.nvidia
+        ];
         variables = {
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
           # GBM could possibily cause Firefox to crash - comment out if so
@@ -49,7 +56,7 @@ in {
         };
       };
 
-      home-manager.users.${vars.user}.programs.${browser}.profiles.${vars.user}.settings = {
+      home-manager.users.${vars.user}.programs.${cfgOpts.browser}.profiles.${vars.user}.settings = {
         "gfx.x11-egl.force-enabled" = true;
         "media.rdd-ffmpeg.enabled" = true;
         "widget.dmabuf.force-enabled" = true;
@@ -59,20 +66,16 @@ in {
       services.xserver.videoDrivers = [ "nvidia" ];
     })
 
-    (lib.mkIf (cfg.enable && desktops.hyprland.enable) {
-      environment = {
-        sessionVariables = {
-          __GL_GSYNC_ALLOWED = 1;
-          __GL_VRR_ALLOWED = 1;
-        };
-        systemPackages = with pkgs; [ egl-wayland ];
+    (lib.mkIf (cfg.enable && cfgOpts.desktops.hyprland.enable) {
+      environment.sessionVariables = {
+        __GL_GSYNC_ALLOWED = 1;
+        __GL_VRR_ALLOWED = 1;
       };
     })
 
-    (lib.mkIf (cfg.enable && desktops.kde.enable) {
+    (lib.mkIf (cfg.enable && cfgOpts.desktops.kde.enable) {
       # Disable GSP Mode - Smoother Plasma Wayland experience
       boot.kernelParams = [ "nvidia.NVreg_EnableGpuFirmware=0" ];
     })
-
   ];
 }

@@ -1,5 +1,12 @@
-{ config, inputs, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions;
+{
+  cfgOpts,
+  config,
+  inputs,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   host = config.myHosts;
 in {
   imports = [
@@ -48,14 +55,14 @@ in {
   # Home Manager
   ##########################################################
   home-manager.users.${vars.user} = let
-    hyprApps = cfg.desktops.hyprland.hyprApps;
+    hyprApps = cfgOpts.desktops.hyprland.hyprApps;
   in {
     imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
 
     home.stateVersion = "24.11";
 
     programs = {
-      plasma = lib.mkIf (cfg.desktops.kde.enable) {
+      plasma = lib.mkIf (cfgOpts.desktops.kde.enable) {
         configFile."kcminputrc"."Libinput/1739/0/Synaptics TM3053-004" = {
           "ClickMethod" = 2;
           "NaturalScroll" = true;
@@ -65,7 +72,7 @@ in {
         };
       };
 
-      waybar.settings = lib.mkIf (cfg.desktops.hyprland.enable) {
+      waybar.settings = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
         mainBar = {
           # CPU Temperature
           "temperature#cpu" = {
@@ -128,7 +135,7 @@ in {
       };
     };
 
-    wayland.windowManager.hyprland = lib.mkIf (cfg.desktops.hyprland.enable) {
+    wayland.windowManager.hyprland = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
       settings = {
         # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
         monitor = with host; [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
@@ -208,5 +215,4 @@ in {
   ##########################################################
   # Network
   ##########################################################
-
 }

@@ -1,5 +1,11 @@
-{ config, lib, vars, ... }: let
-  cfg = config.myOptions.desktops.hyprland;
+{
+  cfgOpts,
+  config,
+  lib,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.hyprland;
 in {
   config = lib.mkIf (cfg.enable) {
     home-manager.users.${vars.user} = { lib, ... }: let
@@ -367,6 +373,5 @@ in {
         '';
       };
     };
-
   };
 }

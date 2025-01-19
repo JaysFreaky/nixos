@@ -1,5 +1,11 @@
-{ config, lib, pkgs, vars, ... }: let
-  cfg = config.myOptions.desktops.hyprland;
+{
+  cfgOpts,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
+  cfg = cfgOpts.desktops.hyprland;
 
   wallpaper = {
     dir = "${vars.configPath}/assets/wallpapers";
@@ -310,6 +316,5 @@ in {
         #extraConfig = '''';
       };
     };
-
   };
 }
