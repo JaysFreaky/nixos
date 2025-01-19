@@ -1,4 +1,9 @@
-{ config, lib, pkgs, vars, ... }: {
+{
+  config,
+  pkgs,
+  vars,
+  ...
+}: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -8,17 +13,14 @@
   # Custom Options
   ##########################################################
   myOptions = {
-    desktops = {    # gnome, kde
-      gnome.enable = true;
-    };
-
-    hardware = {    # amdgpu, audio, bluetooth
+    hardware = {
       #amdgpu.enable = true;
-      #bluetooth.enable = true;
+      bluetooth.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, plex, syncthing
-    #gaming.enable = true;
+    "1password".enable = true;
+    plex.enable = true;
+    syncthing.enable = true;
   };
 
 
@@ -31,19 +33,28 @@
       amdgpu_top              # GPU stats
       nvtopPackages.amd       # GPU stats
     ];
-
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   };
 
   jovian = {
-    decky-loader.enable = true;
-    devices.steamdeck.enable = true;
+    decky-loader = {
+      enable = true;
+      user = "${vars.user}";
+    };
+
+    devices.steamdeck = {
+      enable = true;
+      autoUpdate = true;
+      #enableGyroDsuService = true;
+    };
+
+    hardware.has.amd.gpu = true;
 
     steam = {
-      # Steam Deck UI
+      # Enable SteamOS UI
       enable = true;
-      # Start in Steam UI
+      # Boot into SteamOS UI
       autoStart = true;
       # Switch to desktop - Use 'gamescope-wayland' for no desktop
       desktopSession = "gnome";
@@ -51,7 +62,7 @@
     };
   };
 
-  services.xserver.displayManager.gdm.enable = lib.mkForce false;
+  services.xserver.desktopManager.gnome.enable = true;
   system.stateVersion = "24.11";
 
 
@@ -94,8 +105,8 @@
   hardware.graphics = {
     extraPackages = with pkgs; [
       #amdvlk
-      #jovian-chaotic.mesa-radeonsi-jupiter
-      #jovian-chaotic.mesa-radv-jupiter
+      jovian-chaotic.mesa-radeonsi-jupiter
+      jovian-chaotic.mesa-radv-jupiter
       #rocmPackages.clr
       #rocmPackages.clr.icd
     ];
@@ -109,13 +120,8 @@
   # Boot
   ##########################################################
   boot = {
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [ ];
-      systemd.enable = true;
-    };
+    initrd.systemd.enable = true;
 
-    kernelModules = [ ];
     kernelPackages = if (config.jovian.devices.steamdeck.enable) then pkgs.linuxPackages_jovian else pkgs.linuxPackages_latest;
     kernelParams = [
       "quiet"
@@ -155,5 +161,4 @@
   ##########################################################
   # Network
   ##########################################################
-
 }
