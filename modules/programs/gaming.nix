@@ -1,4 +1,10 @@
-{ config, lib, pkgs, vars, ... }: let
+{
+  config,
+  lib,
+  pkgs,
+  vars,
+  ...
+}: let
   cfg = config.myOptions.gaming;
   host = config.myHosts;
 in {
@@ -135,7 +141,9 @@ in {
           "-r ${builtins.toString host.refresh}"                  # Focused refresh rate
           "-o 30"                                                 # Unfocused refresh rate
           "--adaptive-sync"                                       # VRR (if available)
+          "--borderless"
           "--framerate-limit ${builtins.toString host.refresh}"   # Sync framerate to refresh rate
+          #"--fullscreen"
           "--rt"                                                  # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
@@ -182,6 +190,5 @@ in {
     }];
 
     users.users.${vars.user}.extraGroups = [ "gamemode" ];
-
   };
 }

@@ -1,4 +1,10 @@
-{ config, inputs, pkgs, vars, ... }: {
+{
+  config,
+  inputs,
+  pkgs,
+  vars,
+  ...
+}: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -62,20 +68,14 @@
       enable = true;
       # Boot into SteamOS UI
       autoStart = true;
-      # Which DE to switch to
+      # Switch to desktop - Use 'gamescope-wayland' for no desktop
       desktopSession = "plasma";
       user = "${vars.user}";
     };
   };
 
-  /*
   # lspci -nn | grep -i vga
-  programs.gamescope.args = [
-    "--prefer-vk-device \"1002:73a5\""
-    #"--borderless"
-    "--fullscreen"
-  ];
-  */
+  #programs.gamescope.args = [ "--prefer-vk-device \"1002:73a5\"" ];
 
   services = {
     desktopManager.plasma6.enable = true;
@@ -231,5 +231,4 @@
   ##########################################################
   # Network
   ##########################################################
-
 }

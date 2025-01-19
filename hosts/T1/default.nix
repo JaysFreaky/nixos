@@ -26,8 +26,8 @@ in {
   };
 
   myOptions = {
-    desktops = {    # gnome, hyprland, kde
-      #hyprland.enable = true;
+    desktops = {
+      hyprland.enable = false;
       kde = {
         enable = true;
         gpuWidget = "gpu/gpu0/temperature";
@@ -35,7 +35,8 @@ in {
       };
     };
 
-    hardware = {    # amdgpu, bluetooth, nvidia
+    hardware = {
+      bluetooth.enable = false;
       nvidia.enable = true;
     };
 
@@ -80,8 +81,6 @@ in {
       # lspci -nn | grep -i vga
       args = [
         "--prefer-vk-device \"10de:2684\""
-        #"--borderless"
-        "--fullscreen"
         "--hdr-enabled"
       ];
       env = {
@@ -249,5 +248,4 @@ in {
   ##########################################################
   # Network
   ##########################################################
-
 }

@@ -88,11 +88,7 @@ in {
   };
 
   # lspci -nn | grep -i vga
-  programs.gamescope.args = [
-    "--prefer-vk-device \"1002:15bf\""
-    "--fullscreen"
-    #"--borderless"
-  ];
+  programs.gamescope.args = [ "--prefer-vk-device \"1002:15bf\"" ];
 
   system.stateVersion = "24.11";
 
@@ -341,5 +337,4 @@ in {
       powersave = false;
     };
   };
-
 }
