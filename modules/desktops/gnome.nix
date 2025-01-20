@@ -416,7 +416,11 @@ in {
         };
         "org/gnome/shell/weather".automatic-location = true;
         "org/gnome/system/location".enabled = true;
-        "org/gnome/TextEditor".restore-session = false;
+        "org/gnome/TextEditor" = {
+          restore-session = false;
+          show-line-numbers = true;
+          tab-width = 2;
+        };
         "org/gtk/gtk4/settings/file-chooser".show-hidden = true;
       };
 
