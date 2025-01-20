@@ -1,4 +1,5 @@
 {
+  cfgHosts,
   cfgOpts,
   config,
   lib,
@@ -7,7 +8,6 @@
   ...
 }: let
   cfg = cfgOpts.desktops.hyprland;
-  host = config.myHosts;
 
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -82,8 +82,8 @@ in {
           XDG_SESSION_TYPE = "wayland";
 
         # Scaling
-          GDK_SCALE = host.scale;
-          QT_AUTO_SCREEN_SCALE_FACTOR = host.scale;
+          GDK_SCALE = cfgHosts.scale;
+          QT_AUTO_SCREEN_SCALE_FACTOR = cfgHosts.scale;
         
         # Toolkit Backend
           GDK_BACKEND = "wayland,x11";

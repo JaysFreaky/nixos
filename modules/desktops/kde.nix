@@ -1,6 +1,6 @@
 {
+  cfgHosts,
   cfgOpts,
-  config,
   inputs,
   lib,
   pkgs,
@@ -8,7 +8,6 @@
   ...
 }: let
   cfg = cfgOpts.desktops.kde;
-  host = config.myHosts;
 
   alacritty = {
     dark = "catppuccin_mocha";
@@ -69,8 +68,8 @@ in {
         sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
           themeConfig = {
           # Screen
-            ScreenWidth = "${builtins.toString host.width}";
-            ScreenHeight = "${builtins.toString host.height}";
+            ScreenWidth = "${builtins.toString cfgHosts.width}";
+            ScreenHeight = "${builtins.toString cfgHosts.height}";
           # Background
             Background = "${wallpaper.sddm}";
           # Form
@@ -266,7 +265,7 @@ in {
                 "FocusPolicy" = "FocusFollowsMouse";
               };
               # Set host scaling
-              "Xwayland"."Scale" = host.scale;
+              "Xwayland"."Scale" = cfgHosts.scale;
             };
           };
 

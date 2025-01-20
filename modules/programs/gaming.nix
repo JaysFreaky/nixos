@@ -1,4 +1,5 @@
 {
+  cfgHosts,
   cfgOpts,
   config,
   lib,
@@ -7,7 +8,6 @@
   ...
 }: let
   cfg = cfgOpts.gaming;
-  host = config.myHosts;
 in {
   options.myOptions.gaming.enable = lib.mkEnableOption "Gaming";
 
@@ -50,7 +50,7 @@ in {
 
       variables = {
         "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
-        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${builtins.toString host.scale}";
+        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${builtins.toString cfgHosts.scale}";
       };
     };
 
@@ -72,7 +72,7 @@ in {
         enableSessionWide = false;
         settings = with lib; {
           ### Performance ###
-          fps_limit = host.refresh;
+          fps_limit = cfgHosts.refresh;
           fps_limit_method = "late";
           vsync = 0;
           gl_vsync = -1;
@@ -137,13 +137,13 @@ in {
       gamescope = {
         enable = true;
         args = [
-          "-W ${builtins.toString host.width}"
-          "-H ${builtins.toString host.height}"
-          "-r ${builtins.toString host.refresh}"                  # Focused refresh rate
+          "-W ${builtins.toString cfgHosts.width}"
+          "-H ${builtins.toString cfgHosts.height}"
+          "-r ${builtins.toString cfgHosts.refresh}"                  # Focused refresh rate
           "-o 30"                                                 # Unfocused refresh rate
           "--adaptive-sync"                                       # VRR (if available)
           "--borderless"
-          "--framerate-limit ${builtins.toString host.refresh}"   # Sync framerate to refresh rate
+          "--framerate-limit ${builtins.toString cfgHosts.refresh}"   # Sync framerate to refresh rate
           #"--fullscreen"
           "--rt"                                                  # Real-time scheduling
         ];

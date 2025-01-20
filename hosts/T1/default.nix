@@ -1,4 +1,5 @@
 {
+  #cfgHosts,
   cfgOpts,
   config,
   inputs,
@@ -7,7 +8,6 @@
   vars,
   ...
 }: let
-  host = config.myHosts;
   fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
 in {
   imports = [
@@ -131,7 +131,7 @@ in {
 
     wayland.windowManager.hyprland.settings = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
       # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
-      #monitor = with host; lib.mkForce [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
+      #monitor = with cfgHosts; lib.mkForce [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
     };
   };
 

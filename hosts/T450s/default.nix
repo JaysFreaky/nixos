@@ -1,14 +1,12 @@
 {
+  cfgHosts,
   cfgOpts,
-  config,
   inputs,
   lib,
   pkgs,
   vars,
   ...
-}: let
-  host = config.myHosts;
-in {
+}: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -138,7 +136,7 @@ in {
     wayland.windowManager.hyprland = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
       settings = {
         # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
-        monitor = with host; [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
+        monitor = with cfgHosts; [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
         bind = [
           ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
           #", XF86, exec, amixer sset Capture toggle"  # Mic disabled in firmware

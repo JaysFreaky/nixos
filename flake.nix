@@ -216,6 +216,7 @@
     stdModules = hostName: [
       ({ config, ... }: {
         _module.args = {
+          cfgHosts = config.myHosts;
           cfgOpts = config.myOptions;
         };
         networking.hostName = hostName;
