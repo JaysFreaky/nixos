@@ -16,17 +16,11 @@
     };
     fancontrol-gui = {
       url = "github:JaysFreaky/fancontrol-gui";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     framework-plymouth = {
       url = "github:JaysFreaky/framework-plymouth";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {

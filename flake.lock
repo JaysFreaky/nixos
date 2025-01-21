@@ -160,17 +160,14 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "systems": [
-          "systems"
         ]
       },
       "locked": {
-        "lastModified": 1725484698,
-        "narHash": "sha256-Qa8C5p8Qhy9V2DH61903BrKmcBN/2E4Q+9Ef4DhQsu4=",
+        "lastModified": 1737424327,
+        "narHash": "sha256-P/BsFbfAQmPmBvkTmxKT+RIkfGAv+Iqjrj3HFCwR6Lg=",
         "owner": "JaysFreaky",
         "repo": "fancontrol-gui",
-        "rev": "4feed82d97fe145083c22cf96e9f36afa8808216",
+        "rev": "c2bbb89e9ba9ba50a836905ed829b5ca9d47423b",
         "type": "github"
       },
       "original": {
@@ -268,17 +265,14 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "systems": [
-          "systems"
         ]
       },
       "locked": {
-        "lastModified": 1725046286,
-        "narHash": "sha256-zQqCtV//66MEQ2cByHcs1I4ph+IrIf/HrqLq3y0vVts=",
+        "lastModified": 1737424043,
+        "narHash": "sha256-CymQYwjW3dpxSarFN3UeTU/cInvmFuBzxPDFZ7fSgcU=",
         "owner": "JaysFreaky",
         "repo": "framework-plymouth",
-        "rev": "4f7ebe51624b80d4d8d74f48370434f8077b2f6f",
+        "rev": "85b0d686df75d684279a86cdcafc4c6893132629",
         "type": "github"
       },
       "original": {
