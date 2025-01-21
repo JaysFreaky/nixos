@@ -194,11 +194,7 @@ in {
   };
 
   services = {
-    fprintd = {
-      enable = true;
-      #tod.enable = true;
-      #tod.driver = pkgs.libfprint-2-tod1-goodix;
-    };
+    fprintd.enable = true;
 
     fwupd = {
       enable = true;
@@ -246,6 +242,7 @@ in {
 
   # Sleep for 30m then hibernate
   systemd.sleep.extraConfig = ''
+    AllowHibernation=yes
     HibernateDelaySec=30m
     HibernateMode=shutdown
     SuspendState=mem
@@ -261,31 +258,24 @@ in {
       systemd.enable = true;
     };
 
-    # Zenpower uses same PCI device as k10temp
-    blacklistedKernelModules = [ "k10temp" ];
+    blacklistedKernelModules = [
+      # For AMD s2_idle.py debugging, as it taints the kernel
+      #"framework_laptop"
+    ];
     # Allow 5GHz wifi
     extraModprobeConfig = ''options cfg80211 ieee80211_regdom="US"'';
-    extraModulePackages = with config.boot.kernelPackages; [
-      cpupower
-      framework-laptop-kmod
-      zenpower
-    ];
-    kernelModules = [
-      "cros_ec"
-      "cros_ec_lpcs"
-      "framework_laptop"
-      "nfs"
-      "zenpower"
-    ];
+    #extraModulePackages = with config.boot.kernelPackages; [ ];
+    kernelModules = [ "nfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-      # Mask gpe0B ACPI interrupts
-      "acpi_mask_gpe=0x0B"
-      # Fixes VP9/VAAPI video glitches
+    # Testing reduced battery usage during suspend
+      "acpi.ec_no_wakeup=1"
+      "rtc_cmos.use_acpi_alarm=1"
+    # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
-      # Disable IPv6 stack
+    # Disable IPv6 stack
       "ipv6.disable=1"
-      # Hides any text before showing plymouth boot logo
+    # Hides any text before showing plymouth boot logo
       "quiet"
     ];
 
@@ -307,7 +297,7 @@ in {
         editor = false;
         memtest86.enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
       };
-      timeout = 3;
+      timeout = 2;
     };
 
     plymouth = let
