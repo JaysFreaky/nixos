@@ -3,10 +3,14 @@
   inputs,
   lib,
   pkgs,
+  #stable
   vars,
   ...
 }: let
+  # pkgs or stable
   protonMB = pkgs.protonmail-bridge-gui;
+  # Whether to enable the fingerprint reader
+  useFP = true;
 in {
   imports = [
     ./filesystems.nix
@@ -24,10 +28,12 @@ in {
   };
 
   myOptions = {
-    # cosmic, gnome, hyprland, kde
-    desktops.gnome.enable = true;
+    desktops = {
+      cosmic.enable = false;
+      gnome.enable = true;
+    };
 
-    hardware = {    # amdgpu, bluetooth
+    hardware = {
       amdgpu.enable = true;
       bluetooth.enable = true;
     };
@@ -60,7 +66,6 @@ in {
       thunderbird             # Email client
 
     # Framework Hardware
-      fprintd                 # Fingerprint daemon
       framework-tool          # Swiss army knife for FWs
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       sbctl                   # Secure boot key manager
@@ -82,6 +87,8 @@ in {
     # Productivity
       libreoffice             # Office suite
       obsidian                # Markdown notes
+    ] ++ lib.optionals (useFP) [
+      fprintd                 # Fingerprint daemon
     ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
@@ -194,7 +201,7 @@ in {
   };
 
   services = {
-    fprintd.enable = true;
+    fprintd.enable = lib.mkIf (useFP) true;
 
     fwupd = {
       enable = true;
