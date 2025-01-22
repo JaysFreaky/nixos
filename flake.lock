@@ -89,8 +89,8 @@
       },
       "original": {
         "owner": "chaotic-cx",
-        "ref": "nyxpkgs-unstable",
         "repo": "nyx",
+        "rev": "e75f332c423ae95164ec188c0406c2d47b8a4a65",
         "type": "github"
       }
     },
@@ -153,26 +153,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "disko",
-        "type": "github"
-      }
-    },
-    "fancontrol-gui": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1737424327,
-        "narHash": "sha256-P/BsFbfAQmPmBvkTmxKT+RIkfGAv+Iqjrj3HFCwR6Lg=",
-        "owner": "JaysFreaky",
-        "repo": "fancontrol-gui",
-        "rev": "c2bbb89e9ba9ba50a836905ed829b5ca9d47423b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "JaysFreaky",
-        "repo": "fancontrol-gui",
         "type": "github"
       }
     },
@@ -786,7 +766,6 @@
       "inputs": {
         "chaotic": "chaotic",
         "disko": "disko",
-        "fancontrol-gui": "fancontrol-gui",
         "flake-compat": "flake-compat",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",

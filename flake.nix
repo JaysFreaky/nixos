@@ -14,10 +14,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    fancontrol-gui = {
-      url = "github:JaysFreaky/fancontrol-gui";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     framework-plymouth = {
       url = "github:JaysFreaky/framework-plymouth";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -7,9 +7,7 @@
   pkgs,
   vars,
   ...
-}: let
-  fancontrol-gui = inputs.fancontrol-gui.packages.${pkgs.system}.default;
-in {
+}: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -57,7 +55,6 @@ in {
       discord           # Discord
 
     # Hardware
-      fancontrol-gui    # Fancontrol GUI for lm-sensors
       polychromatic     # Razer lighting GUI
 
     # Misc
