@@ -54,19 +54,33 @@ in {
       hardware = {
         amdgpu = {
           amdvlk = {
-            # graphics.enable / pkgs.amdvlk
+            # hardware.graphics.enable / hardware.graphics.extraPackages: pkgs.amdvlk
             enable = true;
-            # pkgs.driversi686Linux.amdvlk
+            # hardware.graphics.extraPackages32: pkgs.driversi686Linux.amdvlk
             support32Bit.enable = true;
           };
-          # initrd.kernelModules: "amdgpu"
+
+          # boot.initrd.kernelModules: "amdgpu"
           initrd.enable = true;
-          # pkgs.rocmPackages.clr/.icd
+          # hardware.graphics.extraPackages: pkgs.rocmPackages.clr/.icd
           opencl.enable = true;
         };
 
-        # Not currently enabled via amdgpu.amdvlk
-        graphics.enable32Bit = true;
+        graphics = {
+          # Not currently set via hardware.amdgpu.amdvlk.support32Bit.enable, even though package is declared
+          enable32Bit = true;
+
+          # Hardware acceleration
+          extraPackages = with pkgs; [
+            libva1
+            libva-vdpau-driver
+            libvdpau-va-gl
+          ];
+          extraPackages32 = with pkgs.driversi686Linux; [
+            libva-vdpau-driver
+            libvdpau-va-gl
+          ];
+        };
       };
 
       programs.gamescope.args = [ "-F fsr" ];

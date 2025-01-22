@@ -177,18 +177,6 @@ in {
     firmware = [ pkgs.linux-firmware ];
     #framework.laptop13.audioEnhancement.enable = true;
 
-    graphics = {
-      extraPackages = with pkgs; [
-        libva1
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-      extraPackages32 = with pkgs.driversi686Linux; [
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-    };
-
     # Allow 5GHz wifi
     wirelessRegulatoryDatabase = true;
   };

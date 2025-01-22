@@ -158,18 +158,6 @@
       '';
     };
 
-    graphics = {
-      extraPackages = with pkgs; [
-        libva1
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-      extraPackages32 = with pkgs.driversi686Linux; [
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-    };
-
     xone.enable = true;
   };
 
