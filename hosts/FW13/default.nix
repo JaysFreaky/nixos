@@ -66,6 +66,9 @@ in {
       thunderbird             # Email client
 
     # Framework Hardware
+    ] ++ lib.optionals (useFP) [
+      fprintd                 # Fingerprint daemon
+    ] ++ [
       framework-tool          # Swiss army knife for FWs
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       sbctl                   # Secure boot key manager
@@ -87,8 +90,6 @@ in {
     # Productivity
       libreoffice             # Office suite
       obsidian                # Markdown notes
-    ] ++ lib.optionals (useFP) [
-      fprintd                 # Fingerprint daemon
     ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
@@ -189,7 +190,7 @@ in {
   };
 
   services = {
-    fprintd.enable = lib.mkIf (useFP) true;
+    fprintd.enable = if (useFP) then lib.mkForce true else lib.mkForce false;
 
     fwupd = {
       enable = true;
