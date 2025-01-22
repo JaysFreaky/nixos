@@ -23,14 +23,12 @@
   };
 
   myOptions = {
-    desktops = {    # cosmic, hyprland
+    desktops = {
       cosmic.enable = true;
-      #hyprland.enable = true;
+      hyprland.enable = false;
     };
 
-    hardware = {    # amdgpu, audio, bluetooth
-      #bluetooth.enable = true;
-    };
+    hardware.bluetooth.enable = false;
 
     # "1password", alacritty, flatpak, kitty, wezterm
     "1password".enable = true;
@@ -41,7 +39,7 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; [ ];
+    #systemPackages = with pkgs; [ ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:00:02.0-render";
   };
@@ -163,12 +161,19 @@
   # Hardware
   ##########################################################
   hardware.graphics = {
-    # Imported from nixos-hardware/lenovo/T450s through nixos-hardware/common/gpu/intel
-    extraPackages = [ ];
-    extraPackages32 = with pkgs.driversi686Linux; [
-      intel-media-driver
-      intel-vaapi-driver
+    # Packages (listed for context) are imported from nixos-hardware/common/gpu/intel through T450s module
+    /*
+    extraPackages = with pkgs; [
+      #intel-compute-runtime
+      #intel-media-driver
+      #intel-vaapi-driver
+      #vpl-gpu-rt
     ];
+    extraPackages32 = with pkgs.driversi686Linux; [
+      #intel-media-driver
+      #intel-vaapi-driver
+    ];
+    */
   };
 
 

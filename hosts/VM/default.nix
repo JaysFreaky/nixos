@@ -1,4 +1,9 @@
-{ lib, pkgs, vars, ... }: {
+{
+  lib,
+  pkgs,
+  vars,
+  ...
+}: {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -8,15 +13,14 @@
   # Custom Options
   ##########################################################
   myOptions = {
-    desktops = {  # gnome, kde
+    desktops = {
       gnome.enable = true;
+      kde.enable = false;
     };
 
-    hardware = {  # audio
-      audio.enable = false;
-    };
+    hardware.audio.enable = false;
 
-    # "1password", alacritty, flatpak, kitty, syncthing, wezterm
+    # "1password", alacritty, flatpak, kitty, wezterm
   };
 
 
@@ -24,11 +28,12 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = [ ];
+    #systemPackages = with pkgs; [ ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   };
 
+  # Bypass occasional login screen freeze
   services.displayManager.autoLogin = {
     enable = lib.mkForce true;
     user = "${vars.user}";
@@ -50,12 +55,15 @@
   ##########################################################
   hardware.graphics = {
     extraPackages = with pkgs; [
+      intel-compute-runtime
       intel-media-driver
       intel-vaapi-driver
-      vaapiIntel
+      libvpl
+      vpl-gpu-rt
     ];
     extraPackages32 = with pkgs.driversi686Linux; [
       intel-media-driver
+      intel-vaapi-driver
     ];
   };
 
@@ -64,14 +72,8 @@
   # Boot
   ##########################################################
   boot = {
-    initrd = {
-      availableKernelModules = [ ];
-      kernelModules = [ ];
-      systemd.enable = true;
-    };
+    initrd.systemd.enable = true;
 
-    kernelModules = [ ];
-    extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [ "quiet" ];
 
@@ -96,5 +98,4 @@
   ##########################################################
   # Network
   ##########################################################
-
 }
