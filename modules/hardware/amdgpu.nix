@@ -99,13 +99,13 @@ in {
           echo "Setting GPU max clock"
           echo s 1 ${builtins.toString cfg.undervolt.clockMax} | tee "$GPU"/pp_od_clk_voltage
           echo "Setting voltage offset"
-          echo vo ${builtins.toString cfg.undervolt.voltOffset}-150 | tee "$GPU"/pp_od_clk_voltage
+          echo vo ${builtins.toString cfg.undervolt.voltOffset} | tee "$GPU"/pp_od_clk_voltage
           #echo "Setting VRAM max clock"
-          #echo m 1 ${builtins.toString cfg.undervolt.vramClock}1124 | tee "$GPU"/pp_od_clk_voltage
+          #echo m 1 ${builtins.toString cfg.undervolt.vramClock} | tee "$GPU"/pp_od_clk_voltage
           echo "Applying undervolt settings"
           echo c | tee "$GPU"/pp_od_clk_voltage
           echo "Setting power usage limit"
-          echo ${builtins.toString cfg.undervolt.powerLimit}300000000 | tee "$GPU"/hwmon/hwmon1/power1_cap
+          echo ${builtins.toString cfg.undervolt.powerLimit} | tee "$GPU"/hwmon/hwmon1/power1_cap
 
           # Performance level: auto, low, high, manual
           echo "Setting performance level"
