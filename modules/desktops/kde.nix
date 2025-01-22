@@ -67,43 +67,44 @@ in {
       systemPackages = with pkgs; let
         sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
           themeConfig = {
-          # Screen
-            ScreenWidth = "${builtins.toString cfgHosts.width}";
-            ScreenHeight = "${builtins.toString cfgHosts.height}";
           # Background
-            Background = "${wallpaper.sddm}";
+            Background = wallpaper.sddm;
           # Form
-            FormPosition = "left";  # left, center, right
-            PartialBlur = false;    # Form is blurred
-            FullBlur = true;        # Everything is blurred
             Blur = 1.0;             # Default 2.0 | 0.0 - 3.0
             BlurMax = 64;           # Default 48 | 2 - 64
+            FormPosition = "left";  # left, center, right
+            FullBlur = true;        # Everything is blurred
+            #PartialBlur = false;   # Form is blurred
+          # Screen
+            ScreenHeight = "${builtins.toString cfgHosts.height}";
+            ScreenWidth = "${builtins.toString cfgHosts.width}";
           # UI
-            ForceHideVirtualKeyboardButton = true;
+            HideVirtualKeyboard = true;
           };
         };
       in [
+      # KDE
+        #kdePackages.qt5compat       # Qt5 compatibility
+        kdePackages.sddm-kcm        # SDDM settings module
+
+      # Multimedia
+        haruna                      # MPV frontend
+        kdePackages.dragon          # Media player
+
+      # Text
+        neovide                     # GUI launcher for neovim
+
       # Theming
         cursor.package              # For SDDM login screen
         icon.package                # Icon theme
         sddm-astronaut-pkg          # SDDM theme
 
-      # Misc
+      # Wallet
+        #kdePackages.kwallet         # KDE Wallet
+        #kdePackages.kwallet-pam     # Unlock on login
+        #kdePackages.kwalletmanager  # Wallet manager
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
-
-      # Multimedia
-        haruna                      # MPV frontend
-
-      # Text
-        neovide                     # GUI launcher for neovim
-      ] ++ (with kdePackages; [
-        dragon                      # Media player
-        #kwallet                     # KDE Wallet
-        #kwallet-pam                 # Unlock on login
-        #kwalletmanager              # Wallet manager
-        qt5compat                   # Qt5 compatibility
-        sddm-kcm                    # SDDM settings module
-      ]);
+      ];
       #plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
@@ -113,7 +114,7 @@ in {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        extraPackages = [ pkgs.kdePackages.qt5compat ];
+        extraPackages = [ pkgs.kdePackages.qtmultimedia ]; # Astronaut does not currently include this
         settings = {
           Theme = {
             CursorSize = cursor.size;

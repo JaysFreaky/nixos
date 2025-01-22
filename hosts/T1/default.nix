@@ -181,6 +181,10 @@
     };
   };
 
+  # hardware.fancontrol temp workaround
+  systemd.services.fancontrol.serviceConfig.ExecStart = let
+    configFile = pkgs.writeText "fancontrol.conf" config.hardware.fancontrol.config;
+  in lib.mkForce "${pkgs.lm_sensors}/bin/fancontrol ${configFile}";
 
   ##########################################################
   # Boot
@@ -212,7 +216,7 @@
         editor = false;
         memtest86.enable = true;
       };
-      timeout = 3;
+      timeout = 2;
     };
 
     plymouth = {

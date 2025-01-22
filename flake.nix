@@ -3,7 +3,9 @@
 
   inputs = {
     chaotic = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      #url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      # 6.12.10 pin until 6.13 testing
+      url = "github:chaotic-cx/nyx/625eb4eb8b5e09787636b69aa6d0eda714ec6ee5";
       inputs = {
         home-manager.follows = "home-manager";
         jovian.follows = "jovian";
@@ -47,7 +49,9 @@
         nixpkgs-stable.follows = "nixpkgs-stable";
       };
     };
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # 6.12.10 pin until 6.13 testing
+    nixpkgs.url = "github:nixos/nixpkgs/445cb7358e95fa163e66308786e2c5e9ff594d74";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
     nixvim = {
       url = "github:nix-community/nixvim";
@@ -157,6 +161,7 @@
 
 
   outputs = { self, nixpkgs, ... } @ inputs: let
+    # 'nixos-rebuild switch --flake .#your-hostname'
     hostSystems = {
       Dekki.modules = [
         inputs.chaotic.nixosModules.default
@@ -232,7 +237,6 @@
       terminal = "kitty";
     };
   in {
-    # 'nixos-rebuild switch --flake .#your-hostname'
     nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
   };
 
