@@ -54,12 +54,6 @@ in {
       example = "gpu/gpu0/temperature";
       type = types.nullOr types.str;
     };
-    gpuWidget2 = mkOption {
-      default = null;
-      description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
-      example = "gpu/gpu1/temperature";
-      type = types.nullOr types.str;
-    };
   };
 
   config = lib.mkIf (cfg.enable) {
@@ -76,8 +70,8 @@ in {
             FullBlur = true;        # Everything is blurred
             #PartialBlur = false;   # Form is blurred
           # Screen
-            ScreenHeight = "${builtins.toString cfgHosts.height}";
-            ScreenWidth = "${builtins.toString cfgHosts.width}";
+            ScreenHeight = cfgHosts.height;
+            ScreenWidth = cfgHosts.width;
           # UI
             HideVirtualKeyboard = true;
           };
@@ -114,7 +108,9 @@ in {
       desktopManager.plasma6.enable = true;
       displayManager.sddm = {
         enable = true;
-        extraPackages = [ pkgs.kdePackages.qtmultimedia ]; # Astronaut does not currently include this
+        extraPackages = with pkgs; [
+          kdePackages.qtmultimedia  # Astronaut does not currently include this
+        ];
         settings = {
           Theme = {
             CursorSize = cursor.size;
@@ -135,11 +131,12 @@ in {
     system.activationScripts.showProfileImage.text = ''
       mkdir -p /var/lib/AccountsService/{icons,users}
       cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
-
       echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\n" > /var/lib/AccountsService/users/${vars.user}
     '';
 
-    home-manager.users.${vars.user} = { config, osConfig, ... }: {
+    home-manager.users.${vars.user} = { config, osConfig, ... }: let
+      polo = config.programs.plasma.kwin.scripts.polonium.enable;
+    in {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
 
       home.file = {
@@ -197,7 +194,7 @@ in {
       programs = {
         plasma = {
           enable = true;
-          # If true, resets all KDE settings not defined in this module @ boot/login
+          # If true, resets all KDE settings not defined in this module @ login
           #overrideConfig = true;
 
           configFile = {
@@ -236,8 +233,8 @@ in {
               # Screen locking timeout & plugin / provider
               "Daemon"."Timeout" = 10;
               "Greeter"."WallpaperPlugin" = "org.kde.potd";
-              # Astronomy (NASA) is set by commenting out the provider
-                # Providers: bing, natgeo, noaa, wcpotd
+              # Providers: bing, natgeo, noaa, wcpotd
+                # Astronomy (NASA) is set by setting: "Provider" = "";
               #"Greeter/Wallpaper/org.kde.potd/General"."Provider" = "natgeo";
             };
             # Start an empty session upon login
@@ -258,7 +255,7 @@ in {
                 # Screen edge reactivation delay in ms
                 "ElectricBorderCooldown" = 225;
                 # Screen edge delay in ms
-                "ElectricBorderDelay" = 175;
+                "ElectricBorderDelay" = 150;
                 # Focus follows mouse instead of clicking
                 "FocusPolicy" = "FocusFollowsMouse";
               };
@@ -268,7 +265,7 @@ in {
           };
 
           kwin.scripts.polonium = {
-            enable = false;
+            enable = true;
             settings = {
               borderVisibility = "borderAll";
               layout = {
@@ -360,12 +357,6 @@ in {
                         name = "${cfg.gpuWidget}";
                         color = "0,200,0";
                       }
-                    ] ++ lib.optionals (cfg.gpuWidget2 != null) [
-                      {
-                        label = "GPU 2";
-                        name = "${cfg.gpuWidget2}";
-                        color = "0,125,255";
-                      }
                     ];
                   };
                 }
@@ -381,7 +372,7 @@ in {
                       "org.kde.plasma.bluetooth"
                     ];
                     shown = [
-                      "chrome_status_icon_1"              # 1Password
+                      "chrome_status_icon_1" # 1Password
                       "org.kde.plasma.volume"
                     ] ++ lib.optionals (osConfig.hardware.bluetooth.enable) [
                       "blueman"
@@ -420,8 +411,34 @@ in {
           ];
 
           shortcuts = {
+            "ksmserver" = {
+              "Lock Session" = if (polo) then "Ctrl+Alt+L" else "Meta+L";
+              "Log Out" = "Ctrl+Alt+Del"; # Show Logout Screen
+              #"Log Out Without Confirmation" = ""; # Log Out Without Confirmation
+            };
+
             "kwin" = {
               "Overview" = "Meta+Tab";
+              "PoloniumCycleEngine" = "Meta+|";
+              "PoloniumFocusAbove" = "Meta+K";
+              "PoloniumFocusBelow" = "Meta+J";
+              "PoloniumFocusLeft" = "Meta+H";
+              "PoloniumFocusRight" = if (polo) then "Meta+L" else "";
+              "PoloniumInsertAbove" = "Meta+Shift+K";
+              "PoloniumInsertBelow" = "Meta+Shift+J";
+              "PoloniumInsertLeft" = "Meta+Shift+H";
+              "PoloniumInsertRight" = "Meta+Shift+L";
+              "PoloniumOpenSettings" = "Meta+\\\\";
+              "PoloniumResizeAbove" = "Meta+Ctrl+K";
+              "PoloniumResizeBelow" = "Meta+Ctrl+J";
+              "PoloniumResizeLeft" = "Meta+Ctrl+H";
+              "PoloniumResizeRight" = "Meta+Ctrl+L";
+              "PoloniumRetileWindow" = "Meta+Shift+Space";
+              "PoloniumSwitchBTree" = "";
+              "PoloniumSwitchHalf" = "";
+              "PoloniumSwitchKwin" = "";
+              "PoloniumSwitchMonocle" = "";
+              "PoloniumSwitchThreeColumn" = "";
               "Switch to Desktop 1" = "Meta+1";
               "Switch to Desktop 2" = "Meta+2";
               "Switch to Desktop 3" = "Meta+3";
@@ -436,6 +453,10 @@ in {
               "Window Maximize" = "Meta+Up";
               "Window Minimize" = "Meta+Down";
               "Window Quick Tile Bottom" = "";
+              "Window Quick Tile Left" = "Meta+Left";
+              #"Window Quick Tile Left" = "";
+              "Window Quick Tile Right" = "Meta+Right";
+              #"Window Quick Tile Right" = "";
               "Window Quick Tile Top" = "";
               "Window to Desktop 1" = "Meta+!";
               "Window to Desktop 2" = "Meta+@";
@@ -448,6 +469,7 @@ in {
               "Window to Desktop 9" = "Meta+(";
               "Window to Desktop 10" = "Meta+)";
             };
+
             "plasmashell" = {
               "activate task manager entry 1" = [ ];
               "activate task manager entry 2" = [ ];
@@ -461,16 +483,13 @@ in {
               "activate task manager entry 10" = [ ];
               "manage activities" = [ ];
             };
+
             "services/${cfgOpts.browser}.desktop"."_launch" = "Meta+W";
             "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
             "services/darkman.desktop"."_launch" = "Meta+Shift+T";
             "services/org.kde.krunner.desktop"."_launch" = [ "" "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };
 
-          # Setting cursor/icon themes via configFile
-          #workspace.cursor.theme = cursor.name;
-          #workspace.cursor.size = cursor.size;
-          #workspace.iconTheme = icon.name;
           #workspace.wallpaper = wallpaper.light;
         };
       };
