@@ -169,18 +169,6 @@
       '';
     };
 
-    graphics = {
-      extraPackages = with pkgs; [
-        libva1
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-      extraPackages32 = with pkgs.driversi686Linux; [
-        libva-vdpau-driver
-        libvdpau-va-gl
-      ];
-    };
-
     nvidia.prime = {
       amdgpuBusId = "PCI:13:0:0";
       nvidiaBusId = "PCI:1:0:0";
@@ -229,8 +217,7 @@
 
     plymouth = {
       enable = true;
-      # Theme previews: https://github.com/adi1090x/plymouth-themes
-      theme = "loader";
+      theme = "loader"; # Previews: https://github.com/adi1090x/plymouth-themes
       # Overriding installs a single theme instead of all 80, reducing the required size
       themePackages = [ (pkgs.adi1090x-plymouth-themes.override { selected_themes = [ "${config.boot.plymouth.theme}" ]; }) ];
     };
