@@ -92,14 +92,10 @@ in {
         libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
 
       # Multimedia
-        haruna            # MPV frontend
-        mpc-qt            # MPV frontend
+        haruna                      # MPV frontend
 
       # Text
         neovide                     # GUI launcher for neovim
-
-      # Window Management
-        #polonium                    # Window tiling
       ] ++ (with kdePackages; [
         dragon                      # Media player
         #kwallet                     # KDE Wallet
@@ -108,7 +104,7 @@ in {
         qt5compat                   # Qt5 compatibility
         sddm-kcm                    # SDDM settings module
       ]);
-      plasma6.excludePackages = with pkgs.kdePackages; [ ];
+      #plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
     #security.pam.services.sddm.kwallet.enable = true;
@@ -148,6 +144,7 @@ in {
       home.file = {
         # Sets profile image
         ".face".source = profileImg;
+
         # KRunner web search providers
         ".local/share/kf6/searchproviders/hm.desktop".text = ''
           [Desktop Entry]
@@ -269,6 +266,18 @@ in {
             };
           };
 
+          kwin.scripts.polonium = {
+            enable = false;
+            settings = {
+              borderVisibility = "borderAll";
+              layout = {
+                engine = "binaryTree";
+                insertionPoint = "activeWindow";
+              };
+              maximizeSingleWindow = true;
+            };
+          };
+
           panels = [
             # Top panel
             {
@@ -321,6 +330,8 @@ in {
                     time.format = "24h";
                   };
                 }
+                "org.kde.plasma.marginsseparator"
+                "org.kde.plasma.weather"
                 "org.kde.plasma.panelspacer"
                 {
                   systemMonitor = {
@@ -493,25 +504,52 @@ in {
         };
       };
 
-      # Set default application file associations
-      xdg.mimeApps = let
-        mime = {
-          archive = [ "org.kde.ark.desktop" ];
-          audio = [ "org.kde.elisa.desktop" ];
-          calendar = [ "" ];
-          image = [ "org.kde.gwenview.desktop" ];
-          pdf = [ "okularApplication_pdf.desktop" ];
-          text = [ "org.kde.kate.desktop" ];
-          video = [
-            "mpc-qt.desktop"
-            #"org.kde.haruna.desktop"
-            #"org.kde.dragonplayer.desktop"
-          ];
+      xdg = {
+        # Set Haruna settings, since there is no HM module
+        configFile = let
+          hwDecoder = (
+            if (cfgOpts.hardware.amdgpu.enable) then "HWDecoding=vaapi"
+            else if (cfgOpts.hardware.nvidia.enable) then "HWDecoding=nvdec"
+            else ""
+          );
+        in {
+          "haruna/haruna.conf".text = ''
+            [General]
+            MaxRecentFiles=0
+
+            [Playback]
+            ${hwDecoder}
+            UseHWDecoding=true
+          '';
+
+          "haruna/shortcuts.conf".text = ''
+            [Shortcuts]
+            seekBackwardBigAction=
+            seekForwardBigAction=
+            volumeDownAction=Down
+            volumeUpAction=Up
+          '';
         };
-      in {
-        enable = true;
-        associations.added = config.xdg.mimeApps.defaultApplications;
-        defaultApplications = import ./mimeapps.nix { inherit mime; };
+
+        # Set default application file associations
+        mimeApps = let
+          mime = {
+            archive = [ "org.kde.ark.desktop" ];
+            audio = [ "org.kde.elisa.desktop" ];
+            calendar = [ "" ];
+            image = [ "org.kde.gwenview.desktop" ];
+            pdf = [ "okularApplication_pdf.desktop" ];
+            text = [ "org.kde.kate.desktop" ];
+            video = [
+              "org.kde.haruna.desktop"
+              "org.kde.dragonplayer.desktop"
+            ];
+          };
+        in {
+          enable = true;
+          associations.added = config.xdg.mimeApps.defaultApplications;
+          defaultApplications = import ./mimeapps.nix { inherit mime; };
+        };
       };
     };
   };
