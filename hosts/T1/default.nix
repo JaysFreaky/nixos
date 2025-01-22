@@ -2,7 +2,6 @@
   #cfgHosts,
   cfgOpts,
   config,
-  inputs,
   lib,
   pkgs,
   vars,
@@ -29,7 +28,6 @@
       kde = {
         enable = true;
         gpuWidget = "gpu/gpu0/temperature";
-        #gpuWidget2 = "gpu/gpu1/temperature";
       };
     };
 
@@ -38,10 +36,11 @@
       nvidia.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, syncthing, wezterm
+    # "1password", alacritty, flatpak, gaming, kitty, openrgb, plex, spicetify, syncthing, wezterm
     "1password".enable = true;
     gaming.enable = true;
     plex.enable = true;
+    spicetify.enable = true;
     syncthing.enable = true;
   };
 
@@ -85,18 +84,6 @@
         # Not sure if required with pkgs.gamescope-wsi
         ENABLE_GAMESCOPE_WSI = "1";
       };
-    };
-
-    spicetify = let spice-pkgs = inputs.spicetify-nix.legacyPackages.${pkgs.system}; in {
-      enable = true;
-      theme = spice-pkgs.themes.text;
-      colorScheme = "CatppuccinMacchiato";
-      enabledExtensions = with spice-pkgs.extensions; [
-        fullAlbumDate
-        hidePodcasts
-        savePlaylists
-        wikify
-      ];
     };
   };
 
