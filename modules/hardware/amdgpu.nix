@@ -63,7 +63,7 @@ in {
           # boot.initrd.kernelModules: "amdgpu"
           initrd.enable = true;
           # hardware.graphics.extraPackages: pkgs.rocmPackages.clr/.icd
-          opencl.enable = true;
+          opencl.enable = false;
         };
 
         graphics = {
