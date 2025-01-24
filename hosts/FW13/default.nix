@@ -85,6 +85,7 @@ in {
       #smplayer               # MPV frontend
 
     # Networking
+      brave                   # Alt browser
       protonvpn-gui           # VPN client
 
     # Productivity
