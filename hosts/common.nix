@@ -126,7 +126,6 @@ in {
   i18n.defaultLocale = "en_US.UTF-8";
 
   myOptions = {
-    git.ssh.enable = lib.mkDefault true;
     hardware.audio.enable = lib.mkDefault true;
     ${vars.terminal}.enable = true;
   };
@@ -223,6 +222,7 @@ in {
     };
     openssh = {
       enable = true;
+      extraConfig = "AllowAgentForwarding yes";
       knownHosts = {
         "FW13".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGQQSTCKMqWNCTIFsND7Da2EUTjYktXX8xNl7Yf4X4At";
         "T1".publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPiwqkVHyuJgJAdln6Wg7NXip2awN38aXddPydQhTw18";
