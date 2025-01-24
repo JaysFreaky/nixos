@@ -57,7 +57,6 @@
       polychromatic       # Razer lighting GUI
 
     # Misc
-      android-udev-rules  # Android flashing
       calibre             # Book organization
 
     # Multimedia
@@ -75,12 +74,12 @@
   };
 
   programs = {
+    adb.enable = true;  # Android flashing
     coolercontrol.enable = lib.mkIf (!config.hardware.fancontrol.enable) true;
 
     gamescope = {
-      # lspci -nn | grep -i vga
       args = [
-        "--prefer-vk-device \"10de:2684\""
+        "--prefer-vk-device \"10de:2684\""  # lspci -nn | grep -i vga
         "--hdr-enabled"
       ];
       env = {

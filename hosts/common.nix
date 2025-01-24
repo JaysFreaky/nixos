@@ -259,6 +259,7 @@ in {
       ${vars.user} = {
         description = "${vars.name}";
         extraGroups = [
+          "adbusers"
           "audio"
           "input"
           "networkmanager"

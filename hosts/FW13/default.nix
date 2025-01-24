@@ -73,9 +73,6 @@ in {
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       sbctl                   # Secure boot key manager
 
-    # Misc
-      android-udev-rules      # Android flashing
-
     # Monitoring
       powertop                # Power stats
       zenmonitor              # CPU stats
@@ -96,8 +93,10 @@ in {
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
   };
 
-  # lspci -nn | grep -i vga
-  programs.gamescope.args = [ "--prefer-vk-device \"1002:15bf\"" ];
+  programs = {
+    adb.enable = true;  # Android flashing
+    gamescope.args = [ "--prefer-vk-device \"1002:15bf\"" ];  # lspci -nn | grep -i vga
+  };
 
   system.stateVersion = "24.11";
 
