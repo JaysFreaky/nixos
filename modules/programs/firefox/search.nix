@@ -4,6 +4,9 @@
   privateDefault = "Google";
 
   engines = {
+    "Bing".metaData.hidden = true;
+    "You.com".metaData.hidden = true;
+
     "Startpage" = {
       definedAliases = [ "@sp" ];
       icon = "https://www.startpage.com/sp/cdn/favicons/favicon--default.ico";

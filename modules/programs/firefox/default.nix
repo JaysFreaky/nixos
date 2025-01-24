@@ -7,9 +7,9 @@
   ...
 }: let
   bpc = {
-    commit = "2556d9294db54a5702bec84941930dc1b67506f4";
-    sha256 = "sha256-/kCsronF4zXe0PFuR8EGu/GwOr28KQ9PCcMRPym95tU=";
-    version = "3.9.9.0";
+    commit = "3af056f6aca8dfa9fcee0e71a9d92101d6f40d35";
+    sha256 = "sha256-J8ABW3mODdXpJ8lm5KpZr6Fhrmjf3CTTKT/uK6nkbSA=";
+    version = "4.0.1.0";
   };
 
   browser = cfgOpts.browser;
