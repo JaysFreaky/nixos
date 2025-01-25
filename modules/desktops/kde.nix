@@ -58,6 +58,12 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     environment = {
+      plasma6.excludePackages = with pkgs.kdePackages; [
+        #kwallet                    # KDE Wallet
+        #kwallet-pam                # Unlock on login
+        #kwalletmanager             # Wallet manager
+      ];
+
       systemPackages = with pkgs; let
         sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
           themeConfig = {
@@ -92,14 +98,7 @@ in {
         cursor.package              # For SDDM login screen
         icon.package                # Icon theme
         sddm-astronaut-pkg          # SDDM theme
-
-      # Wallet
-        #kdePackages.kwallet         # KDE Wallet
-        #kdePackages.kwallet-pam     # Unlock on login
-        #kdePackages.kwalletmanager  # Wallet manager
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
       ];
-      #plasma6.excludePackages = with pkgs.kdePackages; [ ];
     };
 
     #security.pam.services.sddm.kwallet.enable = true;

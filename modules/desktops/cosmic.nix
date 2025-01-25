@@ -39,7 +39,6 @@ in {
     environment.systemPackages = with pkgs; [
       cursor.package              # For GDM login screen
       icon.package                # Icon theme
-      libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
       neovide                     # GUI launcher for neovim
     ];
 

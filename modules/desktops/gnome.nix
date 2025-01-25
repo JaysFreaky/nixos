@@ -71,7 +71,7 @@ in {
         gnome-characters            # Character map
         gnome-contacts              # Contact app
         gnome-initial-setup         # First time setup
-        #gnome-music                 # Music
+        #gnome-music                # Music
         #gnome-maps                 # Maps
         #gnome-photos               # Image viewer
         #gnome-terminal             # Console
@@ -86,15 +86,11 @@ in {
       systemPackages = with pkgs; [
       # GNOME
         dconf-editor                # GUI dconf editor
-        gdm-settings                # Login screen settings
         stable.gnome-extension-manager     # Gnome extensions
         gnome-tweaks                # Gnome tweaks
         libappindicator             # Allow tray icons to be displayed in GNOME
         nautilus-open-any-terminal  # Open custom terminals in nautilus
         nautilus-python             # Allow custom nautilus scripts/open-any-terminal
-
-      # Misc
-        libsecret                   # Secret storage used by gnome-keyring / KDE-wallet
 
       # Multimedia
         celluloid                   # MPV GTK frontend w/ Wayland
@@ -104,14 +100,22 @@ in {
         neovide                     # GUI launcher for neovim
 
       # Theming
-        cursor.package              # For GDM login screen
+        cursor.package              # GDM login screen
       ] ++ lib.optionals (stylix) [
         switch-mode                 # HM theme switcher
       ];
 
       # Fix black borders around windows until amdvlk patch
-      variables.GSK_RENDERER = "gl";
+      variables."GSK_RENDERER" = "gl";
     };
+
+    nixpkgs.overlays = lib.mkIf (cfgOpts.git.ssh.enable && cfgOpts."1password".enable) [
+      (final: prev: {
+        gnome-keyring = prev.gnome-keyring.overrideAttrs (oldAttrs: {
+          configureFlags = (builtins.filter (flag: flag != "--enable-ssh-agent") oldAttrs.configureFlags) ++ [ "--disable-ssh-agent" ];
+        });
+      })
+    ];
 
     programs = {
       # Manages keys/passwords in gnome-keyring
@@ -140,14 +144,6 @@ in {
     security.pam.services.gdm.enableGnomeKeyring = true;
 
     services = {
-      # Manages keys/passwords in gnome-keyring
-      dbus.packages = [ pkgs.seahorse ];
-      # Autologin will prevent the keyring from auto-unlocking
-      displayManager.autoLogin = {
-        enable = lib.mkDefault false;
-        user = "${vars.user}";
-      };
-
       gnome = {
         games.enable = false;
         gnome-keyring.enable = true;
@@ -158,31 +154,18 @@ in {
         enable = true;
         desktopManager.gnome.enable = true;
         displayManager.gdm.enable = true;
-        excludePackages = with pkgs; [
-          xterm
-        ];
+        excludePackages = with pkgs; [ xterm ];
       };
 
       # Enable additional systray icons
-      udev.packages = with pkgs; [
-        gnome-settings-daemon
-      ];
-    };
-
-    systemd.services = {
-      # These fix current autologin issues with Gnome
-      "getty@tty1".enable = false;
-      "autovt@tty1".enable = false;
+      udev.packages = with pkgs; [ gnome-settings-daemon ];
     };
 
     # Workaround to display profile image at login screen - image needs +x
     system.activationScripts.showProfileImage.text = ''
+      mkdir -p /var/lib/AccountsService/{icons,users}
       cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
-
-      echo "[User]
-      Session=gnome
-      SystemAccount=false
-      Icon=/var/lib/AccountsService/icons/${vars.user}" > /var/lib/AccountsService/users/${vars.user}
+      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\nSession=gnome\nSystemAccount=false\n" > /var/lib/AccountsService/users/${vars.user}
     '';
  
     home-manager.users.${vars.user} = { config, lib, ... }: rec {
