@@ -17,16 +17,6 @@ in {
   config = {
     myOptions.git.ssh.enable = lib.mkDefault true;
 
-    environment = lib.mkMerge [
-      (lib.mkIf (cfg.libsecret.enable) {
-        systemPackages = with pkgs; [ libsecret ];
-      })
-
-      (lib.mkIf (cfg.ssh.enable) {
-        #variables."SSH_AUTH_SOCK" = lib.mkIf (cfgOpts."1password".enable) "/home/${vars.user}/.1password/agent.sock";
-      })
-    ];
-
     home-manager.users.${vars.user} = lib.mkMerge [
       {
         programs.git = {
@@ -37,15 +27,11 @@ in {
         };
       }
 
-      # credential.helper = "libsecret" stores credentials inside gnome-keyring / kde-wallet
+      # "git-credential-libsecret" stores credentials inside gnome-keyring / kde-wallet
         # Gnome relies upon 'gnome-keyring' and 'seahorse'
         # KDE relies upon 'kwallet', 'kwallet-pam', and 'kwalletmanager'
       (lib.mkIf (cfg.libsecret.enable) {
-        programs.git = {
-          extraConfig.credential.helper = "libsecret";
-          # gitFull contains git-credential-libsecret
-          package = pkgs.gitFull;
-        };
+        programs.git.extraConfig.credential.helper = lib.getExe' pkgs.git.override { withLibsecret = true; } "git-credential-libsecret";
       })
 
       (lib.mkIf (cfg.oauth.enable) {
@@ -58,21 +44,35 @@ in {
             commit.gpgsign = true;
             gpg = {
               format = "ssh";
-              ssh.program = lib.mkIf (cfgOpts."1password".enable) (lib.getExe' pkgs._1password-gui "op-ssh-sign");
+              ssh.program = (if (cfgOpts."1password".enable)
+                then (lib.getExe' pkgs._1password-gui "op-ssh-sign")
+                else "" # TBD
+              );
             };
             user.signingkey = gitHubKey;
           };
 
-          ssh = {
-            enable = false;
+          ssh = let
+            identityAgent = (if (cfgOpts."1password".enable)
+              then "/home/${vars.user}/.1password/agent.sock"
+              else "" # TBD
+            );
+          in {
+            enable = true;
             matchBlocks = {
-              "github.com" = lib.mkIf (cfgOpts."1password".enable) {
+              "FW13" = {
+                extraOptions.IdentityAgent = identityAgent;
                 forwardAgent = true;
-                match = ''
-                  Host github.com exec "test -z $SSH_TTY"
-                    IdentityAgent /home/${vars.user}/.1password/agent.sock
-                '';
               };
+              "T1" = {
+                extraOptions.IdentityAgent = identityAgent;
+                forwardAgent = true;
+              };
+
+              "github.com".match = ''
+                host github.com exec "test -z $SSH_TTY"
+                  IdentityAgent ${identityAgent}
+              '';
             };
           };
         };
