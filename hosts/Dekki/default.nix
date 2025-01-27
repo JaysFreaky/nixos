@@ -34,7 +34,7 @@
       nvtopPackages.amd       # GPU stats
     ];
     # Set Firefox to use GPU for video codecs
-    variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
+    variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:04:00.0-render";
   };
 
   jovian = {
@@ -122,7 +122,11 @@
   boot = {
     initrd.systemd.enable = true;
 
-    kernelPackages = if (config.jovian.devices.steamdeck.enable) then pkgs.linuxPackages_jovian else pkgs.linuxPackages_latest;
+    kernelPackages = (
+      if (config.jovian.devices.steamdeck.enable)
+        then pkgs.linuxPackages_jovian
+      else pkgs.linuxPackages_latest
+    );
     kernelParams = [
       "quiet"
       "splash"

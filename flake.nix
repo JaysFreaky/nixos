@@ -175,7 +175,7 @@
 
       # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
       iso = {
-        bareSystem = true;
+        isBare = true;
         modules = [ ./hosts/iso ];
       };
 
@@ -192,12 +192,16 @@
     };
 
     mkSystem = hostName: hostOpts: let
-      bareSystem = hostOpts.bareSystem or false;
+      isBare = hostOpts.isBare or false;
       sysModules = hostOpts.modules;
       system = hostOpts.system or "x86_64-linux";
     in nixpkgs.lib.nixosSystem {
       inherit system;
-      modules = (if (bareSystem) then ([ ]) else (stdModules hostName)) ++ sysModules;
+      modules = (
+        if (isBare)
+          then ([ ])
+        else (stdModules hostName)
+      ) ++ sysModules;
       specialArgs = let
         stable = import inputs.nixpkgs-stable {
           inherit system;
@@ -239,5 +243,4 @@
   in {
     nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
   };
-
 }

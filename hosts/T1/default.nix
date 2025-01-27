@@ -188,7 +188,11 @@
       "nct6687"
       "nfs"
     ];
-    kernelPackages = if (config.services.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
+    kernelPackages = (
+      if (config.services.scx.enable)
+        then pkgs.linuxPackages_cachyos
+      else pkgs.linuxPackages_latest
+    );
     kernelParams = [
       "amd_pstate=active"
       "quiet"

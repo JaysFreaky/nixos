@@ -193,7 +193,11 @@ in {
   };
 
   services = {
-    fprintd.enable = if (useFP) then lib.mkForce true else lib.mkForce false;
+    fprintd.enable = (
+      if (useFP)
+        then lib.mkForce true
+      else lib.mkForce false
+    );
 
     fwupd = {
       enable = true;
@@ -258,7 +262,7 @@ in {
     };
 
     blacklistedKernelModules = [
-      # For AMD s2_idle.py debugging, as it taints the kernel
+      # For amd_s2idle.py debugging, as it taints the kernel
       #"framework_laptop"
     ];
     # Allow 5GHz wifi
@@ -290,11 +294,15 @@ in {
         efiSysMountPoint = "/boot";
       };
       systemd-boot = {
-        enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
+        enable = (
+          if (config.boot.lanzaboote.enable)
+            then lib.mkForce false
+          else true
+        );
         configurationLimit = 5;
         consoleMode = "auto";
         editor = false;
-        memtest86.enable = if (config.boot.lanzaboote.enable) then lib.mkForce false else true;
+        memtest86.enable = config.boot.loader.systemd-boot.enable;
       };
       timeout = 2;
     };

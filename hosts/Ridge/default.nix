@@ -176,7 +176,11 @@
       "nfs"
       "zenpower"
     ];
-    kernelPackages = if (config.services.scx.enable) then pkgs.linuxPackages_cachyos else pkgs.linuxPackages_latest;
+    kernelPackages = (
+      if (config.services.scx.enable)
+        then pkgs.linuxPackages_cachyos
+      else pkgs.linuxPackages_latest
+    );
     kernelParams = [
       "amd_pstate=active"
       # Hides text prior to plymouth boot logo

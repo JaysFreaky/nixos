@@ -362,8 +362,16 @@ in {
         "org/gnome/shell/extensions/lockkeys".style = "show-hide-capslock";
         "org/gnome/shell/extensions/nightthemeswitcher/commands" = {
           enabled = true;
-          sunrise = if (stylix) then "${lib.getExe switch-mode} light" else "${lib.getExe themeChange}";
-          sunset = if (stylix) then "${lib.getExe switch-mode} dark" else "${lib.getExe themeChange}";
+          sunrise = (
+            if (stylix)
+              then "${lib.getExe switch-mode} light"
+            else "${lib.getExe themeChange}"
+          );
+          sunset = (
+            if (stylix)
+              then "${lib.getExe switch-mode} dark"
+            else "${lib.getExe themeChange}"
+          );
         };
         "org/gnome/shell/extensions/nightthemeswitcher/time" = {
           manual-schedule = false;
@@ -448,7 +456,11 @@ in {
       programs.neovide = {
         enable = true;
         settings = {
-          neovim-bin = if (config.programs.nixvim.enable) then "${lib.getExe config.programs.nixvim.package}" else "${lib.getExe pkgs.neovim}";
+          neovim-bin = (
+            if (config.programs.nixvim.enable)
+              then "${lib.getExe config.programs.nixvim.package}"
+            else "${lib.getExe pkgs.neovim}"
+          );
         };
       };
       */

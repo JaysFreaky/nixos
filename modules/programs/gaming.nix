@@ -27,10 +27,11 @@ in {
         '';
 
         lutris-pkg = pkgs.lutris.override {
-          extraLibraries = pkgs: (with config.hardware.graphics; if pkgs.hostPlatform.is64bit
-            then extraPackages
+          extraLibraries = pkgs: (with config.hardware.graphics; (
+            if (pkgs.hostPlatform.is64bit)
+              then extraPackages
             else extraPackages32
-          );
+          ));
           extraPkgs = pkgs: with pkgs; [
             dxvk
             vkd3d

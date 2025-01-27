@@ -44,8 +44,9 @@ in {
             commit.gpgsign = true;
             gpg = {
               format = "ssh";
-              ssh.program = (if (cfgOpts."1password".enable)
-                then (lib.getExe' pkgs._1password-gui "op-ssh-sign")
+              ssh.program = (
+                if (cfgOpts."1password".enable)
+                  then (lib.getExe' pkgs._1password-gui "op-ssh-sign")
                 else "" # TBD
               );
             };
@@ -53,8 +54,9 @@ in {
           };
 
           ssh = let
-            identityAgent = (if (cfgOpts."1password".enable)
-              then "/home/${vars.user}/.1password/agent.sock"
+            identityAgent = (
+              if (cfgOpts."1password".enable)
+                then "/home/${vars.user}/.1password/agent.sock"
               else "" # TBD
             );
           in {
