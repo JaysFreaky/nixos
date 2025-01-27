@@ -67,6 +67,7 @@
       brave               # Alt browser
 
     # Productivity
+      libreoffice         # Office suite
       obsidian            # Markdown notes
     ];
     # Set Firefox to use GPU for video codecs
