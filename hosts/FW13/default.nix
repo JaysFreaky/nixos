@@ -59,7 +59,9 @@ in {
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; [
+    systemPackages = with pkgs; let
+      s2idle = import ./s2idle.nix { inherit pkgs; };
+    in [
     # Communication
       discord                 # Discord
       protonMB                # GUI bridge for Thunderbird
@@ -71,6 +73,7 @@ in {
     ] ++ [
       framework-tool          # Swiss army knife for FWs
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
+      s2idle                  # Environment for suspend testing | 's2idle ./amd_s2idle.py'
       sbctl                   # Secure boot key manager
 
     # Monitoring
