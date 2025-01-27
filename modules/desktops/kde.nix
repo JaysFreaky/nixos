@@ -104,7 +104,10 @@ in {
     #security.pam.services.sddm.kwallet.enable = true;
 
     services = {
-      desktopManager.plasma6.enable = true;
+      desktopManager.plasma6 = {
+        enable = true;
+        #enableQt5Integration = false;
+      };
       displayManager.sddm = {
         enable = true;
         extraPackages = with pkgs; [
@@ -330,6 +333,7 @@ in {
                 "org.kde.plasma.marginsseparator"
                 "org.kde.plasma.weather"
                 "org.kde.plasma.panelspacer"
+              ] ++ lib.optionals (cfg.cpuWidget != null) [
                 {
                   systemMonitor = {
                     title = "CPU Temperature";
@@ -411,7 +415,11 @@ in {
 
           shortcuts = {
             "ksmserver" = {
-              "Lock Session" = if (polo) then "Ctrl+Alt+L" else "Meta+L";
+              "Lock Session" = (
+                if (polo)
+                  then "Ctrl+Alt+L"
+                else "Meta+L"
+              );
               "Log Out" = "Ctrl+Alt+Del"; # Show Logout Screen
               #"Log Out Without Confirmation" = ""; # Log Out Without Confirmation
             };
@@ -422,7 +430,11 @@ in {
               "PoloniumFocusAbove" = "Meta+K";
               "PoloniumFocusBelow" = "Meta+J";
               "PoloniumFocusLeft" = "Meta+H";
-              "PoloniumFocusRight" = if (polo) then "Meta+L" else "";
+              "PoloniumFocusRight" = (
+                if (polo)
+                  then "Meta+L"
+                else ""
+              );
               "PoloniumInsertAbove" = "Meta+Shift+K";
               "PoloniumInsertBelow" = "Meta+Shift+J";
               "PoloniumInsertLeft" = "Meta+Shift+H";
@@ -499,7 +511,7 @@ in {
       in {
         enable = true;
         darkModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
@@ -511,7 +523,7 @@ in {
         };
 
         lightModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) ''ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml'';
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
@@ -527,8 +539,10 @@ in {
         # Set Haruna settings, since there is no HM module
         configFile = let
           hwDecoder = (
-            if (cfgOpts.hardware.amdgpu.enable) then "HWDecoding=vaapi"
-            else if (cfgOpts.hardware.nvidia.enable) then "HWDecoding=nvdec"
+            if (cfgOpts.hardware.amdgpu.enable)
+              then "HWDecoding=vaapi"
+            else if (cfgOpts.hardware.nvidia.enable)
+              then "HWDecoding=nvdec"
             else ""
           );
         in {
