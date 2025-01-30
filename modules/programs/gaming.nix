@@ -71,7 +71,7 @@ in {
       programs.mangohud = {
         enable = true;
         enableSessionWide = false;
-        settings = with lib; {
+        settings = {
           ### Performance ###
           fps_limit = cfgHosts.refresh;
           fps_limit_method = "late";
@@ -83,14 +83,14 @@ in {
           gpu_stats = true;
           gpu_load_change = true;
           gpu_load_value = "50,90";
-          gpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
+          gpu_load_color = lib.mkDefault "FFFFFF,FFAA7F,CC0000";
           gpu_temp = true;
           gpu_power = true;
           cpu_text = "CPU";
           cpu_stats = true;
           cpu_load_change = true;
           cpu_load_value = "50,90";
-          cpu_load_color = mkDefault "FFFFFF,FFAA7F,CC0000";
+          cpu_load_color = lib.mkDefault "FFFFFF,FFAA7F,CC0000";
           cpu_temp = true;
           cpu_power = true;
           vram = true;
@@ -107,7 +107,7 @@ in {
           position = "top-left";
           round_corners = 10;
           table_columns = 4;
-          background_alpha = mkForce 0.4;
+          background_alpha = lib.mkForce 0.4;
           ### Interaction ###
           toggle_hud = "Shift_R+F12";
         };
@@ -138,15 +138,17 @@ in {
       gamescope = {
         enable = true;
         args = [
-          "-W ${builtins.toString cfgHosts.width}"
-          "-H ${builtins.toString cfgHosts.height}"
-          "-r ${builtins.toString cfgHosts.refresh}"                  # Focused refresh rate
-          "-o 30"                                                 # Unfocused refresh rate
-          "--adaptive-sync"                                       # VRR (if available)
-          "--borderless"
-          "--framerate-limit ${builtins.toString cfgHosts.refresh}"   # Sync framerate to refresh rate
-          #"--fullscreen"
-          "--rt"                                                  # Real-time scheduling
+          "-W ${builtins.toString cfgHosts.width}"                  # Output width
+          "-H ${builtins.toString cfgHosts.height}"                 # Output height
+          #"-w ${builtins.toString cfgHosts.width}"                  # Game width
+          #"-h ${builtins.toString cfgHosts.height}"                 # Game height
+          "-r ${builtins.toString cfgHosts.refresh}"                # Refresh rate
+          "-o 30"                                                   # Unfocused refresh rate
+          "-b"                                                      # Borderless window
+          #"-f"                                                      # Fullscreen window
+          #"--adaptive-sync"                                         # VRR (if available)
+          "--framerate-limit ${builtins.toString cfgHosts.refresh}" # Sync framerate to refresh rate
+          "--rt"                                                    # Real-time scheduling
         ];
         # capSysNice currently stops games from launching - "failed to inherit capabilities: Operation not permitted"
           # Current workaround is using 'gs-renice' to replace gamescope in launch options mentioned above
