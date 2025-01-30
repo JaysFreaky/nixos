@@ -16,10 +16,10 @@
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   myAddons = pkgs.callPackage ./addons.nix { inherit (firefox-addons) buildFirefoxXpiAddon; };
 in {
-  options.myOptions.browser = with lib; mkOption {
+  options.myOptions.browser = lib.mkOption {
     default = "floorp";
     description = "Whether to use the Firefox or Floorp Home-Manager option";
-    type = types.str;
+    type = lib.types.str;
   };
 
   config = {

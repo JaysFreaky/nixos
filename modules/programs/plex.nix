@@ -8,10 +8,10 @@
 in {
   options.myOptions.plex = {
     enable = lib.mkEnableOption "Plex";
-    shortcut = with lib; mkOption {
+    shortcut = lib.mkOption {
       default = "plex-desktop.desktop";
       description = "Which desktop shortcut to use";
-      type = types.str;
+      type = lib.types.str;
     };
   };
 

@@ -15,14 +15,14 @@ in {
     environment.systemPackages = [ pkgs.alacritty-theme ];
 
     home-manager.users.${vars.user} = {
-      programs.alacritty = with lib; {
+      programs.alacritty = {
         enable = true;
         settings = {
           font = {
-            size = mkDefault 12;
+            size = lib.mkDefault 12;
             normal = {
-              family = mkDefault "JetBrainsMono Nerd Font Mono";
-              style = mkDefault "Regular";
+              family = lib.mkDefault "JetBrainsMono Nerd Font Mono";
+              style = lib.mkDefault "Regular";
             };
           };
           import = lib.mkIf (!stylix) [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
@@ -31,7 +31,7 @@ in {
           selection.save_to_clipboard = true;
           window = {
             blur = true;
-            opacity = mkDefault 0.8;
+            opacity = lib.mkDefault 0.8;
             startup_mode = "Maximized";
           };
         };

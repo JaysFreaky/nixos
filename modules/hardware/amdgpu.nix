@@ -6,39 +6,39 @@
 }: let
   cfg = cfgOpts.hardware.amdgpu;
 in {
-  options.myOptions.hardware.amdgpu = with lib; {
-    enable = mkEnableOption "AMDGPU";
+  options.myOptions.hardware.amdgpu = {
+    enable = lib.mkEnableOption "AMDGPU";
     undervolt = {
-      enable = mkEnableOption "Undervolting AMDGPU";
-      gpu = mkOption {
+      enable = lib.mkEnableOption "Undervolting AMDGPU";
+      gpu = lib.mkOption {
         description = "GPU's persistant path can be found by running: 'readlink -f /sys/class/drm/card*/device'";
         example = "/sys/devices/pci0000\:00/.../.../...";
-        type = types.str;
+        type = lib.types.str;
       };
-      clockMin = mkOption {
+      clockMin = lib.mkOption {
         description = "GPU's minimum clock speed";
         example = 500;
-        type = types.int;
+        type = lib.types.int;
       };
-      clockMax = mkOption {
+      clockMax = lib.mkOption {
         description = "GPU's maximum clock speed";
         example = 2664;
-        type = types.int;
+        type = lib.types.int;
       };
-      powerLimit = mkOption {
+      powerLimit = lib.mkOption {
         description = "GPU's power limit via wattage (first 3 digits are watts)";
         example = 284000000;
-        type = types.int;
+        type = lib.types.int;
       };
-      voltOffset = mkOption {
+      voltOffset = lib.mkOption {
         description = "GPU's negative voltage offset";
         example = -150;
-        type = types.int;
+        type = lib.types.int;
       };
-      vramClock = mkOption {
+      vramClock = lib.mkOption {
         description = "GPU's VRAM maximum clock speed";
         example = 1124;
-        type = types.int;
+        type = lib.types.int;
       };
     };
   };

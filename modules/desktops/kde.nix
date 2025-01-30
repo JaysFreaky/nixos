@@ -40,19 +40,19 @@
     sddm = "${vars.configPath}/assets/wallpapers/login.png";
   };
 in {
-  options.myOptions.desktops.kde = with lib; {
-    enable = mkEnableOption "KDE desktop";
-    cpuWidget = mkOption {
+  options.myOptions.desktops.kde = {
+    enable = lib.mkEnableOption "KDE desktop";
+    cpuWidget = lib.mkOption {
       default = "cpu/all/averageTemperature";
       description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
       example = "cpu/all/averageTemperature";
-      type = types.nullOr types.str;
+      type = lib.types.nullOr lib.types.str;
     };
-    gpuWidget = mkOption {
+    gpuWidget = lib.mkOption {
       default = null;
       description = "The nested path of the widget's sensor details. Paths can be found at '.config/plasma-org.kde.plasma.desktop-appletsrc'";
       example = "gpu/gpu0/temperature";
-      type = types.nullOr types.str;
+      type = lib.types.nullOr lib.types.str;
     };
   };
 

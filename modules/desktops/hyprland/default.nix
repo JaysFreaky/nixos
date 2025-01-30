@@ -35,11 +35,11 @@ in {
     ./waybar.nix
   ];
 
-  options.myOptions.desktops.hyprland = with lib; {
-    enable = mkEnableOption "Hyprland desktop";
-    hyprApps = mkOption {
+  options.myOptions.desktops.hyprland = {
+    enable = lib.mkEnableOption "Hyprland desktop";
+    hyprApps = lib.mkOption {
       description = "Bins for Hyprland";
-      type = types.attrs;
+      type = lib.types.attrs;
     };
   };
 
