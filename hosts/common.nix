@@ -16,6 +16,8 @@ in {
     import ../modules/programs
   );
 
+  myOptions.${vars.terminal}.enable = true;
+
   boot = {
     # Prioritize swap for hibernation only
     kernel.sysctl."vm.swappiness" = lib.mkDefault 0;
@@ -136,11 +138,6 @@ in {
   };
 
   i18n.defaultLocale = "en_US.UTF-8";
-
-  myOptions = {
-    hardware.audio.enable = lib.mkDefault true;
-    ${vars.terminal}.enable = true;
-  };
 
   networking.networkmanager = {
     enable = true;

@@ -6,7 +6,12 @@
 }: let
   cfg = cfgOpts.hardware.audio;
 in {
-  options.myOptions.hardware.audio.enable = lib.mkEnableOption "Audio";
+  options.myOptions.hardware.audio.enable = lib.mkOption {
+    default = true;
+    description = "Whether to enable audio.";
+    example = false;
+    type = lib.types.bool;
+  };
 
   config = lib.mkIf (cfg.enable) {
     environment.systemPackages = with pkgs; [
