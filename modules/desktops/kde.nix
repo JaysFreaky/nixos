@@ -1,6 +1,7 @@
 {
   cfgHosts,
   cfgOpts,
+  cfgTerm,
   inputs,
   lib,
   nixPath,
@@ -400,7 +401,7 @@ in {
               widgets = [
                 {
                   iconTasks.launchers = [
-                    "applications:${vars.terminal}.desktop"
+                    "applications:${cfgTerm}.desktop"
                     "applications:org.kde.dolphin.desktop"
                     "applications:${cfgOpts.browser}.desktop"
                     "applications:spotify.desktop"
@@ -497,7 +498,7 @@ in {
             };
 
             "services/${cfgOpts.browser}.desktop"."_launch" = "Meta+W";
-            "services/${vars.terminal}.desktop"."_launch" = "Meta+Return";
+            "services/${cfgTerm}.desktop"."_launch" = "Meta+Return";
             "services/darkman.desktop"."_launch" = "Meta+Shift+T";
             "services/org.kde.krunner.desktop"."_launch" = [ "" "Alt+Space" "Meta+Space" "Search" "Alt+F2" ];
           };

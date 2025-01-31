@@ -1,6 +1,7 @@
 {
   cfgHosts,
   cfgOpts,
+  cfgTerm,
   config,
   lib,
   nixPath,
@@ -62,7 +63,7 @@ in {
       slurp = getExe pkgs.slurp;
       swww = getExe pkgs.swww;
       swww-daemon = getExe' pkgs.swww "swww-daemon";
-      terminal = getExe pkgs.${vars.terminal};
+      terminal = getExe pkgs.${cfgTerm};
       thunderbird = getExe pkgs.thunderbird;
       tuigreet =  getExe pkgs.greetd.tuigreet;
       waybar = getExe config.programs.waybar.package;
@@ -196,7 +197,7 @@ in {
       programs = {
         alacritty.settings.import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
         bash.initExtra = ''
-          if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${vars.terminal}" ]; then
+          if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${cfgTerm}" ]; then
             wal -Rqe
           fi
         '';

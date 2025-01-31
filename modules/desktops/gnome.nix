@@ -1,5 +1,6 @@
 {
   cfgOpts,
+  cfgTerm,
   config,
   lib,
   nixPath,
@@ -174,7 +175,7 @@ in {
         "ca/desrt/dconf-editor".show-warning = false;
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {
           new-tab = true;
-          terminal = "${vars.terminal}";
+          terminal = cfgTerm;
         };
         "org/gnome/Console" = {
           custom-font = "JetBrainsMonoNL Nerd Font Mono 12";
@@ -278,7 +279,7 @@ in {
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
           binding = "<Super>Return";
-          command = "${vars.terminal}";
+          command = cfgTerm;
           name = "Launch Terminal";
         };
         "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
@@ -291,7 +292,7 @@ in {
           ];
           disable-user-extensions = false;
           favorite-apps = [
-            "${vars.terminal}.desktop"
+            "${cfgTerm}.desktop"
             "org.gnome.Nautilus.desktop"
             "${cfgOpts.browser}.desktop"
             "spotify.desktop"

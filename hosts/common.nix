@@ -1,4 +1,5 @@
 {
+  cfgTerm,
   config,
   inputs,
   lib,
@@ -17,7 +18,7 @@ in {
     import ../modules/programs
   );
 
-  myOptions.${vars.terminal}.enable = true;
+  myOptions.${cfgTerm}.enable = true;
 
   boot = {
     # Prioritize swap for hibernation only
@@ -117,7 +118,7 @@ in {
 
     variables = {
       EDITOR = "nvim";
-      TERMINAL = "${vars.terminal}";
+      TERMINAL = cfgTerm;
     };
   };
 

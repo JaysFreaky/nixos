@@ -33,8 +33,6 @@
     vars = {
       user = "jays";
       name = "Jason";
-      # Alacritty, kitty, or wezterm
-      terminal = "kitty";
     };
 
     # 'nixos-rebuild switch --flake .#your-hostname'
@@ -79,13 +77,15 @@
         else (stdModules hostName)
       ) ++ sysModules;
       specialArgs = let
+        # Alacritty, kitty, or wezterm
+        cfgTerm = "kitty";
         nixPath = "/etc/nixos";
         stable = import inputs.nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
         };
       in {
-        inherit inputs nixPath stable vars;
+        inherit cfgTerm inputs nixPath stable vars;
       };
     };
 
