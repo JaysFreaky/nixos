@@ -85,20 +85,15 @@
       }
     ];
 
-    plugins.dap = {
-      enable = true;
-      # Add your own debuggers here
-      extensions = {
-        # Install golang specific config
-        dap-go.enable = true;
+    plugins = {
+      # Install golang specific config
+      dap-go.enable = true;
 
-        # Creates a beautiful debugger UI
-        #
-        # Dap UI setup
-        # For more information, see |:help nvim-dap-ui|
-        dap-ui = {
-          enable = true;
-
+      # Creates a beautiful debugger UI
+      # For more information, see |:help nvim-dap-ui|
+      dap-ui = {
+        enable = true;
+        settings = {
           controls = {
             enabled = true;
             icons = {
@@ -124,6 +119,5 @@
         };
       };
     };
-
   };
 }
