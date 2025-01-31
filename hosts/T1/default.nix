@@ -51,24 +51,24 @@
   environment = {
     systemPackages = with pkgs; [
     # Communication
-      discord             # Discord
+      discord                 # Discord
 
     # Hardware
-      polychromatic       # Razer lighting GUI
+      polychromatic           # Razer lighting GUI
 
     # Misc
-      calibre             # Book organization
+      calibre                 # Book organization
 
     # Multimedia
-      #mpv                # Media player
-      #smplayer           # MPV frontend
+      #mpv                    # Media player
+      #smplayer               # MPV frontend
 
     # Networking
-      brave               # Alt browser
+      brave                   # Alt browser
 
     # Productivity
-      libreoffice         # Office suite
-      obsidian            # Markdown notes
+      libreoffice-qt6-fresh   # Office suite
+      obsidian                # Markdown notes
     ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:01:00.0-render";

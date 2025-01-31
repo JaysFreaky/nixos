@@ -89,7 +89,7 @@ in {
       protonvpn-gui           # VPN client
 
     # Productivity
-      libreoffice             # Office suite
+      libreoffice-fresh       # Office suite
       obsidian                # Markdown notes
     ];
     # Set Firefox to use GPU for video codecs

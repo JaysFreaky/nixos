@@ -1,4 +1,12 @@
-{ config, inputs, lib, pkgs, stable, vars, ... }: let
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  #stable,
+  vars,
+  ...
+}: let
   secrets = config.sops.secrets;
   superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
@@ -72,6 +80,10 @@ in {
 
     # Notifications
       libnotify                   # Notification engine
+
+    # Productivity
+      hunspell                    # Spellcheck
+      hunspellDicts.en_US         # US English
 
     # Secrets
       sops                        # Secret management
@@ -189,7 +201,8 @@ in {
 
   programs = {
     dconf.enable = true;
-  /*direnv = {
+    /*
+    direnv = {
       enable = true;
       enableBashIntegration = true;
       nix-direnv.enable = true;
@@ -279,5 +292,4 @@ in {
       };
     };
   };
-
 }
