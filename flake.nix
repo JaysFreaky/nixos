@@ -2,165 +2,42 @@
   description = "NixOS Systems Flake";
 
   inputs = {
-    chaotic = {
-      #url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      # 6.12.10 pin until 6.13 testing
-      url = "github:chaotic-cx/nyx/625eb4eb8b5e09787636b69aa6d0eda714ec6ee5";
-      inputs = {
-        home-manager.follows = "home-manager";
-        jovian.follows = "jovian";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    framework-plymouth = {
-      url = "github:JaysFreaky/framework-plymouth";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    # 6.12.10 pin until 6.13 testing
+    chaotic.url = "github:chaotic-cx/nyx/625eb4eb8b5e09787636b69aa6d0eda714ec6ee5";
+    disko.url = "github:nix-community/disko";
+    framework-plymouth.url = "github:JaysFreaky/framework-plymouth";
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    jovian = {
-      url = "github:Jovian-Experiments/Jovian-NixOS";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0_4_2";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        flake-parts.follows = "flake-parts";
-        #flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-        pre-commit-hooks-nix.follows = "";
-        rust-overlay.follows = "rust-overlay";
-      };
-    };
+    jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
+    lanzaboote.url = "github:nix-community/lanzaboote/v0.4.2";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-    nixos-cosmic = {
-      url = "github:lilyinstarlight/nixos-cosmic";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs-stable";
-      };
-    };
-    #nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # 6.12.10 pin until 6.13 testing
-    nixpkgs.url = "github:nixos/nixpkgs/445cb7358e95fa163e66308786e2c5e9ff594d74";
+    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        flake-parts.follows = "flake-parts";
-        git-hooks.follows = "git-hooks";
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-        nuschtosSearch.follows = "nuschtosSearch";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-    };
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs = {
-        flake-parts.follows = "flake-parts";
-        nixpkgs.follows = "nixpkgs";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-    };
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs = {
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    spicetify-nix = {
-      url = "github:Gerg-L/spicetify-nix";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    stylix = {
-      url = "github:danth/stylix";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        flake-utils.follows = "flake-utils";
-        git-hooks.follows = "git-hooks";
-        home-manager.follows = "home-manager";
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "systems";
-      };
-    };
-    superfile = {
-      url = "github:yorukot/superfile";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    wezterm = {
-      url = "github:wez/wezterm?dir=nix";
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-        rust-overlay.follows = "rust-overlay";
-      };
-    };
-
-    # Follows-only
-    flake-compat.url = "github:edolstra/flake-compat";
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
-    };
-    git-hooks = {
-      url = "github:cachix/git-hooks.nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-        gitignore.follows = "gitignore";
-      };
-    };
-    gitignore = {
-      url = "github:hercules-ci/gitignore.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nuschtosSearch = {
-      url = "github:NuschtOS/search";
-      inputs = {
-        flake-utils.follows = "flake-utils";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    systems.url = "github:nix-systems/default-linux";
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixvim.url = "github:nix-community/nixvim";
+    nur.url = "github:nix-community/NUR";
+    plasma-manager.url = "github:nix-community/plasma-manager";
+    sops-nix.url = "github:Mic92/sops-nix";
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    stylix.url = "github:danth/stylix";
+    superfile.url = "github:yorukot/superfile";
+    wezterm.url = "github:wez/wezterm?dir=nix";
   };
 
 
   outputs = { self, nixpkgs, ... } @ inputs: let
+    vars = {
+      user = "jays";
+      name = "Jason";
+      configPath = "/etc/nixos";
+      # Alacritty, kitty, or wezterm
+      terminal = "kitty";
+    };
+
     # 'nixos-rebuild switch --flake .#your-hostname'
     hostSystems = {
       Dekki.modules = [
@@ -232,14 +109,6 @@
       inputs.nur.modules.nixos.default
       inputs.sops-nix.nixosModules.sops
     ];
-
-    vars = {
-      user = "jays";
-      name = "Jason";
-      configPath = "/etc/nixos";
-      # Alacritty, kitty, or wezterm
-      terminal = "kitty";
-    };
   in {
     nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
   };
