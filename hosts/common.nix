@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  nixPath,
   pkgs,
   #stable,
   vars,
@@ -251,7 +252,7 @@ in {
 
   sops = {
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-    defaultSopsFile = "${vars.configPath}/secrets/secrets.yaml";
+    defaultSopsFile = "${nixPath}/secrets/secrets.yaml";
     secrets = {
       "user/password".neededForUsers = true;
       "wifi.env" = { };

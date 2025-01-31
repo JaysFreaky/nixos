@@ -1,6 +1,7 @@
 {
   cfgOpts,
   lib,
+  nixPath,
   pkgs,
   vars,
   ...
@@ -8,7 +9,7 @@
   cfg = cfgOpts.desktops.hyprland;
 
   wallpaper = {
-    dir = "${vars.configPath}/assets/wallpapers";
+    dir = "${nixPath}/assets/wallpapers";
     day = "${wallpaper.dir}/blobs-l.png";
     night = "${wallpaper.dir}/blobs-d.png";
   };

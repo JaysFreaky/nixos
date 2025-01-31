@@ -3,6 +3,7 @@
   cfgOpts,
   inputs,
   lib,
+  nixPath,
   pkgs,
   vars,
   ...
@@ -35,9 +36,9 @@
   };
   profileImg = ../../assets/profile.png;
   wallpaper = {
-    dark = "${vars.configPath}/assets/wallpapers/dark.png";
-    light = "${vars.configPath}/assets/wallpapers/light.png";
-    sddm = "${vars.configPath}/assets/wallpapers/login.png";
+    dark = "${nixPath}/assets/wallpapers/dark.png";
+    light = "${nixPath}/assets/wallpapers/light.png";
+    sddm = "${nixPath}/assets/wallpapers/login.png";
   };
 in {
   options.myOptions.desktops.kde = {

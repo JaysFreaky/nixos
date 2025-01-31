@@ -3,6 +3,7 @@
   cfgOpts,
   config,
   lib,
+  nixPath,
   pkgs,
   vars,
   ...
@@ -26,7 +27,7 @@
     package = pkgs.papirus-icon-theme.override { color = "violet"; };
   };
   wallpaper = {
-    dir = "${vars.configPath}/assets/wallpapers";
+    dir = "${nixPath}/assets/wallpapers";
     regreet = "${wallpaper.dir}/blobs-l.png";
   };
 in {

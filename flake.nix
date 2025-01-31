@@ -33,7 +33,6 @@
     vars = {
       user = "jays";
       name = "Jason";
-      configPath = "/etc/nixos";
       # Alacritty, kitty, or wezterm
       terminal = "kitty";
     };
@@ -80,12 +79,13 @@
         else (stdModules hostName)
       ) ++ sysModules;
       specialArgs = let
+        nixPath = "/etc/nixos";
         stable = import inputs.nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
         };
       in {
-        inherit inputs stable vars;
+        inherit inputs nixPath stable vars;
       };
     };
 

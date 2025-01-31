@@ -2,6 +2,7 @@
   cfgOpts,
   config,
   lib,
+  nixPath,
   pkgs,
   stable,
   vars,
@@ -46,7 +47,7 @@
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
-      #gsettings set org.gnome.desktop.background picture-uri '${vars.configPath}/assets/wallpapers/blobs-l.png'
+      #gsettings set org.gnome.desktop.background picture-uri '${nixPath}/assets/wallpapers/blobs-l.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Alacritty
       ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
@@ -54,7 +55,7 @@
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
-      #gsettings set org.gnome.desktop.background picture-uri-dark '${vars.configPath}/assets/wallpapers/blobs-d.png'
+      #gsettings set org.gnome.desktop.background picture-uri-dark '${nixPath}/assets/wallpapers/blobs-d.png'
     fi;
   '';
 in {

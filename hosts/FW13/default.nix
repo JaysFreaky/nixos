@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  #nixPath,
   pkgs,
   #stable
   vars,
@@ -46,8 +47,8 @@ in {
     stylix = {
       enable = true;
       wallpaper = {
-        #dark = "${vars.configPath}/assets/wallpapers/FW13/dark.png";
-        #light = "${vars.configPath}/assets/wallpapers/FW13/light.png";
+        #dark = "${nixPath}/assets/wallpapers/FW13/dark.png";
+        #light = "${nixPath}/assets/wallpapers/FW13/light.png";
       };
     };
     syncthing.enable = true;

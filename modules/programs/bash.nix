@@ -1,11 +1,15 @@
-{ vars, ... }: {
+{
+  nixPath,
+  vars,
+  ...
+}: {
   home-manager.users.${vars.user} = {
     programs.bash = {
       enable = true;
       #initExtra = '''';
       shellAliases = {
         ".." = "cd ..";
-        ".df" = "cd ${vars.configPath}";
+        ".df" = "cd ${nixPath}";
         "ff" = "fastfetch";
         "fishies" = "asciiquarium";
         "ga" = "git add";
@@ -19,5 +23,4 @@
       };
     };
   };
-
 }

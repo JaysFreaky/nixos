@@ -3,6 +3,7 @@
   config,
   inputs,
   lib,
+  nixPath,
   pkgs,
   vars,
   ...
@@ -27,8 +28,8 @@
   };
   profileImg = ../../assets/profile.png;
   wallpaper = {
-    day = "${vars.configPath}/assets/wallpapers/blobs-l.png";
-    night = "${vars.configPath}/assets/wallpapers/blobs-d.png";
+    day = "${nixPath}/assets/wallpapers/blobs-l.png";
+    night = "${nixPath}/assets/wallpapers/blobs-d.png";
   };
 in {
   imports = [ inputs.nixos-cosmic.nixosModules.default ];
