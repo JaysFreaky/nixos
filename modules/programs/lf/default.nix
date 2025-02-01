@@ -1,4 +1,8 @@
-{ pkgs, vars, ... }: {
+{
+  pkgs,
+  myUser,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
   # Previewer tools
     # Archive
@@ -12,7 +16,7 @@
     #sxiv                 # Image viewer
   ];
 
-  home-manager.users.${vars.user} = {
+  home-manager.users.${myUser} = {
     programs.lf = {
       enable = true;
 
@@ -58,5 +62,4 @@
 
     xdg.configFile."lf/icons".source = ./icons;
   };
-
 }

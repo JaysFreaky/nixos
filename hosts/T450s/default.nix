@@ -3,8 +3,8 @@
   cfgOpts,
   inputs,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: {
   imports = [
@@ -50,7 +50,7 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = let
+  home-manager.users.${myUser} = let
     hyprApps = cfgOpts.desktops.hyprland.hyprApps;
   in {
     imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];

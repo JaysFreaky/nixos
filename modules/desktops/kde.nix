@@ -4,9 +4,9 @@
   cfgTerm,
   inputs,
   lib,
+  myUser,
   nixPath,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.desktops.kde;
@@ -134,11 +134,11 @@ in {
     # Workaround to display profile image at login screen - image needs +x
     system.activationScripts.showProfileImage.text = ''
       mkdir -p /var/lib/AccountsService/{icons,users}
-      cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
-      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\n" > /var/lib/AccountsService/users/${vars.user}
+      cp /home/${myUser}/.face /var/lib/AccountsService/icons/${myUser}
+      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${myUser}\n" > /var/lib/AccountsService/users/${myUser}
     '';
 
-    home-manager.users.${vars.user} = { config, osConfig, ... }: let
+    home-manager.users.${myUser} = { config, osConfig, ... }: let
       polo = config.programs.plasma.kwin.scripts.polonium.enable;
     in {
       imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
@@ -205,7 +205,7 @@ in {
             # Disable file indexing
             "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
             "dolphinrc"."General" = {
-              "HomeUrl" = "/home/${vars.user}";
+              "HomeUrl" = "/home/${myUser}";
               "RememberOpenedTabs" = false;
             };
             # Do not remember file history
@@ -513,9 +513,9 @@ in {
       in {
         enable = true;
         darkModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml";
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${myUser}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
-            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${myUser}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
           plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breezedark.desktop"'';
@@ -525,9 +525,9 @@ in {
         };
 
         lightModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml";
+          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${myUser}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
-            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+            ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${myUser}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
           '';
           plasma_global_theme = ''${lookandfeeltool} --apply "org.kde.breeze.desktop"'';

@@ -3,9 +3,9 @@
   config,
   inputs,
   lib,
+  myUser,
   nixPath,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.desktops.cosmic;
@@ -53,7 +53,7 @@ in {
       };
     };
 
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       # Sets profile image
       home.file.".face".source = profileImg;
 

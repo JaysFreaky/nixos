@@ -2,10 +2,10 @@
   config,
   inputs,
   lib,
+  myUser,
   #nixPath,
   pkgs,
   #stable
-  vars,
   ...
 }: let
   # pkgs or stable
@@ -108,7 +108,7 @@ in {
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = { config, ... }: let
+  home-manager.users.${myUser} = { config, ... }: let
     ee-pkg = config.services.easyeffects.package;
     eePreset = config.services.easyeffects.preset;
   in {

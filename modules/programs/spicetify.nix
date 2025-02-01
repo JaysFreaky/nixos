@@ -3,8 +3,8 @@
   config,
   inputs,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.spicetify;
@@ -16,7 +16,7 @@ in {
   options.myOptions.spicetify.enable = lib.mkEnableOption "Spicetify";
 
   config = lib.mkIf (cfg.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       imports = [ inputs.spicetify-nix.homeManagerModules.spicetify ];
 
       programs.spicetify =  {

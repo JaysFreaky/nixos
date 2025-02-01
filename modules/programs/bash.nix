@@ -1,9 +1,9 @@
 {
+  myUser,
   nixPath,
-  vars,
   ...
 }: {
-  home-manager.users.${vars.user} = {
+  home-manager.users.${myUser} = {
     programs.bash = {
       enable = true;
       #initExtra = '''';

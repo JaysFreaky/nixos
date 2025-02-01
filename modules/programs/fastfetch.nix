@@ -1,5 +1,8 @@
-{ vars, ... }: {
-  home-manager.users.${vars.user} = {
+{
+  myUser,
+  ...
+}: {
+  home-manager.users.${myUser} = {
     programs.fastfetch = {
       enable = true;
       settings = {

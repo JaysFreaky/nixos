@@ -3,8 +3,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.gaming;
@@ -50,12 +50,12 @@ in {
       ];
 
       variables = {
-        "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${vars.user}/.steam/steam/compatibilitytools.d";
+        "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${myUser}/.steam/steam/compatibilitytools.d";
         #"STEAM_FORCE_DESKTOPUI_SCALING" = "${builtins.toString cfgHosts.scale}";
       };
     };
 
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       home.file = {
         "Games/Severed_Chains_Linux/launch" = {
           executable = true;
@@ -193,6 +193,6 @@ in {
       value = -20;  # Range from -20 to 19
     }];
 
-    users.users.${vars.user}.extraGroups = [ "gamemode" ];
+    users.users.${myUser}.extraGroups = [ "gamemode" ];
   };
 }

@@ -30,11 +30,6 @@
 
 
   outputs = { self, nixpkgs, ... } @ inputs: let
-    vars = {
-      user = "jays";
-      name = "Jason";
-    };
-
     # 'nixos-rebuild switch --flake .#your-hostname'
     hostSystems = {
       Dekki.modules = [
@@ -77,15 +72,14 @@
         else (stdModules hostName)
       ) ++ sysModules;
       specialArgs = let
-        # Alacritty, kitty, or wezterm
-        cfgTerm = "kitty";
+        cfgTerm = "kitty";  # Alacritty, kitty, or wezterm
         nixPath = "/etc/nixos";
         stable = import inputs.nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
         };
       in {
-        inherit cfgTerm inputs nixPath stable vars;
+        inherit cfgTerm inputs nixPath stable;
       };
     };
 
@@ -94,6 +88,7 @@
         _module.args = {
           cfgHosts = config.myHosts;
           cfgOpts = config.myOptions;
+          myUser = config.myUser;
         };
         networking.hostName = hostName;
       })

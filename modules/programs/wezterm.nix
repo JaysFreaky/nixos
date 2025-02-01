@@ -2,8 +2,8 @@
   cfgOpts,
   inputs,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.wezterm;
@@ -11,7 +11,7 @@ in {
   options.myOptions.wezterm.enable = lib.mkEnableOption "Wezterm";
 
   config = lib.mkIf (cfg.enable) {
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       programs.wezterm = {
         enable = true;
         enableBashIntegration = false;

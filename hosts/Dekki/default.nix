@@ -1,7 +1,7 @@
 {
   config,
+  myUser,
   pkgs,
-  vars,
   ...
 }: {
   imports = [
@@ -40,7 +40,7 @@
   jovian = {
     decky-loader = {
       enable = true;
-      user = "${vars.user}";
+      user = myUser;
     };
 
     devices.steamdeck = {
@@ -58,7 +58,7 @@
       autoStart = true;
       # Switch to desktop - Use 'gamescope-wayland' for no desktop
       desktopSession = "gnome";
-      user = "${vars.user}";
+      user = myUser;
     };
   };
 
@@ -69,7 +69,7 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = { config, lib, ... }: rec {
+  home-manager.users.${myUser} = { config, lib, ... }: rec {
     dconf.settings = {
       # Enable on-screen keyboard
       "org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true;
@@ -146,7 +146,7 @@
         memtest86.enable = true;
         theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
-        #users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
+        #users.${myUser}.hashedPasswordFile = "/etc/users/grub";
       };
       systemd-boot = {
         enable = true;

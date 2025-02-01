@@ -3,8 +3,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: {
   imports = [
@@ -100,13 +100,13 @@
   };
 
   system.stateVersion = "24.11";
-  users.users.${vars.user}.extraGroups = [ "fancontrol" ];
+  users.users.${myUser}.extraGroups = [ "fancontrol" ];
 
 
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = {
+  home-manager.users.${myUser} = {
     home.stateVersion = "24.11";
 
     # lspci -D | grep -i vga
@@ -168,7 +168,7 @@
 
     openrazer = {
       enable = true;
-      users = [ "${vars.user}" ];
+      users = [ myUser ];
     };
   };
 

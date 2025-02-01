@@ -1,8 +1,8 @@
 {
   config,
   inputs,
+  myUser,
   pkgs,
-  vars,
   ...
 }: {
   imports = [
@@ -55,7 +55,7 @@
   jovian = {
     decky-loader = {
       enable = true;
-      user = "${vars.user}";
+      user = myUser;
     };
 
     hardware = {
@@ -70,7 +70,7 @@
       autoStart = true;
       # Switch to desktop - Use 'gamescope-wayland' for no desktop
       desktopSession = "plasma";
-      user = "${vars.user}";
+      user = myUser;
     };
   };
 
@@ -104,7 +104,7 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = {
+  home-manager.users.${myUser} = {
     home.stateVersion = "24.11";
 
     /*
@@ -201,7 +201,7 @@
         memtest86.enable = true;
         theme = pkgs.sleek-grub-theme.override { withStyle = "dark"; };
         useOSProber = true;
-        #users.${vars.user}.hashedPasswordFile = "/etc/users/grub";
+        #users.${myUser}.hashedPasswordFile = "/etc/users/grub";
       };
       timeout = 1;
     };

@@ -2,8 +2,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.hardware.nvidia;
@@ -56,7 +56,7 @@ in {
         };
       };
 
-      home-manager.users.${vars.user}.programs.${cfgOpts.browser}.profiles.${vars.user}.settings = {
+      home-manager.users.${myUser}.programs.${cfgOpts.browser}.profiles.${myUser}.settings = {
         "gfx.x11-egl.force-enabled" = true;
         "media.rdd-ffmpeg.enabled" = true;
         "widget.dmabuf.force-enabled" = true;

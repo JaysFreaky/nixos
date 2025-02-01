@@ -2,8 +2,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   bpc = {
@@ -15,6 +15,7 @@
   browser = cfgOpts.browser;
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   myAddons = pkgs.callPackage ./addons.nix { inherit (firefox-addons) buildFirefoxXpiAddon; };
+  userName = config.users.users.${myUser}.description;
 in {
   options.myOptions.browser = lib.mkOption {
     default = "floorp";
@@ -23,7 +24,7 @@ in {
   };
 
   config = {
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       programs.${browser} = {
         enable = true;
 
@@ -51,12 +52,12 @@ in {
           };
         };
 
-        profiles.${vars.user} = {
+        profiles.${myUser} = {
           containers = import ./containers.nix;
           containersForce = true;
           id = 0;
           isDefault = true;
-          name = "${vars.name}";
+          name = userName;
           search = import ./search.nix { inherit pkgs; };
           settings = import ./settings.nix { inherit config; };
           #userChrome = builtins.readFile ./userChrome.css;

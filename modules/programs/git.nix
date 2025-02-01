@@ -1,8 +1,8 @@
 {
   cfgOpts,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.git;
@@ -17,7 +17,7 @@ in {
   config = {
     myOptions.git.ssh.enable = lib.mkDefault true;
 
-    home-manager.users.${vars.user} = lib.mkMerge [
+    home-manager.users.${myUser} = lib.mkMerge [
       {
         programs.git = {
           enable = true;
@@ -56,7 +56,7 @@ in {
           ssh = let
             identityAgent = (
               if (cfgOpts."1password".enable)
-                then "/home/${vars.user}/.1password/agent.sock"
+                then "/home/${myUser}/.1password/agent.sock"
               else "" # TBD
             );
           in {
@@ -67,6 +67,10 @@ in {
                 forwardAgent = true;
               };
               "T1" = {
+                extraOptions.IdentityAgent = identityAgent;
+                forwardAgent = true;
+              };
+              "T450s" = {
                 extraOptions.IdentityAgent = identityAgent;
                 forwardAgent = true;
               };

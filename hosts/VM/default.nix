@@ -1,7 +1,7 @@
 {
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: {
   imports = [
@@ -36,7 +36,7 @@
   # Bypass occasional login screen freeze
   services.displayManager.autoLogin = {
     enable = lib.mkForce true;
-    user = "${vars.user}";
+    user = myUser;
   };
 
   system.stateVersion = "24.11";
@@ -45,7 +45,7 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${vars.user} = {
+  home-manager.users.${myUser} = {
     home.stateVersion = "24.11";
   };
 

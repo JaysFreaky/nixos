@@ -4,9 +4,9 @@
   cfgTerm,
   config,
   lib,
+  myUser,
   nixPath,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.desktops.hyprland;
@@ -167,7 +167,7 @@ in {
       inter                         # Waybar
     ];
 
-    home-manager.users.${vars.user} = { lib, ... }: {
+    home-manager.users.${myUser} = { lib, ... }: {
       gtk = {
         enable = true;
         cursorTheme = {
@@ -195,13 +195,13 @@ in {
 
       # Use Pywal for terminal theming
       programs = {
-        alacritty.settings.import = [ "/home/${vars.user}/.cache/wal/colors-alacritty.toml" ];
+        alacritty.settings.import = [ "/home/${myUser}/.cache/wal/colors-alacritty.toml" ];
         bash.initExtra = ''
           if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${cfgTerm}" ]; then
             wal -Rqe
           fi
         '';
-        kitty.extraConfig = ''include /home/${vars.user}/.cache/wal/colors-kitty.conf'';
+        kitty.extraConfig = ''include /home/${myUser}/.cache/wal/colors-kitty.conf'';
       };
 
       #qt.enable = true;
@@ -315,7 +315,7 @@ in {
               then "${hyprApps.hyprland}"
               # Tuigreet
               else "${hyprApps.tuigreet} --asterisks --remember --remember-user-session --time --cmd ${hyprApps.hyprland}";
-            user = "${vars.user}";
+            user = myUser;
           };
         };
       };

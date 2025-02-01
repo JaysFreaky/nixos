@@ -2,8 +2,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.openrgb;
@@ -44,6 +44,6 @@ in {
       wantedBy = [ "graphical-session.target" ];
     };
 
-    users.users.${vars.user}.extraGroups = [ "i2c" ];
+    users.users.${myUser}.extraGroups = [ "i2c" ];
   };
 }

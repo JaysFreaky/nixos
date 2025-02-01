@@ -2,13 +2,13 @@
   cfgOpts,
   config,
   lib,
-  vars,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.desktops.hyprland;
 in {
   config = lib.mkIf (cfg.enable) {
-    home-manager.users.${vars.user} = { lib, ... }: let
+    home-manager.users.${myUser} = { lib, ... }: let
       hyprApps = cfg.hyprApps;
     in {
       programs.waybar = {

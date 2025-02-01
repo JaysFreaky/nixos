@@ -2,8 +2,8 @@
   cfgOpts,
   config,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.alacritty;
@@ -14,7 +14,7 @@ in {
   config = lib.mkIf (cfg.enable) {
     environment.systemPackages = [ pkgs.alacritty-theme ];
 
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       programs.alacritty = {
         enable = true;
         settings = {
@@ -25,7 +25,7 @@ in {
               style = lib.mkDefault "Regular";
             };
           };
-          import = lib.mkIf (!stylix) [ "/home/${vars.user}/.config/alacritty/current-theme.toml" ];
+          import = lib.mkIf (!stylix) [ "/home/${myUser}/.config/alacritty/current-theme.toml" ];
           live_config_reload = true;
           mouse.hide_when_typing = false;
           selection.save_to_clipboard = true;

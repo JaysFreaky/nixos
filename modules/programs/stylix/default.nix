@@ -2,8 +2,8 @@
   cfgOpts,
   inputs,
   lib,
+  myUser,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.stylix;
@@ -99,7 +99,7 @@ in {
       };
     };
 
-    home-manager.users.${vars.user} = {
+    home-manager.users.${myUser} = {
       stylix.targets = {
         alacritty.enable = true;
         bat.enable = true;

@@ -2,7 +2,7 @@
   cfgOpts,
   config,
   lib,
-  vars,
+  myUser,
   ...
 }: let
   cfg = cfgOpts."1password";
@@ -21,7 +21,7 @@ in {
       '';
     };
 
-    home-manager.users.${vars.user}.xdg.configFile."autostart/1password.desktop".text = let
+    home-manager.users.${myUser}.xdg.configFile."autostart/1password.desktop".text = let
       onePassword-pkg = config.programs._1password-gui.package;
     in (lib.strings.replaceStrings
       [ "Exec=1password %U" ]
@@ -33,7 +33,7 @@ in {
       _1password.enable = false; # CLI
       _1password-gui = {
         enable = true;
-        polkitPolicyOwners = [ "${vars.user}" ];
+        polkitPolicyOwners = [ myUser ];
       };
     };
   };

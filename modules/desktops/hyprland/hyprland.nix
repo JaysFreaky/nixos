@@ -1,9 +1,9 @@
 {
   cfgOpts,
   lib,
+  myUser,
   nixPath,
   pkgs,
-  vars,
   ...
 }: let
   cfg = cfgOpts.desktops.hyprland;
@@ -15,7 +15,7 @@
   };
 in {
   config = lib.mkIf (cfg.enable) {
-    home-manager.users.${vars.user} = { lib, ... }: let
+    home-manager.users.${myUser} = { lib, ... }: let
       hyprApps = cfg.hyprApps;
     in {
       wayland.windowManager.hyprland = {
@@ -28,7 +28,7 @@ in {
           mainMod = "SUPER";
         in {
           # Import optional color schemes
-          #source = "/home/${vars.user}/.cache/wal/colors-hyprland.conf";
+          #source = "/home/${myUser}/.cache/wal/colors-hyprland.conf";
 
           ################
           ### MONITORS ###

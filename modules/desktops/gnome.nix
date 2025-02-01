@@ -3,10 +3,10 @@
   cfgTerm,
   config,
   lib,
+  myUser,
   nixPath,
   pkgs,
   stable,
-  vars,
   ...
 }: let
   cfg = cfgOpts.desktops.gnome;
@@ -43,17 +43,17 @@
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
       # Alacritty
-      ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${myUser}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
       #gsettings set org.gnome.desktop.background picture-uri '${nixPath}/assets/wallpapers/blobs-l.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Alacritty
-      ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${vars.user}/.config/alacritty/current-theme.toml
+      ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${myUser}/.config/alacritty/current-theme.toml
       # Kitty
-      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${vars.user}/.config/kitty/current-theme.conf
+      ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
       #gsettings set org.gnome.desktop.background picture-uri-dark '${nixPath}/assets/wallpapers/blobs-d.png'
@@ -166,11 +166,11 @@ in {
     # Workaround to display profile image at login screen - image needs +x
     system.activationScripts.showProfileImage.text = ''
       mkdir -p /var/lib/AccountsService/{icons,users}
-      cp /home/${vars.user}/.face /var/lib/AccountsService/icons/${vars.user}
-      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${vars.user}\nSession=gnome\nSystemAccount=false\n" > /var/lib/AccountsService/users/${vars.user}
+      cp /home/${myUser}/.face /var/lib/AccountsService/icons/${myUser}
+      echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${myUser}\nSession=gnome\nSystemAccount=false\n" > /var/lib/AccountsService/users/${myUser}
     '';
  
-    home-manager.users.${vars.user} = { config, lib, ... }: rec {
+    home-manager.users.${myUser} = { config, lib, ... }: rec {
       dconf.settings = {
         "ca/desrt/dconf-editor".show-warning = false;
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {

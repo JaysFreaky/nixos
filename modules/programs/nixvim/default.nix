@@ -1,7 +1,13 @@
-{ config, inputs, lib, vars, ... }: let
+{
+  config,
+  inputs,
+  lib,
+  myUser,
+  ...
+}: let
   stylix = config.stylix.enable;
 in { 
-  home-manager.users.${vars.user} = { config, ... }: {
+  home-manager.users.${myUser} = { config, ... }: {
     imports = [
       inputs.nixvim.homeManagerModules.nixvim
       ./plugins
@@ -251,6 +257,5 @@ in {
         vim-be-good.enable = true;
       };
     };
-
   };
 }
