@@ -40,6 +40,9 @@
       FW13.modules = [
         inputs.hardware.nixosModules.framework-13-7040-amd
         inputs.lanzaboote.nixosModules.lanzaboote
+        {
+          nixpkgs.overlays = [ inputs.framework-plymouth.overlays.default ];
+        }
       ];
 
       # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'

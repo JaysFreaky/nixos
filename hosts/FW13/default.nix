@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   lib,
   myUser,
   #nixPath,
@@ -308,12 +307,10 @@ in {
       timeout = 2;
     };
 
-    plymouth = let
-      framework-plymouth = inputs.framework-plymouth.packages.${pkgs.system}.default;
-    in {
+    plymouth = {
       enable = true;
       theme = "framework";
-      themePackages = [ framework-plymouth ];
+      themePackages = [ pkgs.framework-plymouth ];
     };
 
     supportedFilesystems = [

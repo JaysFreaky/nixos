@@ -433,11 +433,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1738250915,
-        "narHash": "sha256-UwyHMvx+fP63NhMRE84BOUaWl0zI8BvK2wCQGVIiAhk=",
+        "lastModified": 1738709829,
+        "narHash": "sha256-ZpoCyyv0HANdHWL2pf9z/lwbbmUBE4jLSX9U1YGfyKo=",
         "owner": "JaysFreaky",
         "repo": "framework-plymouth",
-        "rev": "e033bc537c9908e32f5f6ad7950e1ace8f9dcb2e",
+        "rev": "5f254ab9f3f35cb75cb882a9065141449bfe7ffc",
         "type": "github"
       },
       "original": {
@@ -1164,11 +1164,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1724819573,
-        "narHash": "sha256-GnR7/ibgIH1vhoy8cYdmXE6iyZqKqFxQSVkFgosBh6w=",
+        "lastModified": 1738680400,
+        "narHash": "sha256-ooLh+XW8jfa+91F1nhf9OF7qhuA/y1ChLx6lXDNeY5U=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "71e91c409d1e654808b2621f28a327acfdad8dc2",
+        "rev": "799ba5bffed04ced7067a91798353d360788b30d",
         "type": "github"
       },
       "original": {
