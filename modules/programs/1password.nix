@@ -11,13 +11,10 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     # Allow _1password-gui to communicate with its browser extension
-      # This, however, does not work when the browser is installed via HM
     environment.etc."1password/custom_allowed_browsers" = {
-      enable = lib.mkIf (!config.programs.firefox.enable) false;
       mode = "0755";
       text = ''
         ${cfgOpts.browser}
-        .floorp-wrapped
       '';
     };
 

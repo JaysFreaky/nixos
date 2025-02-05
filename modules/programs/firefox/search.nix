@@ -1,4 +1,7 @@
-{ pkgs, ... }: {
+{
+  pkgs,
+  ...
+}: {
   default = "Startpage";
   force = true;
   privateDefault = "Google";

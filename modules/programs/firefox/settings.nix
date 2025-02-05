@@ -1,4 +1,7 @@
-{ config, ... }: {
+{
+  config,
+  ...
+}: {
   /****************************************************************************
    * Betterfox                                                                *
    * "Ad meliora"                                                             *
@@ -65,9 +68,10 @@
     "browser.urlbar.speculativeConnect.enabled" = false;
   "network.dns.disablePrefetch" = true;
   "network.dns.disablePrefetchFromHTTPS" = true;
-  "network.http.speculative-parallel-limit" = 0;
-  "network.prefetch-next" = false;
-  "network.predictor.enabled" = false;
+  # Handled via policies.NetworkPrediction?
+    "network.http.speculative-parallel-limit" = 0;
+    "network.prefetch-next" = false;
+    "network.predictor.enabled" = false;
   "network.predictor.enable-prefetch" = false;
 
   /** EXPERIMENTAL ***/
@@ -125,7 +129,6 @@
     "privacy.sanitize.pending" = ''
       [{"id":"newtab-container","itemsToClear":[],"options":{}},{"id":"shutdown","itemsToClear":["cache","cookies","offlineApps","history","formdata","downloads"],"options":{}}]
     '';
-    #"privacy.sanitize.pending" = ''[{"id":"shutdown","itemsToClear":["cache","cookies","offlineApps"],"options":{}}]'';
   # 0=everything, 1=last hour, 2=last 2 hours, 3=last 4 hours
   # 4=today, 5=last 5 minutes, 6=last 24 hours
     "privacy.sanitize.timeSpan" = 0;
@@ -346,7 +349,7 @@
   "browser.aboutConfig.showWarning" = false;
   # first run
     "browser.aboutwelcome.enabled" = false;
-    "browser.startup.firstrunSkipsHomepage" = false;
+    "browser.startup.firstrunSkipsHomepage" = true;
   # disable what's new toolbar
     "browser.messaging-system.whatsNewPanel.enabled" = false;
   "browser.preferences.moreFromMozilla" = false;
@@ -416,10 +419,10 @@
   # Settings->Home->New Tabs and Windows
     # 0=blank, 1=home, 2=last visited page, 3=resume previous session
       "browser.startup.page" = 1;
-    # extension path is dynamic, so commented out
-      #"browser.startup.homepage" = "";
+    # Set to Tabliss automatically via policies.ExtensionSettings
+      #"browser.startup.homepage" = "moz-extension://";
     "browser.newtab.extensionControlled" = true;
-    #"browser.newtab.privateAllowed" = false;
+    "browser.newtab.privateAllowed" = false;
   # Settings->Home->Firefox Home Control
     "browser.newtabpage.enabled" = false;
     # 'Web Search'
@@ -441,8 +444,8 @@
       "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = false;
       "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = false;
       "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
-  # always, newtab, never
-    "browser.toolbars.bookmarks.visibility" = "newtab";
+  # always, newtab, never - Handled via policies.DisplayBookmarksinToolbar
+    #"browser.toolbars.bookmarks.visibility" = "newtab";
 
   /** POCKET ***/
   "extensions.pocket.enabled" = false;
@@ -495,8 +498,8 @@
     "extensions.autoDisableScopes" = 0;
 
   /** BOOKMARKS ***/
-  # disable default bookmarks
-    "browser.bookmarks.restore_default_bookmarks" = false;
+  # disable default bookmarks - handled by policies.NoDefaultBookmarks
+    #"browser.bookmarks.restore_default_bookmarks" = false;
   # enable mobile bookmarks
     "browser.bookmarks.showMobileBookmarks" = true;
 
@@ -565,5 +568,4 @@
   "media.videocontrols.picture-in-picture.video-toggle.enabled" = false;
   "services.sync.prefs.sync.floorp.browser.note.memos" = true;
   "sidebar.position_start" = false;
-
 }
