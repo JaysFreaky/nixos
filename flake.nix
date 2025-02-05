@@ -15,6 +15,10 @@
     jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
     lanzaboote.url = "github:nix-community/lanzaboote/v0.4.2";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nixos-artwork = {
+      url = "github:NixOS/nixos-artwork";
+      flake = false;
+    };
     nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -32,10 +36,12 @@
   outputs = { self, nixpkgs, ... } @ inputs: let
     # 'nixos-rebuild switch --flake .#your-hostname'
     hostSystems = {
+      /*
       Dekki.modules = [
         inputs.chaotic.nixosModules.default
         inputs.jovian.nixosModules.jovian
       ];
+      */
 
       FW13.modules = [
         inputs.hardware.nixosModules.framework-13-7040-amd
@@ -51,10 +57,12 @@
         modules = [ ./hosts/iso ];
       };
 
+      /*
       Ridge.modules = [
         inputs.chaotic.nixosModules.default
         inputs.jovian.nixosModules.jovian
       ];
+      */
 
       T1.modules = [ inputs.chaotic.nixosModules.default ];
 

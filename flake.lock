@@ -966,6 +966,22 @@
         "type": "github"
       }
     },
+    "nixos-artwork": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1738002455,
+        "narHash": "sha256-VIrSOBCCNq6Fc0dS7XMtC1VebnjRvIUi0/kPal2gWcU=",
+        "owner": "NixOS",
+        "repo": "nixos-artwork",
+        "rev": "33856d7837cb8ba76c4fc9e26f91a659066ee31f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixos-artwork",
+        "type": "github"
+      }
+    },
     "nixos-cosmic": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -1399,6 +1415,7 @@
         "jovian": "jovian_2",
         "lanzaboote": "lanzaboote",
         "nix-flatpak": "nix-flatpak",
+        "nixos-artwork": "nixos-artwork",
         "nixos-cosmic": "nixos-cosmic",
         "nixpkgs": "nixpkgs_7",
         "nixpkgs-stable": "nixpkgs-stable_3",

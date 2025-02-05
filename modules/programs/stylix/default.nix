@@ -38,13 +38,13 @@ in {
     };
     wallpaper = {
       dark = lib.mkOption {
-        default = "${pkgs.gnome-backgrounds}/share/backgrounds/gnome/amber-d.jxl";
+        default = "${inputs.nixos-artwork}/wallpapers/nix-wallpaper-binary-black.png";
         description = "File path to choosen wallpaper.";
         example = "/path/to/file.ext";
         type = lib.types.str;
       };
       light = lib.mkOption {
-        default = "${pkgs.gnome-backgrounds}/share/backgrounds/gnome/amber-l.jxl";
+        default = "${inputs.nixos-artwork}/wallpapers/nix-wallpaper-binary-blue.png";
         description = "File path to choosen wallpaper.";
         example = "/path/to/file.ext";
         type = lib.types.str;
