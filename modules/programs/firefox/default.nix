@@ -23,6 +23,15 @@ in {
   config.home-manager.users.${myUser} = {
     programs.${browser} = {
       enable = true;
+      nativeMessagingHosts = (
+        lib.optionals (cfgOpts.desktops.gnome.enable) [
+          pkgs.gnome-browser-connector
+        ]
+      ) ++ (
+        lib.optionals (cfgOpts.desktops.kde.enable) [
+          pkgs.kdePackages.plasma-browser-integration
+        ]
+      );
       policies = import ./policies.nix;
 
       profiles.${myUser} = {

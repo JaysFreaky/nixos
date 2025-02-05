@@ -120,6 +120,11 @@ in {
     ];
 
     programs = {
+      kdeconnect = {
+        enable = true;
+        package = pkgs.gnomeExtensions.gsconnect;
+      };
+
       # Manages keys/passwords in gnome-keyring
       seahorse.enable = true;
 
@@ -147,7 +152,7 @@ in {
 
     services = {
       gnome = {
-        games.enable = false;
+        gnome-browser-connector.enable = true;
         gnome-keyring.enable = true;
         sushi.enable = true;
       };

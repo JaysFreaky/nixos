@@ -103,6 +103,8 @@ in {
       ];
     };
 
+    programs.kdeconnect.enable = true;
+
     #security.pam.services.sddm.kwallet.enable = true;
 
     services = {
