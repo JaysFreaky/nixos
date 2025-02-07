@@ -14,7 +14,7 @@
     };
     jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
     lanzaboote.url = "github:nix-community/lanzaboote/v0.4.2";
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     nixos-artwork = {
       url = "github:NixOS/nixos-artwork";
       flake = false;
