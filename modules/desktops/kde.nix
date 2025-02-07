@@ -574,6 +574,10 @@ in {
             archive = [ "org.kde.ark.desktop" ];
             audio = [ "org.kde.elisa.desktop" ];
             calendar = [ "" ];
+            connect = [
+              "org.kde.kdeconnect.sms.desktop"
+              #"org.kde.kdeconnect.app.desktop"
+            ];
             image = [ "org.kde.gwenview.desktop" ];
             pdf = [ "okularApplication_pdf.desktop" ];
             text = [ "org.kde.kate.desktop" ];
