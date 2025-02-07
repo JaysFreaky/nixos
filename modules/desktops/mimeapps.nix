@@ -189,6 +189,10 @@
   "image/x-xpixmap" = mime.image;
   "image/x-webp" = mime.image;
 
+  # GS/KDE-Connect
+  "x-scheme-handler/sms" = mime.connect;
+  "x-scheme-handler/tel" = mime.connect;
+
   # PDF / Reader
   #"application/epub+zip" = mime.ebook;
   #"application/ereader" = mime.ebook;
