@@ -50,8 +50,8 @@ in {
       ];
 
       variables = {
-        "STEAM_EXTRA_COMPAT_TOOLS_PATHS" = "/home/${myUser}/.steam/steam/compatibilitytools.d";
-        #"STEAM_FORCE_DESKTOPUI_SCALING" = "${builtins.toString cfgHosts.scale}";
+        STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${myUser}/.steam/steam/compatibilitytools.d";
+        #STEAM_FORCE_DESKTOPUI_SCALING = "${builtins.toString cfgHosts.scale}";
       };
     };
 
@@ -61,7 +61,7 @@ in {
           executable = true;
           text = ''
             #!/usr/bin/env bash
-            export LD_LIBRARY_PATH=${pkgs.libGL}/lib:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.libGL}/lib
             cd ~/Games/Severed_Chains_Linux/
             ${lib.getExe' pkgs.jdk "java"} -cp "lod-game-cbb72c363c4425e53434bd75874d9d697a6cdda2.jar:libs/*" legend.game.Main -ea
           '';

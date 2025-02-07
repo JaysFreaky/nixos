@@ -108,7 +108,7 @@ in {
       ];
 
       # Fix black borders around windows until amdvlk patch
-      variables."GSK_RENDERER" = "gl";
+      variables.GSK_RENDERER = "gl";
     };
 
     nixpkgs.overlays = lib.mkIf (cfgOpts.git.ssh.enable && cfgOpts."1password".enable) [
