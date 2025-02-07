@@ -18,18 +18,22 @@ in {
       ];
 
       environment = {
+        # Suppress Firefox's libva logging
+        etc."libva.conf".text = "LIBVA_MESSAGING_LEVEL=1";
         systemPackages = with pkgs; [
           egl-wayland
           nvtopPackages.nvidia
         ];
         variables = {
+          __GL_GSYNC_ALLOWED = 1;
+          __GL_VRR_ALLOWED = 1;
           __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-          # GBM could possibily cause Firefox to crash - comment out if so
+          # GBM_BACKEND could possibily cause Firefox to crash - comment out if so
           GBM_BACKEND = "nvidia-drm";
           # Hardware Accelaration - 'nvidia' or 'vdpau'
           LIBVA_DRIVER_NAME = "nvidia";
           # Disables the Firefox sandbox for the RDD process that the decoder runs in
-          MOZ_DISABLE_RDD_SANDBOX = "1";
+          MOZ_DISABLE_RDD_SANDBOX = 1;
           # Library backend - 'direct' or 'egl'
           NVD_BACKEND = "direct";
         };
@@ -40,7 +44,6 @@ in {
         nvidia = {
           # "nvidia-drm.modeset=1" / "nvidia-drm.fbdev=1" enables dedicated framebuffer
           modesetting.enable = true;
-          # Nvidia settings application
           nvidiaSettings = true;
           # Starting with 560, open drivers are used by default
           open = false;
@@ -53,6 +56,8 @@ in {
             # Experimental: Turns off GPU when not in use - cannot be used with nvidia.prime.sync
             finegrained = false;
           };
+          # nvidia-vaapi-driver
+          videoAcceleration = true;
         };
       };
 
@@ -66,12 +71,7 @@ in {
       services.xserver.videoDrivers = [ "nvidia" ];
     })
 
-    (lib.mkIf (cfg.enable && cfgOpts.desktops.hyprland.enable) {
-      environment.sessionVariables = {
-        __GL_GSYNC_ALLOWED = 1;
-        __GL_VRR_ALLOWED = 1;
-      };
-    })
+    #(lib.mkIf (cfg.enable && cfgOpts.desktops.hyprland.enable) { })
 
     (lib.mkIf (cfg.enable && cfgOpts.desktops.kde.enable) {
       # Disable GSP Mode - Smoother Plasma Wayland experience
