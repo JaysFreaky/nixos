@@ -1,4 +1,8 @@
-{ lib, pkgs, kernel ? pkgs.linuxPackages_latest.kernel }:
+{
+  lib,
+  pkgs,
+  kernel ? pkgs.linuxPackages_latest.kernel
+}:
 
 pkgs.stdenv.mkDerivation {
   pname = "fw-usbpd-charger";
@@ -8,6 +12,8 @@ pkgs.stdenv.mkDerivation {
   kernelVersion = kernel.modDirVersion;
 
   modulePath = "drivers/power/supply";
+
+  patches = [ ./usbpd_charger.patch ];
 
   buildPhase = ''
     BUILT_KERNEL=$kernel_dev/lib/modules/$kernelVersion/build
@@ -32,5 +38,4 @@ pkgs.stdenv.mkDerivation {
     description = "Framework cros_usbpd_charger kernel module";
     license = lib.licenses.gpl3;
   };
-
 }
