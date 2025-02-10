@@ -7,9 +7,8 @@
   #stable
   ...
 }: let
-  # pkgs or stable
-  protonMB = pkgs.protonmail-bridge-gui;
-  # Whether to enable the fingerprint reader
+  protonMB = pkgs.protonmail-bridge-gui;  # pkgs or stable
+  # Whether or not to enable the fingerprint reader
   useFP = true;
 in {
   imports = [
@@ -162,6 +161,16 @@ in {
         )
         "X-GNOME-Autostart-enabled=true"
       ];
+
+      "autostart/ProtonVPN.desktop".text = lib.strings.concatLines [
+        (lib.strings.replaceStrings
+          [ "Exec=protonvpn-app" ]
+          [ "Exec=${lib.getExe pkgs.protonvpn-gui} --start-minimized" ]
+          (lib.strings.fileContents "${pkgs.protonvpn-gui}/share/applications/protonvpn-app.desktop")
+        )
+        "X-GNOME-Autostart-enabled=true"
+      ];
+
       "easyeffects/output/${eePreset}.json".source = pkgs.fetchFromGitHub {
         owner = "FrameworkComputer";
         repo = "linux-docs";
