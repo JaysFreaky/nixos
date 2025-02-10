@@ -167,7 +167,7 @@ in {
         remotePlay.openFirewall = true;
 
         package = pkgs.steam.override {
-          extraEnv.LD_PRELOAD = "${lib.getLib pkgs.gamemode}/lib/libgamemode.so";
+          extraEnv.LD_PRELOAD = "${pkgs.gamemode.lib}/lib/libgamemode.so";
           extraPkgs = pkgs: with pkgs; [
             # Gamescope fixes for undefined symbols in X11 session
             keyutils
