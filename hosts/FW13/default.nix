@@ -64,7 +64,7 @@ in {
     # Communication
       discord                 # Discord
       protonMB                # GUI bridge for Thunderbird
-      thunderbird             # Email client
+      thunderbird-latest      # Email client
 
     # Framework Hardware
     ] ++ lib.optionals (useFP) [
