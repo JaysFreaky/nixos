@@ -7,6 +7,8 @@
   #stable
   ...
 }: let
+  # Patch kernel to log usbpd instead of warn
+  fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
   protonMB = pkgs.protonmail-bridge-gui;  # pkgs or stable
   # Whether or not to enable the fingerprint reader
   useFP = true;
@@ -222,26 +224,23 @@ in {
       '';
     };
 
-    thermald.enable = true;
-
-    # System performance adjusts when plugged into power - power_dpm_force_performance_level is auto by default
+    # GPU performance adjusts when plugged into power
     udev.extraRules = let
       powerMode = pkgs.writeShellScriptBin "power-mode" ''
         #!/usr/bin/env bash
         # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
         GPU='/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0'
         DPM_PERF_LEVEL=low
-        PPD=power-saver
 
         if [ "$1" -eq 1 ]; then
           DPM_PERF_LEVEL=high
-          PPD=performance
         fi
 
         echo "$DPM_PERF_LEVEL" > "$GPU"/power_dpm_force_performance_level
-        #${lib.getExe pkgs.power-profiles-daemon} set "$PPD"
       '';
-    in ''SUBSYSTEM=="power_supply" RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"'';
+    in ''
+      SUBSYSTEM=="power_supply", RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"
+    '';
 
     upower = {
       enable = true;
@@ -271,18 +270,16 @@ in {
     };
 
     blacklistedKernelModules = [
-      # For amd_s2idle.py debugging, as it taints the kernel
-      #"framework_laptop"
+      #"framework_laptop" # Taints kernel when debugging w/ amd_s2idle
     ];
     # Allow 5GHz wifi
-    extraModprobeConfig = ''options cfg80211 ieee80211_regdom="US"'';
-    #extraModulePackages = with config.boot.kernelPackages; [ ];
+    extraModprobeConfig = "options cfg80211 ieee80211_regdom=\"US\"";
+    #extraModulePackages = [ fw-usbpd-charger ];
     kernelModules = [ "nfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
     # Testing reduced battery usage during suspend
       "acpi.ec_no_wakeup=1"
-      "rtc_cmos.use_acpi_alarm=1"
     # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
     # Disable IPv6 stack
@@ -335,8 +332,7 @@ in {
   networking = {
     enableIPv6 = false;
     networkmanager.wifi = {
-      # iwd provides more stability/throughput on AMD FW models
-      backend = "iwd";
+      backend = "iwd";  # iwd performs better on AMD FW models
       macAddress = "stable-ssid";
       powersave = false;
     };
