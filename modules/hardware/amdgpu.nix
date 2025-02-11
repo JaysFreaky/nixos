@@ -9,10 +9,10 @@ in {
   options.myOptions.hardware.amdgpu = {
     enable = lib.mkEnableOption "AMDGPU";
     undervolt = {
-      enable = lib.mkEnableOption "Undervolting AMDGPU";
+      enable = lib.mkEnableOption "AMDGPU undervolting support";
       gpu = lib.mkOption {
         description = "GPU's persistant path can be found by running: 'readlink -f /sys/class/drm/card*/device'";
-        example = "/sys/devices/pci0000\:00/.../.../...";
+        example = "/sys/devices/pci0000:00/.../.../...";
         type = lib.types.str;
       };
       clockMin = lib.mkOption {
@@ -63,7 +63,7 @@ in {
           # boot.initrd.kernelModules: "amdgpu"
           initrd.enable = true;
           # hardware.graphics.extraPackages: pkgs.rocmPackages.clr/.icd
-          opencl.enable = false;
+          opencl.enable = false;  # Rocm currently fails to build, so disabled for now
         };
 
         graphics = {
@@ -105,8 +105,7 @@ in {
       # Create a service to undervolt GPU
       systemd.services.amdgpu-undervolt = let
         gpuScript = pkgs.writeShellScriptBin "amdgpu-uv" ''
-          #!/usr/bin/env bash
-          GPU=${cfg.undervolt.gpu}
+          GPU='${cfg.undervolt.gpu}'
 
           echo "Setting GPU min clock"
           echo s 0 ${builtins.toString cfg.undervolt.clockMin} | tee "$GPU"/pp_od_clk_voltage

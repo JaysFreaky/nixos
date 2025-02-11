@@ -26,7 +26,7 @@
         enable = true;
         undervolt = {
           enable = true;
-          gpu = "/sys/devices/pci0000\:00/0000\:00\:03.1/0000\:08\:00.0/0000\:09\:00.0/0000\:0a\:00.0"; # RX 6950 XT
+          gpu = "/sys/devices/pci0000:00/0000:00:03.1/0000:08:00.0/0000:09:00.0/0000:0a:00.0"; # RX 6950 XT
           clockMin = 2100; # Default: 500
           clockMax = 2200; # Default: 2664
           powerLimit = 300000000; # Default: 284W
@@ -183,7 +183,6 @@
     );
     kernelParams = [
       "amd_pstate=active"
-      # Hides text prior to plymouth boot logo
       "quiet"
     ];
 
