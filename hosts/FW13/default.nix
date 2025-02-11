@@ -224,8 +224,8 @@ in {
       '';
     };
 
-    # GPU performance adjusts when plugged into power
     udev.extraRules = let
+      # GPU performance adjusts based upon power input
       gpuPowerMode = pkgs.writeShellScriptBin "gpu-power" ''
         # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
         GPU='/sys/devices/pci0000:00/0000:00:08.1/0000:c1:00.0'
@@ -275,11 +275,8 @@ in {
     kernelModules = [ "nfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-    # Fixes VP9/VAAPI video glitches
-      "amd_iommu=off"
-    # Disable IPv6 stack
+      "amd_iommu=off" # Fixes VP9/VAAPI video glitches
       "ipv6.disable=1"
-    # Hides any text before showing plymouth boot logo
       "quiet"
     ];
 
