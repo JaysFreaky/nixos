@@ -226,20 +226,15 @@ in {
 
     # GPU performance adjusts when plugged into power
     udev.extraRules = let
-      powerMode = pkgs.writeShellScriptBin "power-mode" ''
-        #!/usr/bin/env bash
+      gpuPowerMode = pkgs.writeShellScriptBin "gpu-power" ''
         # Find persistant GPU path: readlink -f /sys/class/drm/card1/device
-        GPU='/sys/devices/pci0000\:00/0000\:00\:08.1/0000\:c1\:00.0'
-        DPM_PERF_LEVEL=low
-
-        if [ "$1" -eq 1 ]; then
-          DPM_PERF_LEVEL=high
-        fi
-
-        echo "$DPM_PERF_LEVEL" > "$GPU"/power_dpm_force_performance_level
+        GPU='/sys/devices/pci0000:00/0000:00:08.1/0000:c1:00.0'
+        echo "$1" > "$GPU"/power_dpm_force_performance_level
       '';
     in ''
-      SUBSYSTEM=="power_supply", RUN+="${lib.getExe powerMode} %E{POWER_SUPPLY_ONLINE}"
+      ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${lib.getExe gpuPowerMode} low"
+      ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${lib.getExe gpuPowerMode} high"
+      ACTION=="add", SUBSYSTEM=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0D", ATTR{power/wakeup}="disabled"
     '';
 
     upower = {
@@ -274,12 +269,12 @@ in {
     ];
     # Allow 5GHz wifi
     extraModprobeConfig = "options cfg80211 ieee80211_regdom=\"US\"";
-    #extraModulePackages = [ fw-usbpd-charger ];
+    extraModulePackages = [
+      fw-usbpd-charger  # Taints kernel when debugging w/ amd_s2idle
+    ];
     kernelModules = [ "nfs" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
-    # Testing reduced battery usage during suspend
-      "acpi.ec_no_wakeup=1"
     # Fixes VP9/VAAPI video glitches
       "amd_iommu=off"
     # Disable IPv6 stack
