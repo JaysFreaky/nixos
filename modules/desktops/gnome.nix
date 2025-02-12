@@ -6,7 +6,6 @@
   myUser,
   nixPath,
   pkgs,
-  stable,
   ...
 }: let
   cfg = cfgOpts.desktops.gnome;
@@ -88,7 +87,7 @@ in {
       systemPackages = with pkgs; [
       # GNOME
         dconf-editor                # GUI dconf editor
-        stable.gnome-extension-manager     # Gnome extensions
+        gnome-extension-manager     # Gnome extensions
         gnome-tweaks                # Gnome tweaks
         libappindicator             # Allow tray icons to be displayed in GNOME
         nautilus-open-any-terminal  # Open custom terminals in nautilus
@@ -125,7 +124,7 @@ in {
         package = pkgs.gnomeExtensions.gsconnect;
       };
 
-      # Manages keys/passwords in gnome-keyring
+      # GUI manager for keys/passwords in gnome-keyring
       seahorse.enable = true;
 
       # GDM login screen settings
@@ -184,6 +183,7 @@ in {
         };
         "org/gnome/Console" = {
           custom-font = "JetBrainsMonoNL Nerd Font Mono 12";
+          ignore-scrollback-limit = true;
           use-system-font = false;
         };
         "org/gnome/desktop/interface" = {
