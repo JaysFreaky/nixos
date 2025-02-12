@@ -182,7 +182,7 @@ in {
       };
       settings = {
         auto-optimise-store = true;
-        #download-buffer-size = 67108864; # Default 67108864
+        download-buffer-size = 536870912; # 512MB in Bytes
         experimental-features = [
           "flakes"
           "nix-command"
