@@ -10,7 +10,6 @@
   ...
 }: let
   userName = "Jason";
-  superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
   imports = (
     import ../modules/desktops ++
@@ -107,7 +106,7 @@ in {
         fastfetch                   # Faster system info
         killall                     # Process killer
         shellcheck                  # Script formating checker
-        superfile-pkg               # CLI file manager
+        superfile                   # CLI file manager
         tldr                        # Abbreviated manual
         tmux                        # Multiplexor
         toybox                      # Various commands
@@ -198,13 +197,6 @@ in {
         ];
         trusted-users = [ "@wheel" ];
       };
-    };
-
-    nixpkgs = {
-      config.allowUnfree = true;
-      overlays = [
-        inputs.nur.overlays.default
-      ];
     };
 
     programs = {

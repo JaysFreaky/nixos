@@ -1,10 +1,8 @@
 {
-  description = "NixOS Systems Flake";
+  description = "NixOS Multi-System Flake";
 
   inputs = {
-    #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-    # 6.12.10 pin until 6.13 testing
-    chaotic.url = "github:chaotic-cx/nyx/625eb4eb8b5e09787636b69aa6d0eda714ec6ee5";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     disko.url = "github:nix-community/disko";
     framework-plymouth.url = "github:JaysFreaky/framework-plymouth";
     hardware.url = "github:nixos/nixos-hardware";
@@ -24,11 +22,16 @@
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
     nixvim.url = "github:nix-community/nixvim";
     nur.url = "github:nix-community/NUR";
-    plasma-manager.url = "github:nix-community/plasma-manager";
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     sops-nix.url = "github:Mic92/sops-nix";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     stylix.url = "github:danth/stylix";
-    superfile.url = "github:yorukot/superfile";
     wezterm.url = "github:wez/wezterm?dir=nix";
   };
 
@@ -44,11 +47,11 @@
       */
 
       FW13.modules = [
-        inputs.hardware.nixosModules.framework-13-7040-amd
-        inputs.lanzaboote.nixosModules.lanzaboote
         {
           nixpkgs.overlays = [ inputs.framework-plymouth.overlays.default ];
         }
+        inputs.hardware.nixosModules.framework-13-7040-amd
+        inputs.lanzaboote.nixosModules.lanzaboote
       ];
 
       # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
@@ -102,6 +105,10 @@
           myUser = config.myUser;
         };
         networking.hostName = hostName;
+        nixpkgs = {
+          config.allowUnfree = true;
+          overlays = [ inputs.nur.overlays.default ];
+        };
       })
       ./hosts/${hostName}
       ./hosts/common.nix
