@@ -63,7 +63,7 @@ in {
           # boot.initrd.kernelModules: "amdgpu"
           initrd.enable = true;
           # hardware.graphics.extraPackages: pkgs.rocmPackages.clr/.icd
-          opencl.enable = false;  # Rocm currently fails to build, so disabled for now
+          opencl.enable = true;
         };
 
         graphics = {
