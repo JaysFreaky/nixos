@@ -275,7 +275,7 @@ in {
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "amd_iommu=off" # Fixes VP9/VAAPI video glitches
-      "ipv6.disable=1"
+      #"ipv6.disable=1" # Currently breaks wireguard in protonvpn-gui
       "quiet"
     ];
 
@@ -322,6 +322,7 @@ in {
   ##########################################################
   networking = {
     enableIPv6 = false;
+    firewall.checkReversePath = "loose";
     networkmanager.wifi = {
       backend = "iwd";  # iwd performs better on AMD FW models
       macAddress = "stable-ssid";
