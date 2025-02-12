@@ -177,7 +177,10 @@ in {
         options = "--delete-older-than 30d";
       };
       optimise.automatic = true;
-      registry.nixpkgs.flake = inputs.nixpkgs;
+      registry = {
+        nixpkgs.flake = inputs.nixpkgs;
+        stable.flake = inputs.nixpkgs-stable;
+      };
       settings = {
         auto-optimise-store = true;
         #download-buffer-size = 67108864; # Default 67108864
