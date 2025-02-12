@@ -4,12 +4,14 @@
   myUser,
   #nixPath,
   pkgs,
-  #stable
+  #stable,
   ...
 }: let
   # Patch kernel to log usbpd instead of warn
   fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
+
   protonMB = pkgs.protonmail-bridge-gui;  # pkgs or stable
+
   # Whether or not to enable the fingerprint reader
   useFP = true;
 in {
@@ -69,9 +71,6 @@ in {
       thunderbird-latest      # Email client
 
     # Framework Hardware
-    ] ++ lib.optionals (useFP) [
-      fprintd                 # Fingerprint daemon
-    ] ++ [
       framework-tool          # Swiss army knife for FWs
       iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       s2idle                  # Environment for suspend testing | 's2idle ./amd_s2idle.py'
@@ -115,8 +114,7 @@ in {
     #imports = [ ./fetch-logo.nix ];
 
     dconf.settings = {
-      # Automatic screen brightness
-      "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;
+      "org/gnome/settings-daemon/plugins/power".ambient-enabled = false;  # Auto screen brightness
       "org/gnome/shell".enabled-extensions = [ "Battery-Health-Charging@maniacx.github.com" ];
       "org/gnome/shell/extensions/Battery-Health-Charging" = let
         bal = 85;
@@ -204,6 +202,7 @@ in {
   };
 
   services = {
+    # 'sudo fprintd-enroll'
     fprintd.enable = (
       if (useFP)
         then lib.mkForce true
@@ -232,9 +231,9 @@ in {
         echo "$1" > "$GPU"/power_dpm_force_performance_level
       '';
     in ''
+      ACTION=="add", SUBSYSTEM=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0D", ATTR{power/wakeup}="disabled"
       ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${lib.getExe gpuPowerMode} low"
       ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${lib.getExe gpuPowerMode} high"
-      ACTION=="add", SUBSYSTEM=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0D", ATTR{power/wakeup}="disabled"
     '';
 
     upower = {
