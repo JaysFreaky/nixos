@@ -10,7 +10,6 @@
   ...
 }: let
   userName = "Jason";
-  secrets = config.sops.secrets;
   superfile-pkg = inputs.superfile.packages.${pkgs.system}.superfile;
 in {
   imports = (
@@ -151,7 +150,7 @@ in {
     networking.networkmanager = {
       enable = true;
       ensureProfiles = {
-        environmentFiles = [ secrets."wifi.env".path ];
+        environmentFiles = [ config.sops.secrets."wifi.env".path ];
         profiles."home-wifi" = {
           connection = {
             id = "$home_ssid";
@@ -285,7 +284,7 @@ in {
             "video"
             "wheel"
           ];
-          hashedPasswordFile = secrets."user/password".path;
+          hashedPasswordFile = config.sops.secrets."user/password".path;
           isNormalUser = true;
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAMoEb31xABf0fovDku5zBfBDI2sKCixc31wndQj5VhT ${myUser}"
