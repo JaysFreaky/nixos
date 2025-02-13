@@ -3,8 +3,10 @@
     ./cmp.nix
     ./conform.nix
     ./debug.nix
+    ./image.nix
     ./lint.nix
     ./lsp.nix
+    ./markdown.nix
     ./mini.nix
     ./neo-tree.nix
     ./telescope.nix

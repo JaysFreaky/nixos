@@ -1,4 +1,8 @@
-{ config, lib, ... }: {
+{
+  config,
+  lib,
+  ...
+}: {
   # Collection of various small independent plugins/modules
   programs.nixvim.plugins.mini = {
     enable = true;

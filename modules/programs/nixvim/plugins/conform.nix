@@ -1,4 +1,7 @@
-{ pkgs, ... }: {
+{
+  pkgs,
+  ...
+}: {
   # Autoformat
   programs.nixvim = {
     plugins.conform-nvim = {

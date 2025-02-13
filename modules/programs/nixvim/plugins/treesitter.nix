@@ -1,4 +1,7 @@
-{ pkgs, ... }: {
+{
+  pkgs,
+  ...
+}: {
   # Highlight, edit, and navigate code
   programs.nixvim.plugins.treesitter = {
     enable = true;
@@ -9,6 +12,7 @@
       html
       lua
       markdown
+      markdown_inline
       nix
       vim
       vimdoc

@@ -31,7 +31,25 @@ in {
           desc = "Highlight when yanking (copying) text";
           group = "kickstart-highlight-yank";
         }
+
+        # Spellchecking
+        {
+          event = [ "FileType" ];
+          callback.__raw = ''
+            function(opts)
+              local cmp = require("cmp")
+              cmp.setup.buffer({ enabled = false })
+              vim.opt.spelllang = "en_us"
+              vim.opt.spell = true
+            end
+          '';
+          pattern = [
+            "markdown"
+            "txt"
+          ];
+        }
       ];
+
       autoGroups.kickstart-highlight-yank.clear = true;
 
       # Sync clipboard between OS and Neovim.
@@ -120,6 +138,9 @@ in {
 
         # Set highlight on search
         hlsearch = true;
+
+        # Determine how text with the "conceal" syntax attribute is shown - useful for Markdown
+        conceallevel = 2;
       };
 
 

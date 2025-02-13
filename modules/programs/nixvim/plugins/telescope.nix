@@ -1,4 +1,8 @@
-{ config, lib, ... }: {
+{
+  config,
+  lib,
+  ...
+}: {
   # Fuzzy Finder (files, lsp, etc)
   # See `:help telescope` and `:help telescope.setup()`
   programs.nixvim = {
@@ -123,6 +127,5 @@
         };
       };
     };
-
   };
 }

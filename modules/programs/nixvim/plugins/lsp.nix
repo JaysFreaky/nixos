@@ -1,4 +1,10 @@
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.programs.nixvim.plugins.lsp.servers;
+in {
   programs.nixvim = {
     autoGroups.kickstart-lsp-attach.clear = true;
 
@@ -8,6 +14,62 @@
 
       lsp = {
         enable = true;
+
+        # Enable the following language servers
+        # Feel free to add/remove any LSPs that you want here. They will automatically be installed.
+        servers = {
+          bashls = {
+            enable = true;
+            filetypes = [
+              "bash"
+              "sh"
+            ];
+          };
+
+          html = {
+            enable = true;
+            filetypes = [
+              "html"
+            ];
+          };
+
+          lua_ls = {
+            enable = true;
+            filetypes = [
+              "lua"
+            ];
+          };
+
+          marksman = {
+            enable = true;
+            autostart = true;
+            filetypes = [
+              "markdown"
+            ];
+          };
+
+          nil_ls = {
+            enable = true;
+            autostart = true;
+            filetypes = [
+              "nix"
+            ];
+            settings = {
+              #formatting.command = [ "nixpkgs-fmt" ];
+              nix = {
+                maxMemoryMB = 2560;
+                flake = {
+                  #autoEvalInputs = true;
+                  nixpkgsInputName = "nixpkgs";
+                };
+              };
+            };
+          };
+
+          #nixd.enable = lib.mkIf (!cfg.nixd.enable) true;
+        };
+
+        #capabilities = "capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())";
 
         keymaps = {
           extra = [
@@ -126,17 +188,6 @@
             })
           end
         '';
-
-        #capabilities = "capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())";
-
-        # Enable the following language servers
-        # Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-        servers = {
-          bashls.enable = true;
-          lua_ls.enable = true;
-          nil_ls.enable = true;
-          #nixd.enable = true;
-        };
       };
     };
   };
