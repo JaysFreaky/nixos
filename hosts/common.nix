@@ -102,6 +102,7 @@ in {
         bat                         # cat with syntax highlighting
         chafa                       # Terminal images
         coreutils                   # GNU utilities
+        cryptsetup                  # Encryption
         eza                         # ls/tree replacement | 'eza' or 'exa'
         fastfetch                   # Faster system info
         killall                     # Process killer

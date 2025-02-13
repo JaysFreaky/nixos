@@ -61,9 +61,9 @@ in {
   config = lib.mkIf (cfg.enable) {
     environment = {
       plasma6.excludePackages = with pkgs.kdePackages; [
-        #kwallet                    # KDE Wallet
-        #kwallet-pam                # Unlock on login
-        #kwalletmanager             # Wallet manager
+        #kwallet                      # KDE Wallet
+        #kwallet-pam                  # Unlock on login
+        #kwalletmanager               # Wallet manager
       ];
 
       systemPackages = with pkgs; let
@@ -72,11 +72,11 @@ in {
           # Background
             Background = wallpaper.sddm;
           # Form
-            Blur = 1.0;             # Default 2.0 | 0.0 - 3.0
-            BlurMax = 64;           # Default 48 | 2 - 64
-            FormPosition = "left";  # left, center, right
-            FullBlur = true;        # Everything is blurred
-            #PartialBlur = false;   # Form is blurred
+            Blur = 1.0;               # Default 2.0 | 0.0 - 3.0
+            BlurMax = 64;             # Default 48 | 2 - 64
+            FormPosition = "left";    # left, center, right
+            FullBlur = true;          # Everything is blurred
+            #PartialBlur = false;     # Form is blurred
           # Screen
             ScreenHeight = cfgHosts.height;
             ScreenWidth = cfgHosts.width;
@@ -86,20 +86,22 @@ in {
         };
       in [
       # KDE
-        #kdePackages.qt5compat       # Qt5 compatibility
-        kdePackages.sddm-kcm        # SDDM settings module
+        kdePackages.kpmcore           # Core for Partition Manager
+        kdePackages.partitionmanager  # Partition Manager
+        #kdePackages.qt5compat        # Qt5 compatibility
+        kdePackages.sddm-kcm          # SDDM settings module
 
       # Multimedia
-        haruna                      # MPV frontend
-        kdePackages.dragon          # Media player
+        haruna                        # MPV frontend
+        kdePackages.dragon            # Media player
 
       # Text
-        neovide                     # GUI launcher for neovim
+        neovide                       # GUI launcher for neovim
 
       # Theming
-        cursor.package              # For SDDM login screen
-        icon.package                # Icon theme
-        sddm-astronaut-pkg          # SDDM theme
+        cursor.package                # For SDDM login screen
+        icon.package                  # Icon theme
+        sddm-astronaut-pkg            # SDDM theme
       ];
     };
 
