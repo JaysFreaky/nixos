@@ -1,6 +1,5 @@
 [
   ./1password.nix
-  ./alacritty.nix
   ./bash.nix
   ./fastfetch.nix
   ./firefox

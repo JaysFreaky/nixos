@@ -101,7 +101,6 @@ in {
 
     home-manager.users.${myUser} = {
       stylix.targets = {
-        alacritty.enable = true;
         bat.enable = true;
         btop.enable = true;
         #hyprland.enable = true;

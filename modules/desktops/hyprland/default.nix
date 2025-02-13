@@ -195,7 +195,6 @@ in {
 
       # Use Pywal for terminal theming
       programs = {
-        alacritty.settings.import = [ "/home/${myUser}/.cache/wal/colors-alacritty.toml" ];
         bash.initExtra = ''
           if command -v wal > /dev/null 2>&1 && [ "$TERM" = "${cfgTerm}" ]; then
             wal -Rqe

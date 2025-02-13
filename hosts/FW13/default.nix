@@ -41,7 +41,7 @@ in {
       bluetooth.enable = true;
     };
 
-    # "1password", alacritty, flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, wezterm
+    # "1password", flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, wezterm
     "1password".enable = true;
     gaming.enable = true;
     plex.enable = true;

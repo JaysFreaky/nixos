@@ -11,10 +11,6 @@
   cfg = cfgOpts.desktops.gnome;
   stylix = config.stylix.enable;
 
-  alacritty = {
-    dark = "catppuccin_mocha";
-    light = "catppuccin_latte";
-  };
   kitty = {
     dark = "Catppuccin-Mocha";
     light = "Catppuccin-Latte";
@@ -41,16 +37,12 @@
   themeChange = pkgs.writeShellScriptBin "themeChange" ''
     CURRENT_THEME=$(gsettings get org.gnome.desktop.interface color-scheme | cut -d "'" -f 2)
     if [[ "$CURRENT_THEME" = "default" ]]; then
-      # Alacritty
-      ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${myUser}/.config/alacritty/current-theme.toml
       # Kitty
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
       #gsettings set org.gnome.desktop.background picture-uri '${nixPath}/assets/wallpapers/blobs-l.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
-      # Alacritty
-      ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${myUser}/.config/alacritty/current-theme.toml
       # Kitty
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
@@ -324,7 +316,6 @@ in {
           opacity = 230; # 90%
           sigma = 8;
           whitelist = [
-            "Alacritty"
             "kitty"
             "org.gnome.Console"
           ];

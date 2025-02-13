@@ -86,7 +86,7 @@
         else (stdModules hostName)
       ) ++ sysModules;
       specialArgs = let
-        cfgTerm = "kitty";  # Alacritty, kitty, or wezterm
+        cfgTerm = "kitty";  # kitty or wezterm
         nixPath = "/etc/nixos";
         stable = import inputs.nixpkgs-stable {
           inherit system;

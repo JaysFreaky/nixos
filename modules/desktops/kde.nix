@@ -11,10 +11,6 @@
 }: let
   cfg = cfgOpts.desktops.kde;
 
-  alacritty = {
-    dark = "catppuccin_mocha";
-    light = "catppuccin_latte";
-  };
   kitty = {
     dark = "Catppuccin-Mocha";
     light = "Catppuccin-Latte";
@@ -517,7 +513,6 @@ in {
       in {
         enable = true;
         darkModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.dark}.toml /home/${myUser}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${myUser}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
@@ -529,7 +524,6 @@ in {
         };
 
         lightModeScripts = {
-          alacritty = lib.mkIf (cfgOpts.alacritty.enable) "ln -fs ${pkgs.alacritty-theme}/${alacritty.light}.toml /home/${myUser}/.config/alacritty/current-theme.toml";
           kitty = lib.mkIf (cfgOpts.kitty.enable) ''
             ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${myUser}/.config/kitty/current-theme.conf
             kill -SIGUSR1 $(pidof kitty) 2>/dev/null
