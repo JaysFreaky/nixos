@@ -43,9 +43,18 @@ in {
       neovide                     # GUI launcher for neovim
     ];
 
+    programs.seahorse.enable = true;
+
+    security.pam.services = {
+      cosmic-greeter.enableGnomeKeyring = true;
+      login.enableGnomeKeyring = lib.mkForce false; # Override from services.gnome.gnome-keyring
+    };
+
     services = {
       desktopManager.cosmic.enable = true;
       displayManager.cosmic-greeter.enable = true;
+
+      gnome.gnome-keyring.enable = true;
 
       xserver = {
         enable = true;
@@ -77,5 +86,9 @@ in {
         defaultApplications = import ./mimeapps.nix { inherit mime; };
       };
     };
+
+    xdg.portal.extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
   };
 }
