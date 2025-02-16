@@ -108,8 +108,7 @@ in {
   # Home Manager
   ##########################################################
   home-manager.users.${myUser} = { config, ... }: let
-    ee-pkg = config.services.easyeffects.package;
-    eePreset = config.services.easyeffects.preset;
+    easyPreset = "fw13-easy-effects";
   in {
     #imports = [ ./fetch-logo.nix ];
 
@@ -145,14 +144,17 @@ in {
     # https://github.com/FrameworkComputer/linux-docs/tree/main/easy-effects
     services.easyeffects = {
       enable = true;
-      preset = "fw13-easy-effects";
+      preset = easyPreset;
     };
 
-    # Workaround for easyeeffects preset not auto loading
-      # https://github.com/nix-community/home-manager/issues/5185
-    systemd.user.services.easyeffects.Service.ExecStartPost = [ "${lib.getExe ee-pkg} --load-preset ${eePreset}" ];
-
-    xdg.configFile = {
+    xdg.configFile = let
+      fwRepo = pkgs.fetchFromGitHub {
+        owner = "FrameworkComputer";
+        repo = "linux-docs";
+        rev = "c8be8145fb9d8b45d6ec5949ade81998b7f755ff";
+        sha256 = "sha256-6V1wEr1Q2p3ndJMMxd+XdcvC088YL9T+XpYdcZJ1ySE=";
+      };
+    in {
       "autostart/ProtonMailBridge.desktop".text = lib.strings.concatLines [
         (lib.strings.replaceStrings
           [ "Exec=protonmail-bridge-gui" ]
@@ -171,12 +173,12 @@ in {
         "X-GNOME-Autostart-enabled=true"
       ];
 
-      "easyeffects/output/${eePreset}.json".source = pkgs.fetchFromGitHub {
-        owner = "FrameworkComputer";
-        repo = "linux-docs";
-        rev = "e70bfc83dbdcbcd2cd47259a823a17d5ccce14c2";
-        sha256 = "sha256-o4unZQBGD6nejo1KeZ9x6zGOYOHbSq7WtarGOdiu5EM=";
-      } + "/easy-effects/${eePreset}.json";
+      "easyeffects/output/${easyPreset}.json".text = (lib.strings.replaceStrings
+        [ "\"kernel-path\": \"%CFG%/irs/IR_22ms_27dB_5t_15s_0c.irs\"," ]
+        [ "\"kernel-name\": \"IR_22ms_27dB_5t_15s_0c\"," ]
+        (lib.strings.fileContents (fwRepo + "/easy-effects/${easyPreset}.json"))
+      );
+      "easyeffects/irs/IR_22ms_27dB_5t_15s_0c.irs".source = fwRepo + "/easy-effects/irs/IR_22ms_27dB_5t_15s_0c.irs";
     };
   };
 
@@ -188,10 +190,8 @@ in {
     bluetooth.powerOnBoot = lib.mkForce false;
     enableAllFirmware = true;
     firmware = [ pkgs.linux-firmware ];
-    #framework.laptop13.audioEnhancement.enable = true;
-
-    # Allow 5GHz wifi
-    wirelessRegulatoryDatabase = true;
+    framework.laptop13.audioEnhancement.enable = true;
+    wirelessRegulatoryDatabase = true;  # Allow 5GHz wifi
   };
 
   powerManagement = {
@@ -231,7 +231,6 @@ in {
         echo "$1" > "$GPU"/power_dpm_force_performance_level
       '';
     in ''
-      ACTION=="add", SUBSYSTEM=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0D", ATTR{power/wakeup}="disabled"
       ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${lib.getExe gpuPowerMode} low"
       ACTION=="change", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${lib.getExe gpuPowerMode} high"
     '';
