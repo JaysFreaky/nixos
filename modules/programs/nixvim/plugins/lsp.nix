@@ -51,15 +51,16 @@ in {
           nil_ls = {
             enable = true;
             autostart = true;
-            filetypes = [
-              "nix"
-            ];
+            filetypes = [ "nix" ];
+            rootDir = "require('lspconfig.util').root_pattern('flake.nix', '.git')";
             settings = {
               #formatting.command = [ "nixpkgs-fmt" ];
               nix = {
+                bin = "nix";
                 maxMemoryMB = 2560;
                 flake = {
-                  #autoEvalInputs = true;
+                  autoArchive = false;
+                  autoEvalInputs = false;
                   nixpkgsInputName = "nixpkgs";
                 };
               };
@@ -69,7 +70,7 @@ in {
           #nixd.enable = lib.mkIf (!cfg.nixd.enable) true;
         };
 
-        #capabilities = "capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())";
+        capabilities = "capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())";
 
         keymaps = {
           extra = [
