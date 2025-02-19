@@ -1,18 +1,13 @@
 [
   ./1password.nix
-  ./bash.nix
-  ./fastfetch.nix
-  ./firefox
   ./flatpak.nix
   ./gaming.nix
   ./git.nix
   ./kitty.nix
   #./lf
-  ./nixvim
   ./openrgb.nix
   ./plex.nix
   ./spicetify.nix
-  ./starship
   ./stylix
   ./syncthing.nix
   ./wezterm.nix

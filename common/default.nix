@@ -12,9 +12,8 @@
   userName = "Jason";
 in {
   imports = (
-    import ../modules/desktops ++
-    import ../modules/hardware ++
-    import ../modules/programs
+    import ./programs ++ 
+    import ../modules
   );
 
   options.myUser = lib.mkOption {

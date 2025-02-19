@@ -110,8 +110,8 @@
           overlays = [ inputs.nur.overlays.default ];
         };
       })
+      ./common
       ./hosts/${hostName}
-      ./hosts/common.nix
       inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager {
         home-manager = {
