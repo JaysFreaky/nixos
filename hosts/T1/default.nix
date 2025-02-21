@@ -36,12 +36,13 @@
       nvidia.enable = true;
     };
 
-    # "1password", flatpak, gaming, kitty, openrgb, plex, spicetify, syncthing, wezterm
+    # "1password", flatpak, gaming, kitty, openrgb, plex, spicetify, syncthing, wezterm, yubikey
     "1password".enable = true;
     gaming.enable = true;
     plex.enable = true;
     spicetify.enable = true;
     syncthing.enable = true;
+    yubikey.enable = true;
   };
 
 

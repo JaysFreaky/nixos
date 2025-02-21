@@ -10,4 +10,5 @@
   ./stylix
   ./syncthing.nix
   ./wezterm.nix
+  ./yubikey.nix
 ]
