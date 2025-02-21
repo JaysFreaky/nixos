@@ -408,7 +408,7 @@ in {
                     #"applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
-                    "applications:${cfgOpts.plex.shortcut}"
+                    "applications:plex-desktop.desktop"
                   ];
                 }
               ];

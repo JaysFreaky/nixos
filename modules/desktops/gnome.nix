@@ -296,7 +296,7 @@ in {
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
-            "${cfgOpts.plex.shortcut}"
+            "plex-desktop.desktop"
           ];
         };
         "org/gnome/shell/extensions/appindicator".icon-size = 16;

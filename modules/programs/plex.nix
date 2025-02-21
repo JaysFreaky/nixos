@@ -1,33 +1,18 @@
 {
-  cfgOpts,
   lib,
   pkgs,
+  cfgOpts,
   ...
 }: let
   cfg = cfgOpts.plex;
 in {
-  options.myOptions.plex = {
-    enable = lib.mkEnableOption "Plex";
-    shortcut = lib.mkOption {
-      default = "plex-desktop.desktop";
-      description = "Which desktop shortcut to use";
-      type = lib.types.str;
-    };
-  };
+  options.myOptions.plex.enable = lib.mkEnableOption "Plex";
 
   config = lib.mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      plex-desktop          # Modern - plex-desktop.desktop
-      #plex-media-player    # Outdated - plexmediaplayer.desktop
-    ];
+    environment.systemPackages = [ pkgs.plex-desktop ];
 
-    xdg.portal = {
-      extraPortals = [
-        (lib.mkIf (!cfgOpts.desktops.kde.enable) pkgs.kdePackages.xdg-desktop-portal-kde)
-        (lib.mkIf (!cfgOpts.desktops.gnome.enable) pkgs.xdg-desktop-portal-gtk)
-      ];
-      wlr.enable = true;
-      xdgOpenUsePortal = true;
-    };
+    # Required for initial login link
+      # Can be bypassed by 'set NIXOS_XDG_OPEN_USE_PORTAL=1' and then unsetting when finished
+    #xdg.portal.xdgOpenUsePortal = true;
   };
 }
