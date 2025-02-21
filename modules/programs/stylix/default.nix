@@ -1,14 +1,15 @@
 {
+  lib,
+  pkgs,
   cfgOpts,
   inputs,
-  lib,
   myUser,
-  pkgs,
   ...
 }: let
   cfg = cfgOpts.stylix;
 
   base16 = "${pkgs.base16-schemes}/share/themes";
+  switch-mode = pkgs.callPackage ./switch-mode.nix { };
   theme = {
     dark = cfg.theme.dark;
     light = cfg.theme.light;
@@ -53,6 +54,12 @@ in {
   };
 
   config = lib.mkIf (cfg.enable) {
+    environment.systemPackages = with pkgs; [
+      base16-schemes  # Presets
+      home-manager    # Required for switch-mode | 'programs.home-manager.enable' doesn't install
+      switch-mode     # HM theme switcher script
+    ];
+
     stylix = {
       enable = true;
       autoEnable = false;

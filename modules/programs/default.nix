@@ -4,7 +4,6 @@
   ./gaming.nix
   ./git.nix
   ./kitty.nix
-  #./lf
   ./openrgb.nix
   ./plex.nix
   ./spicetify.nix

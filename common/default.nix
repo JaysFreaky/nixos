@@ -1,11 +1,11 @@
 {
-  cfgTerm,
   config,
-  inputs,
   lib,
+  pkgs,
+  cfgTerm,
+  inputs,
   myUser,
   nixPath,
-  pkgs,
   #stable,
   ...
 }: let
@@ -54,7 +54,6 @@ in {
         p7zip                       # Zip encryption
         unzip                       # Zip files
         unrar                       # Rar files
-        #xdragon                    # Terminal drag'n'drop
         zip                         # Zip files
 
       # Hardware
@@ -83,7 +82,6 @@ in {
         nmap                        # Network discovery
 
       # Nix
-        home-manager                # 'programs.home-manager.enable' doesn't install
         nix-tree                    # Browse nix store
 
       # Notifications
@@ -105,8 +103,8 @@ in {
         eza                         # ls/tree replacement | 'eza' or 'exa'
         fastfetch                   # Faster system info
         killall                     # Process killer
+        ripgrep                     # Search file contents | 'rg'
         shellcheck                  # Script formating checker
-        superfile                   # CLI file manager
         tldr                        # Abbreviated manual
         tmux                        # Multiplexor
         toybox                      # Various commands
@@ -117,7 +115,6 @@ in {
         zellij                      # Tmux alternative
 
       # Theming
-        base16-schemes              # Presets
         #variety                    # Wallpapers
       ];
 
@@ -286,10 +283,8 @@ in {
           ];
         };
 
-        root = {
-          # Disables root login
-          initialHashedPassword = "!";
-        };
+        # Disables root login
+        root.initialHashedPassword = "!";
       };
     };
   };
