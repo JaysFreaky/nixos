@@ -33,6 +33,10 @@
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
     stylix.url = "github:danth/stylix";
     wezterm.url = "github:wez/wezterm?dir=nix";
+    yazi-plugins = {
+      url = "github:yazi-rs/plugins";
+      flake = false;
+    };
   };
 
 
@@ -78,12 +82,12 @@
       isBare = hostOpts.isBare or false;
       sysModules = hostOpts.modules;
       system = hostOpts.system or "x86_64-linux";
-    in nixpkgs.lib.nixosSystem {
+    in nixpkgs.lib.nixosSystem rec {
       inherit system;
       modules = (
         if (isBare)
           then ([ ])
-        else (stdModules hostName)
+        else (stdModules hostName specialArgs)
       ) ++ sysModules;
       specialArgs = let
         cfgTerm = "kitty";  # kitty or wezterm
@@ -97,7 +101,7 @@
       };
     };
 
-    stdModules = hostName: [
+    stdModules = hostName: specialArgs: [
       ({ config, ... }: {
         _module.args = {
           cfgHosts = config.myHosts;
@@ -115,6 +119,7 @@
       inputs.disko.nixosModules.disko
       inputs.home-manager.nixosModules.home-manager {
         home-manager = {
+          extraSpecialArgs = specialArgs;
           useGlobalPkgs = true;
           useUserPackages = true;
         };

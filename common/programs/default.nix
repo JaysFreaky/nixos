@@ -4,4 +4,5 @@
   ./firefox
   ./nixvim
   ./starship
+  ./yazi
 ]
