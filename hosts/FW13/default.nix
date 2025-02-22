@@ -266,8 +266,12 @@ in {
     blacklistedKernelModules = [
       #"framework_laptop" # Taints kernel when debugging w/ amd_s2idle
     ];
-    # Allow 5GHz wifi
-    extraModprobeConfig = "options cfg80211 ieee80211_regdom=\"US\"";
+    extraModprobeConfig = ''
+      # Enable 5GHz
+      options cfg80211 ieee80211_regdom="US"
+      # Fix wifi high latency
+      options mt7921e disable_aspm=1
+    '';
     extraModulePackages = [
       fw-usbpd-charger  # Taints kernel when debugging w/ amd_s2idle
     ];
