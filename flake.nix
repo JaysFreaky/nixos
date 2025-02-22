@@ -80,15 +80,6 @@
 
     mkSystem = hostName: hostOpts: let
       isBare = hostOpts.isBare or false;
-      sysModules = hostOpts.modules;
-      system = hostOpts.system or "x86_64-linux";
-    in nixpkgs.lib.nixosSystem rec {
-      inherit system;
-      modules = (
-        if (isBare)
-          then ([ ])
-        else (stdModules hostName specialArgs)
-      ) ++ sysModules;
       specialArgs = let
         cfgTerm = "kitty";  # kitty or wezterm
         nixPath = "/etc/nixos";
@@ -99,6 +90,16 @@
       in {
         inherit cfgTerm inputs nixPath stable;
       };
+      sysModules = hostOpts.modules;
+      system = hostOpts.system or "x86_64-linux";
+    in nixpkgs.lib.nixosSystem {
+      inherit system;
+      modules = (
+        if (isBare)
+          then ([ ])
+        else (stdModules hostName specialArgs)
+      ) ++ sysModules;
+      specialArgs = specialArgs;
     };
 
     stdModules = hostName: specialArgs: [

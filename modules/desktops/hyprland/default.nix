@@ -1,12 +1,12 @@
 {
+  config,
+  lib,
+  pkgs,
   cfgHosts,
   cfgOpts,
   cfgTerm,
-  config,
-  lib,
   myUser,
   nixPath,
-  pkgs,
   ...
 }: let
   cfg = cfgOpts.desktops.hyprland;
@@ -305,9 +305,9 @@ in {
         package = lib.mkIf (!config.programs.regreet.enable) pkgs.greetd.tuigreet;
         settings = let
           hyprApps = cfg.hyprApps;
-        in rec {
+        in {
           # Auto login
-          default_session = initial_session;
+          default_session = config.services.greetd.settings.initial_session;
           initial_session = {
             command = if (config.programs.regreet.enable)
               # Regreet

@@ -1,11 +1,11 @@
 {
-  cfgOpts,
-  cfgTerm,
   config,
   lib,
+  pkgs,
+  cfgOpts,
+  cfgTerm,
   myUser,
   nixPath,
-  pkgs,
   ...
 }: let
   cfg = cfgOpts.desktops.gnome;
@@ -166,7 +166,23 @@ in {
       echo -e "[User]\nIcon=/var/lib/AccountsService/icons/${myUser}\nSession=gnome\nSystemAccount=false\n" > /var/lib/AccountsService/users/${myUser}
     '';
  
-    home-manager.users.${myUser} = { config, lib, ... }: rec {
+    home-manager.users.${myUser} = { config, lib, ... }: let
+      gnomeExts = with pkgs.gnomeExtensions; [
+        alphabetical-app-grid
+        appindicator
+        bluetooth-quick-connect
+        blur-my-shell
+        clipboard-indicator
+        hibernate-status-button
+        hot-edge
+        just-perfection
+        lock-keys
+        night-theme-switcher
+        power-profile-switcher
+        vitals
+        weather-or-not
+      ];
+    in {
       dconf.settings = {
         "ca/desrt/dconf-editor".show-warning = false;
         "com/github/stunkymonkey/nautilus-open-any-terminal" = {
@@ -281,7 +297,7 @@ in {
         };
         "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
         "org/gnome/shell" = {
-          enabled-extensions = (map (extension: extension.extensionUuid) home.packages) ++ [
+          enabled-extensions = (map (extension: extension.extensionUuid) gnomeExts) ++ [
             # Enable extensions that ship, but aren't enabled by default
             "drive-menu@gnome-shell-extensions.gcampax.github.com"
             "launch-new-instance@gnome-shell-extensions.gcampax.github.com"
@@ -433,21 +449,7 @@ in {
         "Templates/Empty file".text = "";
       };
 
-      home.packages = with pkgs.gnomeExtensions; [
-        alphabetical-app-grid
-        appindicator
-        bluetooth-quick-connect
-        blur-my-shell
-        clipboard-indicator
-        hibernate-status-button
-        hot-edge
-        just-perfection
-        lock-keys
-        night-theme-switcher
-        power-profile-switcher
-        vitals
-        weather-or-not
-      ];
+      home.packages = gnomeExts;
 
       /*
       # https://home-manager-options.extranix.com/?query=neovide&release=master
@@ -496,6 +498,5 @@ in {
         };
       };
     };
-
   };
 }

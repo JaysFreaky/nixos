@@ -1,7 +1,7 @@
 {
   config,
-  myUser,
   pkgs,
+  myUser,
   ...
 }: {
   imports = [
@@ -69,11 +69,15 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${myUser} = { config, lib, ... }: rec {
+  home-manager.users.${myUser} = { config, ... }: let
+    gnomeExts = with pkgs.gnomeExtensions; [
+      dash-to-dock
+    ];
+  in {
     dconf.settings = {
       # Enable on-screen keyboard
       "org/gnome/desktop/a11y/applications".screen-keyboard-enabled = true;
-      "org/gnome/shell".enabled-extensions = (map (extension: extension.extensionUuid) home.packages);
+      "org/gnome/shell".enabled-extensions = (map (extension: extension.extensionUuid) gnomeExts);
       # Dash-to-Dock settings for a better touch screen experience
       "org/gnome/shell/extensions/dash-to-dock" = {
         background-opacity = 0.80000000000000004;
@@ -94,7 +98,7 @@
       };
     };
 
-    home.packages = with pkgs.gnomeExtensions; [ dash-to-dock ];
+    home.packages = gnomeExts;
     home.stateVersion = "24.11";
   };
 
