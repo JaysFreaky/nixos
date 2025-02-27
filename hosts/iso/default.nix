@@ -1,5 +1,11 @@
-{ config, lib, pkgs, modulesPath, ... }: let
-  nvidia  = false;
+{
+  config,
+  lib,
+  pkgs,
+  modulesPath,
+  ...
+}: let
+  nvidia = false;
 in {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
@@ -9,9 +15,14 @@ in {
   config = lib.mkMerge [
     {
       boot = {
-        #kernelModules = [ "nct6687" ];
-        #extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
-        kernelPackages = pkgs.linuxPackages_latest;
+        kernelModules = [
+          #"nct6687"
+        ];
+        extraModulePackages = with config.boot.kernelPackages; [
+          #nct6687d
+        ];
+        #kernelPackages = pkgs.linuxPackages_latest;  # ZFS won't build against 6.13.x, even with allowBroken
+        kernelPackages = pkgs.linuxPackages_6_12;
       };
 
       environment.systemPackages = with pkgs; [
@@ -36,9 +47,12 @@ in {
         trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
       };
 
-      nixpkgs.config = {
-        allowBroken = true; # Bypasses broken ZFS module in latest
-        allowUnfree = true;
+      nixpkgs = {
+        config = {
+          #allowBroken = true; # Bypass broken ZFS module
+          allowUnfree = true;
+        };
+        hostPlatform = lib.mkDefault "x86_64-linux";
       };
 
       time.timeZone = "America/Chicago";
@@ -70,6 +84,5 @@ in {
         videoDrivers = [ "nvidia" ];
       };
     })
-
   ];
 }

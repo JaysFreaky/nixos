@@ -52,7 +52,9 @@
 
       FW13.modules = [
         {
-          nixpkgs.overlays = [ inputs.framework-plymouth.overlays.default ];
+          nixpkgs.overlays = [
+            inputs.framework-plymouth.overlays.default
+          ];
         }
         inputs.hardware.nixosModules.framework-13-7040-amd
         inputs.lanzaboote.nixosModules.lanzaboote
@@ -61,7 +63,9 @@
       # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
       iso = {
         isBare = true;
-        modules = [ ./hosts/iso ];
+        modules = [
+          ./hosts/iso
+        ];
       };
 
       /*
@@ -71,15 +75,20 @@
       ];
       */
 
-      T1.modules = [ inputs.chaotic.nixosModules.default ];
+      T1.modules = [
+        inputs.chaotic.nixosModules.default
+      ];
 
-      T450s.modules = [ inputs.hardware.nixosModules.lenovo-thinkpad-t450s ];
+      T450s.modules = [
+        inputs.hardware.nixosModules.lenovo-thinkpad-t450s
+      ];
 
       VM.modules = [ ];
     };
 
     mkSystem = hostName: hostOpts: let
       isBare = hostOpts.isBare or false;
+      sysModules = hostOpts.modules;
       specialArgs = let
         cfgTerm = "kitty";  # kitty or wezterm
         nixPath = "/etc/nixos";
@@ -90,10 +99,7 @@
       in {
         inherit cfgTerm inputs nixPath stable;
       };
-      sysModules = hostOpts.modules;
-      system = hostOpts.system or "x86_64-linux";
     in nixpkgs.lib.nixosSystem {
-      inherit system;
       modules = (
         if (isBare)
           then ([ ])
@@ -128,7 +134,15 @@
       inputs.nur.modules.nixos.default
       inputs.sops-nix.nixosModules.sops
     ];
+
+    # Only used for inheriting nixpkgs-stable and declaring outputs.packages
+    system = "x86_64-linux";
   in {
     nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
+
+    packages.${system} = {
+      default = self.packages.${system}.buildIso;
+      buildIso = self.nixosConfigurations.iso.config.system.build.isoImage;
+    };
   };
 }
