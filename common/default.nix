@@ -51,7 +51,7 @@ in {
         cbonsai                     # Bonsai growing
 
       # Files
-        cryptomator                 # Encrypt cloud files - unstable refuses to build on last flake update
+        cryptomator                 # Encrypt cloud files
         exiftool                    # File metadata
         file                        # File information
         libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
