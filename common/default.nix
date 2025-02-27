@@ -37,6 +37,9 @@ in {
     };
 
     environment = {
+      # Symlink for nix.nixPath
+      etc."nix/nixpkgs".source = "${pkgs.path}";
+
       # List packages installed in system profile. To search, run:
         # $ nix search wget
       # To use a stable version, add 'stable.' to the beginning of the package:
@@ -167,11 +170,13 @@ in {
     };
 
     nix = {
+      channel.enable = false;
       gc = {
         automatic = true;
         dates = "weekly";
         options = "--delete-older-than 30d";
       };
+      nixPath = [ "nixpkgs=/etc/nix/nixpkgs" ];
       optimise.automatic = true;
       registry = {
         nixpkgs.flake = inputs.nixpkgs;
