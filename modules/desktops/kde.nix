@@ -404,10 +404,10 @@ in {
                     "applications:${cfgTerm}.desktop"
                     "applications:org.kde.dolphin.desktop"
                     "applications:${cfgOpts.browser}.desktop"
-                    "applications:spotify.desktop"
-                    #"applications:thunderbird.desktop"
+                    "applications:thunderbird.desktop"
                     "applications:discord.desktop"
                     "applications:steam.desktop"
+                    "applications:spotify.desktop"
                     "applications:plex-desktop.desktop"
                   ];
                 }
@@ -569,6 +569,7 @@ in {
           mime = {
             archive = [ "org.kde.ark.desktop" ];
             audio = [ "org.kde.elisa.desktop" ];
+            browser = [ "${cfgOpts.browser}.desktop" ];
             calendar = [ "" ];
             connect = [
               "org.kde.kdeconnect.sms.desktop"

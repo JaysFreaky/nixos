@@ -137,8 +137,8 @@
   "audio/x-xm" = mime.audio;
 
   # Browser
-  #"x-scheme-handler/http" = mime.browser;
-  #"x-scheme-handler/https" = mime.browser;
+  "x-scheme-handler/http" = mime.browser;
+  "x-scheme-handler/https" = mime.browser;
 
   # Calendar
   #"text/calendar" = mime.calendar;

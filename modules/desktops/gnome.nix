@@ -308,10 +308,10 @@ in {
             "${cfgTerm}.desktop"
             "org.gnome.Nautilus.desktop"
             "${cfgOpts.browser}.desktop"
-            "spotify.desktop"
             "thunderbird.desktop"
             "discord.desktop"
             "steam.desktop"
+            "spotify.desktop"
             "plex-desktop.desktop"
           ];
         };
@@ -484,6 +484,7 @@ in {
           mime = {
             archive = [ "org.gnome.FileRoller.desktop" ];
             audio = [ "org.gnome.Music.desktop" ];
+            browser = [ "${cfgOpts.browser}.desktop" ];
             calendar = [ "org.gnome.Calendar.desktop" ];
             connect = [ "org.gnome.Shell.Extensions.GSConnect.desktop" ];
             image = [ "org.gnome.Loupe.desktop" ];

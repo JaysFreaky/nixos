@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  cfgOpts,
   cfgTerm,
   inputs,
   myUser,
@@ -122,6 +123,7 @@ in {
       ];
 
       variables = {
+        BROWSER = cfgOpts.browser;
         EDITOR = "nvim";
         TERMINAL = cfgTerm;
       };
