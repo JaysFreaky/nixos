@@ -1,12 +1,14 @@
 {
-  #cfgHosts,
-  cfgOpts,
   config,
   lib,
-  myUser,
   pkgs,
+  #cfgHosts,
+  cfgOpts,
+  myUser,
   ...
-}: {
+}: let
+  protonMB = pkgs.protonmail-bridge-gui;  # pkgs or stable
+in {
   imports = [
     ./filesystems.nix
     ./hardware-configuration.nix
@@ -53,6 +55,8 @@
     systemPackages = with pkgs; [
     # Communication
       discord                 # Discord
+      protonMB                # GUI bridge for Thunderbird
+      thunderbird-latest      # Email client
 
     # Hardware
       polychromatic           # Razer lighting GUI
@@ -122,6 +126,12 @@
       # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
       #monitor = with cfgHosts; lib.mkForce [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
     };
+
+    xdg.configFile."autostart/ProtonMailBridge.desktop".text = (lib.strings.replaceStrings
+      [ "Exec=protonmail-bridge-gui" ]
+      [ "Exec=${lib.getExe protonMB} --no-window" ]
+      (lib.strings.fileContents "${protonMB}/share/applications/proton-bridge-gui.desktop")
+    );
   };
 
 
@@ -173,10 +183,6 @@
     };
   };
 
-  # hardware.fancontrol temp workaround
-  systemd.services.fancontrol.serviceConfig.ExecStart = let
-    configFile = pkgs.writeText "fancontrol.conf" config.hardware.fancontrol.config;
-  in lib.mkForce "${pkgs.lm_sensors}/bin/fancontrol ${configFile}";
 
   ##########################################################
   # Boot
