@@ -1,11 +1,11 @@
 {
-  cfgOpts,
   config,
-  inputs,
   lib,
+  pkgs,
+  cfgOpts,
+  inputs,
   myUser,
   nixPath,
-  pkgs,
   ...
 }: let
   cfg = cfgOpts.desktops.cosmic;
@@ -47,7 +47,7 @@ in {
 
     security.pam.services = {
       cosmic-greeter.enableGnomeKeyring = true;
-      login.enableGnomeKeyring = lib.mkForce false; # Override from services.gnome.gnome-keyring
+      login.enableGnomeKeyring = lib.mkForce false; # Override GDM's setting from services.gnome.gnome-keyring
     };
 
     services = {
@@ -71,6 +71,7 @@ in {
         mime = {
           archive = [ "org.gnome.FileRoller.desktop" ];
           audio = [ "com.system76.CosmicPlayer.desktop" ];
+          browser = [ "${cfgOpts.browser}.desktop" ];
           calendar = [ "" ];
           image = [ "org.gnome.eog.desktop" ];
           pdf = [ "org.gnome.Evince.desktop" ];
