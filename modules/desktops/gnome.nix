@@ -485,7 +485,11 @@ in {
             archive = [ "org.gnome.FileRoller.desktop" ];
             audio = [ "org.gnome.Music.desktop" ];
             browser = [ "${cfgOpts.browser}.desktop" ];
-            calendar = [ "org.gnome.Calendar.desktop" ];
+            calendar = [
+              "org.gnome.Calendar.desktop"
+              #"thunderbird.desktop"
+            ];
+            #email = [ "thunderbird.desktop" ];
             connect = [ "org.gnome.Shell.Extensions.GSConnect.desktop" ];
             image = [ "org.gnome.Loupe.desktop" ];
             pdf = [ "org.gnome.Evince.desktop" ];

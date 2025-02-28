@@ -570,7 +570,8 @@ in {
             archive = [ "org.kde.ark.desktop" ];
             audio = [ "org.kde.elisa.desktop" ];
             browser = [ "${cfgOpts.browser}.desktop" ];
-            calendar = [ "" ];
+            #calendar = [ "thunderbird.desktop" ];
+            #email = [ "thunderbird.desktop" ];
             connect = [
               "org.kde.kdeconnect.sms.desktop"
               #"org.kde.kdeconnect.app.desktop"

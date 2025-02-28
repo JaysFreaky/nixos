@@ -141,10 +141,15 @@
   "x-scheme-handler/https" = mime.browser;
 
   # Calendar
+  #"application/x-extension-ics" = mime.calendar;
   #"text/calendar" = mime.calendar;
+  #"x-scheme-handler/webcal" = mime.calendar;
+  #"x-scheme-handler/webcals" = mime.calendar;
 
   # Email
+  #"message/rfc822" = mime.email;
   #"x-scheme-handler/mailto" = mime.email;
+  #"x-scheme-handler/mid" = mime.email;
 
   # File Manager
   #"inode/directory" = mime.fileManager;

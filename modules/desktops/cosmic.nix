@@ -72,7 +72,8 @@ in {
           archive = [ "org.gnome.FileRoller.desktop" ];
           audio = [ "com.system76.CosmicPlayer.desktop" ];
           browser = [ "${cfgOpts.browser}.desktop" ];
-          calendar = [ "" ];
+          #calendar = [ "thunderbird.desktop" ];
+          #email = [ "thunderbird.desktop" ];
           image = [ "org.gnome.eog.desktop" ];
           pdf = [ "org.gnome.Evince.desktop" ];
           text = [
