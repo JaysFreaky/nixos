@@ -1,10 +1,10 @@
 {
-  cfgHosts,
-  cfgOpts,
   config,
   lib,
-  myUser,
   pkgs,
+  cfgHosts,
+  cfgOpts,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.gaming;
@@ -129,6 +129,8 @@ in {
             inhibit_screensaver = 0;
             # Game process priority
             renice = 20;
+            # Reaper checks every 5 secs for updates
+            reaper_freq = 5;
             # Scheduler policy
             softrealtime = "auto";
           };
