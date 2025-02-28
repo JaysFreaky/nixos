@@ -45,7 +45,7 @@ in {
           # "nvidia-drm.modeset=1" / "nvidia-drm.fbdev=1" enables dedicated framebuffer
           modesetting.enable = true;
           nvidiaSettings = true;
-          # Starting with 560, open drivers are used by default
+          # Starting w/ 560, open drivers are used by default
           open = false;
           # beta or stable
           package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -53,7 +53,7 @@ in {
             # "nvidia.NVreg_PreserveVideoMemoryAllocations=1" / enables nvidia-hibernate/resume/sleep.services
               # enable if graphical corruption on resumption from sleep
             enable = true;
-            # Experimental: Turns off GPU when not in use - cannot be used with nvidia.prime.sync
+            # Experimental: Turns off GPU when not in use - cannot be used w/ nvidia.prime.sync
             finegrained = false;
           };
           # nvidia-vaapi-driver

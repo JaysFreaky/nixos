@@ -93,7 +93,7 @@ in {
             }
 
             # Jump to the implementation of the word under your cursor.
-            # Useful when your language has ways of declaring types without an actual implementation.
+            # Useful when your language has ways of declaring types w/o an actual implementation.
             {
               mode = "n";
               key = "gI";

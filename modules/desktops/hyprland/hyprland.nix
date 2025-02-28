@@ -221,19 +221,19 @@ in {
             #"${mainMod} SHIFT, L, exec, nwg-bar -i \"96\""
             "${mainMod} ALT, R, exec, pkill -SIGUSR2 ${hyprApps.waybar}"
 
-            # Move focus with mainMod + arrow keys
+            # Move focus w/ mainMod + arrow keys
             "${mainMod}, left, movefocus, l"
             "${mainMod}, right, movefocus, r"
             "${mainMod}, up, movefocus, u"
             "${mainMod}, down, movefocus, d"
 
-            # Resize windows with mainMod + SHIFT + arrow keys
+            # Resize windows w/ mainMod + SHIFT + arrow keys
             "${mainMod} SHIFT, left, resizeactive, -10 0"
             "${mainMod} SHIFT, right, resizeactive, 10 0"
             "${mainMod} SHIFT, up, resizeactive, 0 -10"
             "${mainMod} SHIFT, down, resizeactive, 0 10"
 
-            # Switch workspaces with mainMod + [0-9]
+            # Switch workspaces w/ mainMod + [0-9]
             "${mainMod}, 1, workspace, 1"
             "${mainMod}, 2, workspace, 2"
             "${mainMod}, 3, workspace, 3"
@@ -245,7 +245,7 @@ in {
             "${mainMod}, 9, workspace, 9"
             "${mainMod}, 0, workspace, 10"
 
-            # Move active window to a workspace with mainMod + SHIFT + [0-9]
+            # Move active window to a workspace w/ mainMod + SHIFT + [0-9]
             "${mainMod} SHIFT, 1, movetoworkspace, 1"
             "${mainMod} SHIFT, 2, movetoworkspace, 2"
             "${mainMod} SHIFT, 3, movetoworkspace, 3"
@@ -261,17 +261,17 @@ in {
             "${mainMod}, S, togglespecialworkspace, magic"
             "${mainMod} SHIFT, S, movetoworkspace, special:magic"
 
-            # Scroll through existing workspaces with mainMod + scroll
+            # Scroll through existing workspaces w/ mainMod + scroll
             "${mainMod}, mouse_down, workspace, e+1"
             "${mainMod}, mouse_up, workspace, e-1"
           ];
 
-          # Bind resize submap to resize window with arrow keys
+          # Bind resize submap to resize window w/ arrow keys
           #bind = ALT, R, submap, resize
           # Enter resize submap
           #submap = resize
 
-          # Resize active window with arrow keys while in resize submap
+          # Resize active window w/ arrow keys while in resize submap
           #binde = , left, resizeactive, -10 0
           #binde = , right, resizeactive, 10 0
           #binde = , up, resizeactive, 0 -10
@@ -282,7 +282,7 @@ in {
           # Reset the submap and return to global
           #submap = reset
 
-          # Move/resize windows with mainMod + LMB/RMB and dragging
+          # Move/resize windows w/ mainMod + LMB/RMB and dragging
           bindm = [
             "${mainMod}, mouse:272, movewindow"
             "${mainMod}, mouse:273, resizewindow"

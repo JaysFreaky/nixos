@@ -56,7 +56,7 @@ in {
 
       keymap = {
         input.prepend_keymap = [
-          # Close input with one <Esc>
+          # Close input w/ one <Esc>
           {
             desc = "Cancel input";
             on = "<Esc>";
@@ -97,7 +97,7 @@ in {
 
           # Reverse q/Q actions
           {
-            desc = "Quit the process without outputting cwd-file";
+            desc = "Quit the process w/o outputting cwd-file";
             on = "q";
             run = "quit --no-cwd-file";
           }

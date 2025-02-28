@@ -158,7 +158,7 @@ in {
           wayland-utils             # Wayland utilities | 'wayland-info'
           wev                       # Keymapper
           wlroots                   # Wayland compositor library
-          xwayland                  # Interface X11 apps with Wayland
+          xwayland                  # Interface X11 apps w/ Wayland
       ];
     };
 

@@ -100,7 +100,7 @@ in {
         ssh-to-age                  # Convert SSH keys to Age
 
       # Terminal
-        bat                         # cat with syntax highlighting
+        bat                         # cat w/ syntax highlighting
         chafa                       # Terminal images
         coreutils                   # GNU utilities
         cryptsetup                  # Encryption

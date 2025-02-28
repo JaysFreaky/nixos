@@ -19,7 +19,7 @@ in {
       # See `:help lua-guide-autocommands`
       autoCmd = [
         # Highlight when yanking (copying) text
-        # Try it with `yap` in normal mode
+        # Try it w/ `yap` in normal mode
         # See `:help vim.highlight.on_yank()`
         {
           event = [ "TextYankPost" ];
@@ -80,7 +80,7 @@ in {
       opts = {
         # Make line numbers default
         number = true;
-        # You can also add relative line numbers, to help with jumping.
+        # You can also add relative line numbers, to help w/ jumping.
         relativenumber = true;
 
         # Enable mouse mode, can be useful for resizing splits for example!
@@ -139,7 +139,7 @@ in {
         # Set highlight on search
         hlsearch = true;
 
-        # Determine how text with the "conceal" syntax attribute is shown - useful for Markdown
+        # Determine how text w/ the "conceal" syntax attribute is shown - useful for Markdown
         conceallevel = 2;
       };
 
@@ -179,9 +179,9 @@ in {
           options.desc = "Open diagnostic [Q]uickfix list";
         }
 
-        # Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+        # Exit terminal mode in the builtin terminal w/ a shortcut that is a bit easier
         # for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
-        # is not what someone will guess without a bit more experience.
+        # is not what someone will guess w/o a bit more experience.
         #
         # NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
         # or just use <C-\><C-n> to exit terminal mode

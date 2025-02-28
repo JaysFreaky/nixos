@@ -41,7 +41,7 @@ in {
           ];
         };
       in [
-        gamescope-wsi   # Gamescope with WSI (breaks if declared in gamescope.package)
+        gamescope-wsi   # Gamescope w/ WSI (breaks if declared in gamescope.package)
         gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
         heroic          # Game launcher - Epic, GOG, Prime
         jdk             # Java games

@@ -90,7 +90,7 @@ in {
       ];
       env = {
         DXVK_HDR = "1";
-        # Not sure if required with pkgs.gamescope-wsi
+        # Not sure if required w/ pkgs.gamescope-wsi
         ENABLE_GAMESCOPE_WSI = "1";
       };
     };

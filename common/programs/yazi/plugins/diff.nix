@@ -7,7 +7,7 @@ in {
   programs.yazi = {
     keymap.manager.prepend_keymap = [
       {
-        desc = "Diff the selected with the hovered file";
+        desc = "Diff the selected w/ the hovered file";
         on = "<C-d>";
         run = "plugin ${pluginName}";
       }

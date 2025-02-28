@@ -10,7 +10,7 @@ in {
   options.myOptions."1password".enable = lib.mkEnableOption "1Password";
 
   config = lib.mkIf (cfg.enable) {
-    # Allow _1password-gui to communicate with its browser extension
+    # Allow _1password-gui to communicate w/ its browser extension
     environment.etc."1password/custom_allowed_browsers" = {
       mode = "0755";
       text = ''

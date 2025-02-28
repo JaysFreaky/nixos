@@ -13,7 +13,7 @@
       friendly-snippets.enable = true;
       cmp_luasnip.enable = true;
       # Adds other completion capabilities.
-      # nvim-cmp does not ship with all sources by default. They are split
+      # nvim-cmp does not ship w/ all sources by default. They are split
       # into multiple repos for maintenance purposes.
       cmp-nvim-lsp.enable = true;
       cmp-path.enable = true;

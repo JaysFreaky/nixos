@@ -26,13 +26,13 @@ in {
     theme = {
       dark = lib.mkOption {
         default = "catppuccin-macchiato.yaml";
-        description = "The theme's file name located within 'base16-schemes/share/themes/'.";
+        description = "The theme's file name located in 'pkgs.base16-schemes/share/themes/'.";
         example = "catppuccin-macchiato.yaml";
         type = lib.types.str;
       };
       light = lib.mkOption {
         default = "catppuccin-latte.yaml";
-        description = "The theme's file name located within 'base16-schemes/share/themes/'.";
+        description = "The theme's file name located in 'pkgs.base16-schemes/share/themes/'.";
         example = "catppuccin-latte.yaml";
         type = lib.types.str;
       };

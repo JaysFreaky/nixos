@@ -21,7 +21,7 @@ in {
         extraModulePackages = with config.boot.kernelPackages; [
           #nct6687d
         ];
-        #kernelPackages = pkgs.linuxPackages_latest;  # ZFS won't build against 6.13.x, even with allowBroken
+        #kernelPackages = pkgs.linuxPackages_latest;  # ZFS won't build against 6.13.x, even w/ allowBroken
         kernelPackages = pkgs.linuxPackages_6_12;
       };
 
