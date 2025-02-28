@@ -27,11 +27,12 @@ ssh-to-age -i /mnt/etc/ssh/ssh_host_ed25519_key.pub
 * If this is an additional system being deployed:
   * From an existing, established sops system, add the newly generated age
     key to .sops.yaml, run `sops updatekeys secrets/secrets.yaml`, commit those
-    files, and then proceed with the below commands.
+    files, and then run the commands in the code block below:
 * If this is the first time sops is being setup:
   * .sops.yaml and secrets/secrets.yaml will need to be initialized after
-    cloning the repo - refer to [sops-nix's instructions](https://github.com/Mic92/sops-nix?tab=readme-ov-file#usage-example)
-    - then come back here.
+    cloning the repo - refer to
+    [sops-nix's instructions](https://github.com/Mic92/sops-nix?tab=readme-ov-file#usage-example)
+    before running the commands in the code block below:
 
 ```sh
 mkdir -p /mnt/etc/nixos && cd $_
