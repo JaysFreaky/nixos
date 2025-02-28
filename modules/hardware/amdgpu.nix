@@ -1,7 +1,7 @@
 {
-  cfgOpts,
   lib,
   pkgs,
+  cfgOpts,
   ...
 }: let
   cfg = cfgOpts.hardware.amdgpu;
@@ -53,11 +53,12 @@ in {
 
       hardware = {
         amdgpu = {
+          # Disabling amdvlk to use mesa unless specifically required
           amdvlk = {
-            # hardware.graphics.enable / hardware.graphics.extraPackages: pkgs.amdvlk
-            enable = true;
+            # hardware.graphics.extraPackages: pkgs.amdvlk
+            #enable = true;
             # hardware.graphics.extraPackages32: pkgs.driversi686Linux.amdvlk
-            support32Bit.enable = true;
+            #support32Bit.enable = true;
           };
 
           # boot.initrd.kernelModules: "amdgpu"
@@ -67,7 +68,8 @@ in {
         };
 
         graphics = {
-          # Not currently set via hardware.amdgpu.amdvlk.support32Bit.enable, even though package is declared
+          # Mesa drivers
+          enable = true;
           enable32Bit = true;
 
           # Hardware acceleration
