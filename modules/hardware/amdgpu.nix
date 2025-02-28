@@ -45,10 +45,13 @@ in {
 
   config = lib.mkMerge [
     (lib.mkIf (cfg.enable) {
-      environment.systemPackages = with pkgs; [
-        amdgpu_top            # GPU stats
-        lact                  # AMDGPU controller
-        nvtopPackages.amd     # GPU stats
+      environment.systemPackages = builtins.attrValues {
+        inherit (pkgs)
+          amdgpu_top    # GPU stats
+          lact          # AMDGPU controller
+        ;
+      } ++ [
+        pkgs.nvtopPackages.amd  # GPU stats
       ];
 
       hardware = {
@@ -73,15 +76,19 @@ in {
           enable32Bit = true;
 
           # Hardware acceleration
-          extraPackages = with pkgs; [
-            libva1
-            libva-vdpau-driver
-            libvdpau-va-gl
-          ];
-          extraPackages32 = with pkgs.driversi686Linux; [
-            libva-vdpau-driver
-            libvdpau-va-gl
-          ];
+          extraPackages = builtins.attrValues {
+            inherit (pkgs)
+              libva1
+              libva-vdpau-driver
+              libvdpau-va-gl
+            ;
+          };
+          extraPackages32 = builtins.attrValues {
+            inherit (pkgs.driversi686Linux)
+              libva-vdpau-driver
+              libvdpau-va-gl
+            ;
+          };
         };
       };
 
@@ -91,7 +98,7 @@ in {
       # LACT daemon service
       systemd = {
         # Create service from package
-        packages = with pkgs; [ lact ];
+        packages = [ pkgs.lact ];
         # Autostart service at boot
         services.lactd.wantedBy = [ "multi-user.target" ];
       };

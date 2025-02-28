@@ -52,29 +52,30 @@ in {
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; [
-    # Communication
-      discord                 # Discord
+    systemPackages = [
       protonMB                # GUI bridge for Thunderbird
-      thunderbird-latest      # Email client
+    ] ++ builtins.attrValues {
+      inherit (pkgs)
+      # Communication
+        discord                 # Discord
+        thunderbird-latest      # Email client
 
-    # Hardware
-      polychromatic           # Razer lighting GUI
+      # Hardware
+        polychromatic           # Razer lighting GUI
 
-    # Misc
-      calibre                 # Book organization
+      # Misc
+        calibre                 # Book organization
 
-    # Multimedia
-      #mpv                    # Media player
-      #smplayer               # MPV frontend
+      # Multimedia
+        #mpv                    # Media player
 
-    # Networking
-      brave                   # Alt browser
+      # Networking
 
-    # Productivity
-      libreoffice-qt6-fresh   # Office suite
-      obsidian                # Markdown notes
-    ];
+      # Productivity
+        libreoffice-qt6-fresh   # Office suite
+        obsidian                # Markdown notes
+      ;
+    };
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:01:00.0-render";
   };
@@ -124,7 +125,7 @@ in {
 
     wayland.windowManager.hyprland.settings = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
       # 'hyprctl monitors all' - "name, widthxheight@rate, position, scale"
-      #monitor = with cfgHosts; lib.mkForce [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
+      #monitor = lib.mkForce [ "eDP-1, ${builtins.toString cfgHosts.width}x${builtins.toString cfgHosts.height}@${builtins.toString cfgHosts.refresh}, 0x0, ${builtins.toString cfgHosts.scale}" ];
     };
 
     xdg.configFile."autostart/ProtonMailBridge.desktop".text = (lib.strings.replaceStrings
@@ -191,7 +192,7 @@ in {
     initrd.systemd.enable = true;
 
     blacklistedKernelModules = [ "amdgpu" ]; # Disable iGPU
-    extraModulePackages = with config.boot.kernelPackages; [ nct6687d ];
+    extraModulePackages = [ config.boot.kernelPackages.nct6687d ];
     kernelModules = [
       "nct6687"
       "nfs"

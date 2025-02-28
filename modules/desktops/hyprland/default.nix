@@ -46,29 +46,29 @@ in {
   };
 
   config = lib.mkIf (cfg.enable) {
-    myOptions.desktops.hyprland.hyprApps = with lib; {
-      blueman = getExe' pkgs.blueman "blueman-manager";
-      brightnessctl = getExe pkgs.brightnessctl;
-      btop = getExe pkgs.btop;
-      cliphist = getExe pkgs.cliphist;
-      fileManager = getExe pkgs.pcmanfm;
-      firefox = getExe pkgs.firefox;
-      grim = getExe pkgs.grim;
-      hyprland = getExe pkgs.hyprland;
-      nm-applet = getExe' pkgs.networkmanagerapplet "nm-applet";
-      nm-connect = getExe' pkgs.networkmanagerapplet "nm-connection-editor";
-      nvtop = getExe pkgs.nvtopPackages.nvidia;
-      nwg-bar = getExe pkgs.nwg-bar;
-      pw-volume = getExe pkgs.pw-volume;
-      slurp = getExe pkgs.slurp;
-      swww = getExe pkgs.swww;
-      swww-daemon = getExe' pkgs.swww "swww-daemon";
-      terminal = getExe pkgs.${cfgTerm};
-      thunderbird = getExe pkgs.thunderbird;
-      tuigreet =  getExe pkgs.greetd.tuigreet;
-      waybar = getExe config.programs.waybar.package;
-      wl-copy = getExe' pkgs.wl-clipboard "wl-copy";
-      wofi = getExe pkgs.wofi;
+    myOptions.desktops.hyprland.hyprApps = {
+      blueman = lib.getExe' pkgs.blueman "blueman-manager";
+      brightnessctl = lib.getExe pkgs.brightnessctl;
+      btop = lib.getExe pkgs.btop;
+      cliphist = lib.getExe pkgs.cliphist;
+      fileManager = lib.getExe pkgs.pcmanfm;
+      firefox = lib.getExe pkgs.firefox;
+      grim = lib.getExe pkgs.grim;
+      hyprland = lib.getExe pkgs.hyprland;
+      nm-applet = lib.getExe' pkgs.networkmanagerapplet "nm-applet";
+      nm-connect = lib.getExe' pkgs.networkmanagerapplet "nm-connection-editor";
+      nvtop = lib.getExe pkgs.nvtopPackages.nvidia;
+      nwg-bar = lib.getExe pkgs.nwg-bar;
+      pw-volume = lib.getExe pkgs.pw-volume;
+      slurp = lib.getExe pkgs.slurp;
+      swww = lib.getExe pkgs.swww;
+      swww-daemon = lib.getExe' pkgs.swww "swww-daemon";
+      terminal = lib.getExe pkgs.${cfgTerm};
+      thunderbird = lib.getExe pkgs.thunderbird;
+      tuigreet =  lib.getExe pkgs.greetd.tuigreet;
+      waybar = lib.getExe config.programs.waybar.package;
+      wl-copy = lib.getExe' pkgs.wl-clipboard "wl-copy";
+      wofi = lib.getExe pkgs.wofi;
     };
 
     environment = {
@@ -103,69 +103,75 @@ in {
           QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
       };
 
-      systemPackages = with pkgs; [
+      systemPackages = builtins.attrValues {
+        inherit (pkgs)
         # Application Launcher
-          #rofi-wayland             #
-          wofi                      # Launcher
-          #iw                       # wireless config for rofi-wifi script
-          #bc                       # calculator for rofi-wifi script
+          #rofi-wayland           #
+          wofi                    # Launcher
+          #iw                     # wireless config for rofi-wifi script
+          #bc                     # calculator for rofi-wifi script
 
         # Authorization Agent
-          polkit_gnome              #
+          polkit_gnome            #
 
         # Clipboard
-          cliphist                  # Save clipboard history after closing apps
+          cliphist                # Save clipboard history after closing apps
 
         # File Manager
-          file-roller               # Gnome's GUI archive manager
-          pcmanfm                   # Independent file manager
+          file-roller             # Gnome's GUI archive manager
+          pcmanfm                 # Independent file manager
 
         # Hardware
-          brightnessctl             # Laptop monitor brightness control
-          pw-volume                 # Pipewire audio control
+          brightnessctl           # Laptop monitor brightness control
+          pw-volume               # Pipewire audio control
 
         # Locking
-          #swayidle                 #
-          #swaylock-effects         #
-
-        # Login Manager
-          greetd.tuigreet           # TTY-like greeter
+          #swayidle               #
+          #swaylock-effects       #
 
         # Screenshot
-          grim                      #
-          slurp                     #
+          grim                    #
+          slurp                   #
 
         # Session Management
-          nwg-bar                   #
-          wlogout                   #
+          nwg-bar                 #
+          wlogout                 #
 
         # Status bar
-          #eww-wayland              #
-          networkmanagerapplet      # Show network tray icon (nm-applet --indicator)
+          #eww-wayland            #
+          networkmanagerapplet    # Show network tray icon (nm-applet --indicator)
 
         # Theming
-          pywal                     # Theme colors from current wallpaper
-          #wpgtk                    # Pywal GUI
+          pywal                   # Theme colors from current wallpaper
+          #wpgtk                  # Pywal GUI
 
         # Wallpaper
-          #hyprpapr                 #
-          swww                      # Wallpaper manager capable of GIFs
+          #hyprpapr               #
+          swww                    # Wallpaper manager capable of GIFs
 
         # Wayland
-          libsForQt5.qt5.qtwayland  # QT5 Wayland support
-          kdePackages.qtwayland     # QT6 Wayland support
-          wayland-protocols         # Wayland protocol extensions
-          wayland-utils             # Wayland utilities | 'wayland-info'
-          wev                       # Keymapper
-          wlroots                   # Wayland compositor library
-          xwayland                  # Interface X11 apps w/ Wayland
+          wayland-protocols       # Wayland protocol extensions
+          wayland-utils           # Wayland utilities | 'wayland-info'
+          wev                     # Keymapper
+          wlroots                 # Wayland compositor library
+          xwayland                # Interface X11 apps w/ Wayland
+        ;
+      } ++ [
+        # Display Manager
+        pkgs.greetd.tuigreet            # TTY-like greeter
+
+        # Wayland
+        pkgs.kdePackages.qtwayland      # QT6 Wayland support
+        pkgs.libsForQt5.qt5.qtwayland   # QT5 Wayland support
       ];
     };
 
-    fonts.packages = with pkgs; [
-      font-awesome                  # Icons
-      inter                         # Waybar
-    ];
+    fonts.packages = builtins.attrValues {
+      inherit (pkgs)
+        font-awesome    # Icons
+        inter           # Waybar
+      ;
+    };
 
     home-manager.users.${myUser} = { lib, ... }: {
       gtk = {
@@ -324,16 +330,12 @@ in {
         package = pkgs.hypridle;
       };
 
-      xserver.excludePackages = with pkgs; [
-        xterm
-      ];
+      xserver.excludePackages = [ pkgs.xterm ];
     };
 
     xdg.portal = {
       enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk
-      ];
+      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
       wlr.enable = true;
     };
   };

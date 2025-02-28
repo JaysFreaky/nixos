@@ -26,8 +26,8 @@
     autoGroups.lint.clear = true;
 
     # Be sure to install the corresponding pkg for the below linters
-    extraPackages = with pkgs; [
-      markdownlint-cli
+    extraPackages = [
+      pkgs.markdownlint-cli
     ];
 
     plugins.lint = {

@@ -28,10 +28,10 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; [
+    systemPackages = [
     # Monitoring
-      amdgpu_top              # GPU stats
-      nvtopPackages.amd       # GPU stats
+      pkgs.amdgpu_top              # GPU stats
+      pkgs.nvtopPackages.amd       # GPU stats
     ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:04:00.0-render";
@@ -69,9 +69,9 @@
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${myUser} = { config, ... }: let
-    gnomeExts = with pkgs.gnomeExtensions; [
-      dash-to-dock
+  home-manager.users.${myUser} = let
+    gnomeExts = [
+      pkgs.gnomeExtensions.dash-to-dock
     ];
   in {
     dconf.settings = {
@@ -107,16 +107,11 @@
   # Hardware
   ##########################################################
   hardware.graphics = {
-    extraPackages = with pkgs; [
-      #amdvlk
-      jovian-chaotic.mesa-radeonsi-jupiter
-      jovian-chaotic.mesa-radv-jupiter
-      #rocmPackages.clr
-      #rocmPackages.clr.icd
+    extraPackages = [
+      pkgs.jovian-chaotic.mesa-radeonsi-jupiter
+      pkgs.jovian-chaotic.mesa-radv-jupiter
     ];
-    extraPackages32 = with pkgs.driversi686Linux; [
-      #amdvlk
-    ];
+    extraPackages32 = [ ];
   };
 
 

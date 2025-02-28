@@ -1,12 +1,12 @@
 {
+  lib,
+  pkgs,
   cfgHosts,
   cfgOpts,
   cfgTerm,
   inputs,
-  lib,
   myUser,
   nixPath,
-  pkgs,
   ...
 }: let
   cfg = cfgOpts.desktops.kde;
@@ -37,6 +37,23 @@
     light = "${nixPath}/assets/wallpapers/light.png";
     sddm = "${nixPath}/assets/wallpapers/login.png";
   };
+  sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
+    themeConfig = {
+    # Background
+      Background = wallpaper.sddm;
+    # Form
+      Blur = 1.0;               # Default 2.0 | 0.0 - 3.0
+      BlurMax = 64;             # Default 48 | 2 - 64
+      FormPosition = "left";    # left, center, right
+      FullBlur = true;          # Everything is blurred
+      #PartialBlur = false;     # Form is blurred
+    # Screen
+      ScreenHeight = cfgHosts.height;
+      ScreenWidth = cfgHosts.width;
+    # UI
+      HideVirtualKeyboard = true;
+    };
+  };
 in {
   options.myOptions.desktops.kde = {
     enable = lib.mkEnableOption "KDE desktop";
@@ -56,49 +73,32 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     environment = {
-      plasma6.excludePackages = with pkgs.kdePackages; [
-        #kwallet                      # KDE Wallet
-        #kwallet-pam                  # Unlock on login
-        #kwalletmanager               # Wallet manager
-      ];
+      plasma6.excludePackages = [ ];
 
-      systemPackages = with pkgs; let
-        sddm-astronaut-pkg = pkgs.sddm-astronaut.override {
-          themeConfig = {
-          # Background
-            Background = wallpaper.sddm;
-          # Form
-            Blur = 1.0;               # Default 2.0 | 0.0 - 3.0
-            BlurMax = 64;             # Default 48 | 2 - 64
-            FormPosition = "left";    # left, center, right
-            FullBlur = true;          # Everything is blurred
-            #PartialBlur = false;     # Form is blurred
-          # Screen
-            ScreenHeight = cfgHosts.height;
-            ScreenWidth = cfgHosts.width;
-          # UI
-            HideVirtualKeyboard = true;
-          };
-        };
-      in [
-      # KDE
-        kdePackages.kpmcore           # Core for Partition Manager
-        kdePackages.partitionmanager  # Partition Manager
-        #kdePackages.qt5compat        # Qt5 compatibility
-        kdePackages.sddm-kcm          # SDDM settings module
-
-      # Multimedia
-        haruna                        # MPV frontend
-        kdePackages.dragon            # Media player
-
-      # Text
-        neovide                       # GUI launcher for neovim
-
+      systemPackages = [
       # Theming
-        cursor.package                # For SDDM login screen
-        icon.package                  # Icon theme
-        sddm-astronaut-pkg            # SDDM theme
-      ];
+        cursor.package          # For SDDM
+        icon.package            # Icon theme
+        sddm-astronaut-pkg      # SDDM theme
+      ] ++ builtins.attrValues {
+        inherit (pkgs)
+        # Multimedia
+          haruna                # MPV frontend
+
+        # Text
+          neovide               # GUI launcher for neovim
+        ;
+        inherit (pkgs.kdePackages)
+        # KDE
+          kpmcore               # Core for Partition Manager
+          partitionmanager      # Partition Manager
+          #qt5compat            # Qt5 compatibility
+          sddm-kcm              # SDDM settings module
+
+        # Multimedia
+          dragon                # Media player
+        ;
+      };
     };
 
     programs.kdeconnect.enable = true;
@@ -112,8 +112,8 @@ in {
       };
       displayManager.sddm = {
         enable = true;
-        extraPackages = with pkgs; [
-          kdePackages.qtmultimedia  # Astronaut does not currently include this
+        extraPackages = [
+          pkgs.kdePackages.qtmultimedia  # Astronaut does not currently include this
         ];
         settings = {
           Theme = {
@@ -127,7 +127,7 @@ in {
 
       xserver = {
         enable = true;
-        excludePackages = with pkgs; [ xterm ];
+        excludePackages = [ pkgs.xterm ];
       };
     };
 
@@ -423,7 +423,7 @@ in {
                 else "Meta+L"
               );
               "Log Out" = "Ctrl+Alt+Del"; # Show Logout Screen
-              #"Log Out Without Confirmation" = ""; # Log Out Without Confirmation
+              #"Log Out W/O Confirmation" = ""; # Log Out W/O Confirmation
             };
 
             "kwin" = {

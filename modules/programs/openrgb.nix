@@ -1,9 +1,9 @@
 {
-  cfgOpts,
   config,
   lib,
-  myUser,
   pkgs,
+  cfgOpts,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.openrgb;
@@ -11,7 +11,7 @@ in {
   options.myOptions.openrgb.enable = lib.mkEnableOption "OpenRGB";
 
   config = lib.mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [ i2c-tools ];
+    environment.systemPackages = [ pkgs.i2c-tools ];
 
     hardware.i2c.enable = true;
 

@@ -1,8 +1,8 @@
 {
-  cfgOpts,
   lib,
-  myUser,
   pkgs,
+  cfgOpts,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.git;

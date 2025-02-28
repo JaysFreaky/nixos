@@ -1,8 +1,8 @@
 {
-  cfgOpts,
-  inputs,
   lib,
   pkgs,
+  cfgOpts,
+  inputs,
   ...
 }: let
   cfg = cfgOpts.flatpak;
@@ -14,14 +14,14 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     environment.systemPackages = (
-      lib.optional (cfgOpts.desktops.gnome.enable) (with pkgs; [
-        gnome-software  # Gnome store
-      ])
+      lib.optional (cfgOpts.desktops.gnome.enable) [
+        pkgs.gnome-software             # Gnome store
+      ]
     ) ++ (
-      lib.optional (cfgOpts.desktops.kde.enable) (with pkgs.kdePackages; [
-        discover        # KDE store
-        flatpak-kcm     # Flatpak KDE settings module
-      ])
+      lib.optional (cfgOpts.desktops.kde.enable) [
+        pkgs.kdePackages.discover       # KDE store
+        pkgs.kdePackages.flatpak-kcm    # Flatpak KDE settings module
+      ]
     );
 
     services.flatpak = {

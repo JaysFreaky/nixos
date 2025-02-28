@@ -1,7 +1,7 @@
 {
   lib,
-  myUser,
   pkgs,
+  myUser,
   ...
 }: {
   imports = [
@@ -28,7 +28,7 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    #systemPackages = with pkgs; [ ];
+    systemPackages = [ ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "$(stat /dev/dri/* | grep card | cut -d':' -f 2 | tr -d ' ')";
   };
@@ -54,17 +54,21 @@
   # Hardware
   ##########################################################
   hardware.graphics = {
-    extraPackages = with pkgs; [
-      intel-compute-runtime
-      intel-media-driver
-      intel-vaapi-driver
-      libvpl
-      vpl-gpu-rt
-    ];
-    extraPackages32 = with pkgs.driversi686Linux; [
-      intel-media-driver
-      intel-vaapi-driver
-    ];
+    extraPackages = builtins.attrValues {
+      inherit (pkgs)
+        intel-compute-runtime
+        intel-media-driver
+        intel-vaapi-driver
+        libvpl
+        vpl-gpu-rt
+      ;
+    };
+    extraPackages32 = builtins.attrValues {
+      inherit (pkgs.driversi686Linux)
+        intel-media-driver
+        intel-vaapi-driver
+      ;
+    };
   };
 
 

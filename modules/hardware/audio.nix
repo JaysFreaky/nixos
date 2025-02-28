@@ -1,7 +1,7 @@
 {
-  cfgOpts,
   lib,
   pkgs,
+  cfgOpts,
   ...
 }: let
   cfg = cfgOpts.hardware.audio;
@@ -14,8 +14,8 @@ in {
   };
 
   config = lib.mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      #pwvucontrol    # Pipewire audio control
+    environment.systemPackages = [
+      #pkgs.pwvucontrol    # Pipewire audio control
     ];
 
     # Real-time audio

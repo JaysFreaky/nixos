@@ -1,10 +1,10 @@
 {
-  cfgOpts,
   config,
-  inputs,
   lib,
-  myUser,
   pkgs,
+  cfgOpts,
+  inputs,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.spicetify;
@@ -23,12 +23,14 @@ in {
         enable = true;
         theme = spicePkgs.themes.text;
         colorScheme = "CatppuccinMocha";
-        enabledExtensions = with spicePkgs.extensions; [
-          fullAlbumDate
-          hidePodcasts
-          savePlaylists
-          wikify
-        ];
+        enabledExtensions = builtins.attrValues {
+          inherit (spicePkgs.extensions)
+            fullAlbumDate
+            hidePodcasts
+            savePlaylists
+            wikify
+          ;
+        };
       };
 
       specialisation = lib.mkIf (stylix) {
@@ -42,12 +44,14 @@ in {
       enable = true;
       theme = spicePkgs.themes.text;
       colorScheme = "CatppuccinMacchiato";
-      enabledExtensions = with spicePkgs.extensions; [
-        fullAlbumDate
-        hidePodcasts
-        savePlaylists
-        wikify
-      ];
+      enabledExtensions = builtins.attrValues {
+        inherit (spicePkgs.extensions)
+          fullAlbumDate
+          hidePodcasts
+          savePlaylists
+          wikify
+        ;
+      };
     };
     */
   };

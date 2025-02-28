@@ -1,9 +1,9 @@
 {
-  cfgOpts,
   config,
   lib,
-  myUser,
   pkgs,
+  cfgOpts,
+  myUser,
   ...
 }: let
   cfg = cfgOpts.hardware.nvidia;
@@ -20,9 +20,9 @@ in {
       environment = {
         # Suppress Firefox's libva logging
         etc."libva.conf".text = "LIBVA_MESSAGING_LEVEL=1";
-        systemPackages = with pkgs; [
-          egl-wayland
-          nvtopPackages.nvidia
+        systemPackages = [
+          pkgs.egl-wayland
+          pkgs.nvtopPackages.nvidia
         ];
         variables = {
           __GL_GSYNC_ALLOWED = 1;

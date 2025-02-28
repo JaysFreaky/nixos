@@ -1,17 +1,21 @@
-{ pkgs }:
+{
+  pkgs
+}:
 
 pkgs.writeShellApplication {
   name = "s2idle";
 
-  runtimeInputs = with pkgs; [
-    acpica-tools
-    (python3.withPackages(ps: with ps; [
-      distro
-      packaging
-      pip
-      pyudev
-      systemd
-    ]))
+  runtimeInputs = [
+    pkgs.acpica-tools
+    (pkgs.python3.withPackages (py: builtins.attrValues {
+      inherit (py)
+        distro
+        packaging
+        pip
+        pyudev
+        systemd
+      ;
+    }))
   ];
 
   text = ''

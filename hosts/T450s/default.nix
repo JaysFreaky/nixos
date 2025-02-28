@@ -1,10 +1,10 @@
 {
+  lib,
+  pkgs,
   cfgHosts,
   cfgOpts,
   inputs,
-  lib,
   myUser,
-  pkgs,
   ...
 }: {
   imports = [
@@ -39,7 +39,7 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    #systemPackages = with pkgs; [ ];
+    systemPackages = [ ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:00:02.0-render";
   };
@@ -54,7 +54,6 @@
     hyprApps = cfgOpts.desktops.hyprland.hyprApps;
   in {
     imports = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
-
     home.stateVersion = "24.11";
 
     programs = {
@@ -134,7 +133,7 @@
     wayland.windowManager.hyprland = lib.mkIf (cfgOpts.desktops.hyprland.enable) {
       settings = {
         # 'hyprctl monitors all' : name, widthxheight@rate, position, scale
-        monitor = with cfgHosts; [ "eDP-1, ${builtins.toString width}x${builtins.toString height}@${builtins.toString refresh}, 0x0, ${builtins.toString scale}" ];
+        monitor = [ "eDP-1, ${builtins.toString cfgHosts.width}x${builtins.toString cfgHosts.height}@${builtins.toString cfgHosts.refresh}, 0x0, ${builtins.toString cfgHosts.scale}" ];
         bind = [
           ", XF86AudioMute, exec, ${hyprApps.pw-volume} mute toggle"
           #", XF86, exec, amixer sset Capture toggle"  # Mic disabled in firmware
@@ -163,16 +162,20 @@
   hardware.graphics = {
     # Packages (listed for context) are imported from nixos-hardware/common/gpu/intel through T450s module
     /*
-    extraPackages = with pkgs; [
-      #intel-compute-runtime
-      #intel-media-driver
-      #intel-vaapi-driver
-      #vpl-gpu-rt
-    ];
-    extraPackages32 = with pkgs.driversi686Linux; [
-      #intel-media-driver
-      #intel-vaapi-driver
-    ];
+    extraPackages = builtins.attrValues {
+      inherit (pkgs)
+        intel-compute-runtime
+        intel-media-driver
+        intel-vaapi-driver
+        vpl-gpu-rt
+      ;
+    };
+    extraPackages32 = builtins.attrValues {
+      inherit (pkgs.driversi686Linux)
+        intel-media-driver
+        intel-vaapi-driver
+      ;
+    };
     */
   };
 

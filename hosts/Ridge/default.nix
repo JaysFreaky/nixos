@@ -1,8 +1,8 @@
 {
   config,
   inputs,
-  myUser,
   pkgs,
+  myUser,
   ...
 }: {
   imports = [
@@ -47,7 +47,7 @@
   # System Packages / Variables
   ##########################################################
   environment = {
-    #systemPackages = with pkgs; [ ];
+    systemPackages = [ ];
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:0a:00.0-render";
   };
@@ -170,7 +170,7 @@
 
     # Zenpower uses same PCI device as k10temp
     blacklistedKernelModules = [ "k10temp" ];
-    extraModulePackages = with config.boot.kernelPackages; [ zenpower ];
+    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
     kernelModules = [
       "nct6775"
       "nfs"

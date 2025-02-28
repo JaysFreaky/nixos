@@ -45,82 +45,87 @@ in {
         # $ nix search wget
       # To use a stable version, add 'stable.' to the beginning of the package:
         # stable.wget
-      systemPackages = with pkgs; [
-      # ASCII Art
-        asciiquarium                # Fishies swimming
-        cbonsai                     # Bonsai growing
+      systemPackages = builtins.attrValues {
+        inherit (pkgs)
+        # ASCII Art
+          asciiquarium          # Fishies swimming
+          cbonsai               # Bonsai growing
 
-      # Files
-        cryptomator                 # Encrypt cloud files
-        exiftool                    # File metadata
-        file                        # File information
-        libarchive                  # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
-        p7zip                       # Zip encryption
-        unzip                       # Zip files
-        unrar                       # Rar files
-        zip                         # Zip files
+        # Files
+          cryptomator           # Encrypt cloud files
+          exiftool              # File metadata
+          file                  # File information
+          libarchive            # ISO extraction | 'bsdtar -xf IsoFile.iso OutputFile'
+          p7zip                 # Zip encryption
+          unzip                 # Zip files
+          unrar                 # Rar files
+          zip                   # Zip files
 
-      # Hardware
-        clinfo                      # OpenCL info | 'clinfo -l' or -a
-        dmidecode                   # Firmware | 'dmidecode -s bios-version'
-        ffmpeg-full                 # Hardware video acceleration
-        glxinfo                     # OpenGL info
-        lm_sensors                  # Hardware sensors | 'sensors-detect'
-        lshw                        # Hardware config
-        nvme-cli                    # Manage NVMe
-        pciutils                    # Manage PCI | 'lspci'
-        usbutils                    # Manage USB | 'lsusb'
+        # Hardware
+          clinfo                # OpenCL info | 'clinfo -l' or -a
+          dmidecode             # Firmware | 'dmidecode -s bios-version'
+          ffmpeg-full           # Hardware video acceleration
+          glxinfo               # OpenGL info
+          lm_sensors            # Hardware sensors | 'sensors-detect'
+          lshw                  # Hardware config
+          nvme-cli              # Manage NVMe
+          pciutils              # Manage PCI | 'lspci'
+          usbutils              # Manage USB | 'lsusb'
 
-      # Images
-        feh                         # Image viewer
-        imagemagick                 # Image tools
+        # Images
+          feh                   # Image viewer
+          imagemagick           # Image tools
 
-      # Monitoring
-        btop                        # Resource manager
-        htop                        # Resource manager
+        # Monitoring
+          btop                  # Resource manager
+          htop                  # Resource manager
 
-      # Network
-        #cifs-utils                 # SMB support
-        dig                         # DNS tools
-        nfs-utils                   # NFS support
-        nmap                        # Network discovery
+        # Network
+          #cifs-utils           # SMB support
+          dig                   # DNS tools
+          nfs-utils             # NFS support
+          nmap                  # Network discovery
 
-      # Nix
-        nix-tree                    # Browse nix store
+        # Nix
+          nix-tree              # Browse nix store
 
-      # Notifications
-        libnotify                   # Notification engine
+        # Notifications
+          libnotify             # Notification engine
 
-      # Productivity
-        hunspell                    # Spellcheck
-        hunspellDicts.en_US         # US English
+        # Productivity
+          hunspell              # Spellcheck
 
-      # Secrets
-        sops                        # Secret management
-        ssh-to-age                  # Convert SSH keys to Age
+        # Secrets
+          sops                  # Secret management
+          ssh-to-age            # Convert SSH keys to Age
 
-      # Terminal
-        bat                         # cat w/ syntax highlighting
-        chafa                       # Terminal images
-        coreutils                   # GNU utilities
-        cryptsetup                  # Encryption
-        eza                         # ls/tree replacement | 'eza' or 'exa'
-        fastfetch                   # Faster system info
-        killall                     # Process killer
-        ripgrep                     # Search file contents | 'rg'
-        shellcheck                  # Script formating checker
-        tldr                        # Abbreviated manual
-        tmux                        # Multiplexor
-        toybox                      # Various commands
-        tree                        # Directory layout
-        wget                        # Retriever
-        wl-clipboard                # Enable wl-copy/wl-paste / used in Neovim
-        xdg-utils                   # Environment integration
-        zellij                      # Tmux alternative
+        # Terminal
+          bat                   # cat w/ syntax highlighting
+          chafa                 # Terminal images
+          coreutils             # GNU utilities
+          cryptsetup            # Encryption
+          eza                   # ls/tree replacement | 'eza' or 'exa'
+          fastfetch             # Faster system info
+          killall               # Process killer
+          ripgrep               # Search file contents | 'rg'
+          shellcheck            # Script formating checker
+          tldr                  # Abbreviated manual
+          tmux                  # Multiplexor
+          toybox                # Various commands
+          tree                  # Directory layout
+          wget                  # Retriever
+          wl-clipboard          # Enable wl-copy/wl-paste
+          xdg-utils             # Environment integration
+          zellij                # Tmux alternative
 
-      # Theming
-        #variety                    # Wallpapers
-      ];
+        # Theming
+          #variety              # Wallpapers
+        ;
+
+        inherit (pkgs.hunspellDicts)
+          en_US                 # US English for hunspell
+        ;
+      };
 
       variables = {
         BROWSER = cfgOpts.browser;
@@ -129,14 +134,18 @@ in {
       };
     };
 
-    fonts.packages = with pkgs; [
-      cantarell-fonts               # GNOME
-    ] ++ (with nerd-fonts; [
-      jetbrains-mono
-      noto
-      symbols-only
-    ]);
-    
+    fonts.packages = builtins.attrValues {
+      inherit (pkgs)
+        cantarell-fonts         # GNOME
+      ;
+
+      inherit (pkgs.nerd-fonts)
+        jetbrains-mono          # Terminal
+        noto
+        symbols-only
+      ;
+    };
+
     hardware.graphics = {
       enable = true;
       enable32Bit = true;

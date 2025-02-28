@@ -20,34 +20,40 @@ in {
     };
 
     environment = {
-      systemPackages = with pkgs; let
+      systemPackages = let
         gs-renice-pkg = pkgs.writeShellScriptBin "gs-renice" ''
           (sleep 1; pgrep gamescope | xargs renice -n -20 -p)&
           exec gamescope "$@"
         '';
 
         lutris-pkg = pkgs.lutris.override {
-          extraLibraries = pkgs: (with config.hardware.graphics; (
+          extraLibraries = pkgs: (
             if (pkgs.hostPlatform.is64bit)
-              then extraPackages
-            else extraPackages32
-          ));
-          extraPkgs = pkgs: with pkgs; [
-            dxvk
-            vkd3d
-            winetricks
+              then config.hardware.graphics.extraPackages
+            else config.hardware.graphics.extraPackages32
+          );
+          extraPkgs = pkgs: builtins.attrValues {
+            inherit (pkgs)
+              dxvk
+              vkd3d
+              winetricks
+            ;
+          } ++ [
             # wineWow has both x86/64 - stable, staging, or wayland
-            wineWowPackages.wayland
+            pkgs.wineWowPackages.wayland
           ];
         };
       in [
-        gamescope-wsi   # Gamescope w/ WSI (breaks if declared in gamescope.package)
-        gs-renice-pkg   # Builds 'gs-renice' command to add to game launch options
-        heroic          # Game launcher - Epic, GOG, Prime
-        jdk             # Java games
-        lutris-pkg      # Game launcher - Epic, GOG, Humble Bundle, Steam
-        protonplus      # Proton-GE updater
-      ];
+        gs-renice-pkg     # Builds 'gs-renice' command to add to game launch options
+        lutris-pkg        # Game launcher - Epic, GOG, Humble Bundle, Steam
+      ] ++ builtins.attrValues {
+        inherit (pkgs)
+          gamescope-wsi   # Gamescope w/ WSI (breaks if declared in gamescope.package)
+          heroic          # Game launcher - Epic, GOG, Prime
+          jdk             # Java games
+          protonplus      # Proton-GE updater
+        ;
+      };
 
       variables = {
         STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${myUser}/.steam/steam/compatibilitytools.d";
@@ -170,18 +176,23 @@ in {
 
         package = pkgs.steam.override {
           extraEnv.LD_PRELOAD = "${pkgs.gamemode.lib}/lib/libgamemode.so";
-          extraPkgs = pkgs: with pkgs; [
+          extraPkgs = pkgs: builtins.attrValues {
             # Gamescope fixes for undefined symbols in X11 session
-            keyutils
-            libkrb5
-            libpng
-            libpulseaudio
-            libvorbis
-            stdenv.cc.cc.lib
-            xorg.libXcursor
-            xorg.libXi
-            xorg.libXinerama
-            xorg.libXScrnSaver
+            inherit (pkgs)
+              keyutils
+              libkrb5
+              libpng
+              libpulseaudio
+              libvorbis
+            ;
+            inherit (pkgs.xorg)
+              libXcursor
+              libXi
+              libXinerama
+              libXScrnSaver
+            ;
+          } ++ [
+            pkgs.stdenv.cc.cc.lib
           ];
         };
       };

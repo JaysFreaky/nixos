@@ -55,49 +55,52 @@ in {
 
   config = lib.mkIf (cfg.enable) {
     environment = {
-      gnome.excludePackages = with pkgs; [
-        cheese                      # "fun" webcam app
-        epiphany                    # Web browser
-        #evince                     # Document viewer
-        geary                       # Email client
-        #gedit                      # Text editor
-        gnome-characters            # Character map
-        gnome-contacts              # Contact app
-        gnome-initial-setup         # First time setup
-        #gnome-music                # Music
-        #gnome-maps                 # Maps
-        #gnome-photos               # Image viewer
-        #gnome-terminal             # Console
-        gnome-tour                  # Setup walkthrough
-        #loupe                      # Image viewer
-        simple-scan                 # Scanning app
-        #snapshot                   # Webcam
-        totem                       # Video player
-        yelp                        # Help
-      ];
+      gnome.excludePackages = builtins.attrValues {
+        inherit (pkgs)
+          cheese                      # "fun" webcam app
+          epiphany                    # Web browser
+          #evince                     # Document viewer
+          geary                       # Email client
+          #gedit                      # Text editor
+          gnome-characters            # Character map
+          gnome-contacts              # Contact app
+          gnome-initial-setup         # First time setup
+          #gnome-music                # Music
+          #gnome-maps                 # Maps
+          #gnome-photos               # Image viewer
+          #gnome-terminal             # Console
+          gnome-tour                  # Setup walkthrough
+          #loupe                      # Image viewer
+          simple-scan                 # Scanning app
+          #snapshot                   # Webcam
+          totem                       # Video player
+          yelp                        # Help
+        ;
+      };
 
-      systemPackages = with pkgs; [
-      # GNOME
-        dconf-editor                # GUI dconf editor
-        gnome-extension-manager     # Gnome extensions
-        gnome-tweaks                # Gnome tweaks
-        libappindicator             # Allow tray icons to be displayed in GNOME
-        nautilus-open-any-terminal  # Open custom terminals in nautilus
-        nautilus-python             # Allow custom nautilus scripts/open-any-terminal
-
-      # Multimedia
-        celluloid                   # MPV GTK frontend w/ Wayland
-        clapper                     # GTK media player
-
-      # Text
-        neovide                     # GUI launcher for neovim
-
+      systemPackages = [
       # Theming
-        cursor.package              # GDM login screen
+        cursor.package                # GDM login screen
       ] ++ lib.optionals (stylix) [
-        switch-mode                 # HM theme switcher
-      ];
+        switch-mode                   # HM theme switcher
+      ] ++ builtins.attrValues {
+        inherit (pkgs)
+        # GNOME
+          dconf-editor                # GUI dconf editor
+          gnome-extension-manager     # Gnome extensions
+          gnome-tweaks                # Gnome tweaks
+          libappindicator             # Allow tray icons to be displayed in GNOME
+          nautilus-open-any-terminal  # Open custom terminals in nautilus
+          nautilus-python             # Allow custom nautilus scripts/open-any-terminal
 
+        # Multimedia
+          celluloid                   # MPV GTK frontend w/ Wayland
+          clapper                     # GTK media player
+
+        # Text
+          neovide                     # GUI launcher for neovim
+        ;
+      };
       # Fix black borders around windows until amdvlk patch
       variables.GSK_RENDERER = "gl";
     };
@@ -122,8 +125,8 @@ in {
       # GDM login screen settings
       dconf.profiles.gdm.databases = [{
         settings = {
-          "org/gnome/desktop/interface" = with lib.gvariant; {
-            cursor-size = mkInt32 24;
+          "org/gnome/desktop/interface" = {
+            cursor-size = lib.gvariant.mkInt32 24;
             cursor-theme = "Bibata-Modern-Classic";
           };
           "org/gnome/desktop/peripherals/touchpad" = {
@@ -152,11 +155,11 @@ in {
         enable = true;
         desktopManager.gnome.enable = true;
         displayManager.gdm.enable = true;
-        excludePackages = with pkgs; [ xterm ];
+        excludePackages = [ pkgs.xterm ];
       };
 
       # Enable additional systray icons
-      udev.packages = with pkgs; [ gnome-settings-daemon ];
+      udev.packages = [ pkgs.gnome-settings-daemon ];
     };
 
     # Workaround to display profile image at login screen - image needs +x
@@ -167,21 +170,23 @@ in {
     '';
  
     home-manager.users.${myUser} = { config, lib, ... }: let
-      gnomeExts = with pkgs.gnomeExtensions; [
-        alphabetical-app-grid
-        appindicator
-        bluetooth-quick-connect
-        blur-my-shell
-        clipboard-indicator
-        hibernate-status-button
-        hot-edge
-        just-perfection
-        lock-keys
-        night-theme-switcher
-        power-profile-switcher
-        vitals
-        weather-or-not
-      ];
+      gnomeExts = builtins.attrValues {
+        inherit (pkgs.gnomeExtensions)
+          alphabetical-app-grid
+          appindicator
+          bluetooth-quick-connect
+          blur-my-shell
+          clipboard-indicator
+          hibernate-status-button
+          hot-edge
+          just-perfection
+          lock-keys
+          night-theme-switcher
+          power-profile-switcher
+          vitals
+          weather-or-not
+        ;
+      };
     in {
       dconf.settings = {
         "ca/desrt/dconf-editor".show-warning = false;

@@ -5,6 +5,7 @@
   modulesPath,
   ...
 }: let
+  latestKernel = false;
   nvidia = false;
 in {
   imports = [
@@ -18,26 +19,34 @@ in {
         kernelModules = [
           #"nct6687"
         ];
-        extraModulePackages = with config.boot.kernelPackages; [
-          #nct6687d
-        ];
-        #kernelPackages = pkgs.linuxPackages_latest;  # ZFS won't build against 6.13.x, even w/ allowBroken
-        kernelPackages = pkgs.linuxPackages_6_12;
+        extraModulePackages = builtins.attrValues {
+          #inherit (config.boot.kernelPackages)
+            #nct6687d
+          #;
+        };
+        # ZFS won't build against 6.13.x, even w/ allowBroken
+        kernelPackages = (
+          if (latestKernel)
+            then pkgs.linuxPackages_latest
+          else pkgs.linuxPackages_6_12
+        );
       };
 
-      environment.systemPackages = with pkgs; [
-        coreutils
-        git
-        lm_sensors
-        lshw
-        pciutils
-        sops
-        ssh-to-age
-        tree
-        usbutils
-        vim
-        wget
-      ];
+      environment.systemPackages = builtins.attrValues {
+        inherit (pkgs)
+          coreutils
+          git
+          lm_sensors
+          lshw
+          pciutils
+          sops
+          ssh-to-age
+          tree
+          usbutils
+          vim
+          wget
+        ;
+      };
 
       isoImage.squashfsCompression = "gzip";
 

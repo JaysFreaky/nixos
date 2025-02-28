@@ -28,9 +28,9 @@
       };
     };
 
-    extraPackages = with pkgs; [
-      shellcheck
-      stylua
+    extraPackages = [
+      pkgs.shellcheck
+      pkgs.stylua
     ];
   };
 }

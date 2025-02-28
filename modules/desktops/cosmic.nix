@@ -37,11 +37,16 @@ in {
   options.myOptions.desktops.cosmic.enable = lib.mkEnableOption "Cosmic desktop";
 
   config = lib.mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      cursor.package              # For GDM login screen
-      icon.package                # Icon theme
-      neovide                     # GUI launcher for neovim
-    ];
+    environment.systemPackages = [
+    # Theming
+      cursor.package      # For GDM
+      icon.package        # Icon theme
+    ] ++ builtins.attrValues {
+      inherit (pkgs)
+      # Text
+        neovide           # GUI launcher for neovim
+      ;
+    };
 
     programs.seahorse.enable = true;
 
@@ -58,7 +63,7 @@ in {
 
       xserver = {
         enable = true;
-        excludePackages = with pkgs; [ xterm ];
+        excludePackages = [ pkgs.xterm ];
       };
     };
 
@@ -89,8 +94,8 @@ in {
       };
     };
 
-    xdg.portal.extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
+    xdg.portal.extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
     ];
   };
 }

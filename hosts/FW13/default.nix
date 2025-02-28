@@ -1,19 +1,18 @@
 {
   config,
   lib,
+  pkgs,
   myUser,
   #nixPath,
-  pkgs,
   #stable,
   ...
 }: let
   # Patch kernel to log usbpd instead of warn
-  fw-usbpd-charger = pkgs.callPackage ./usbpd { kernel = config.boot.kernelPackages.kernel; };
-
+  fw-usbpd-charger = pkgs.callPackage ./usbpd {
+    kernel = config.boot.kernelPackages.kernel;
+  };
   protonMB = pkgs.protonmail-bridge-gui;  # pkgs or stable
-
-  # Whether or not to enable the fingerprint reader
-  useFP = true;
+  useFP = true; # Whether or not to enable the fingerprint reader
 in {
   imports = [
     ./filesystems.nix
@@ -63,36 +62,37 @@ in {
   # System Packages / Variables
   ##########################################################
   environment = {
-    systemPackages = with pkgs; let
-      s2idle = import ./s2idle.nix { inherit pkgs; };
+    systemPackages = let
+      s2idle = pkgs.callPackage ./s2idle.nix { };
     in [
-    # Communication
-      discord                 # Discord
       protonMB                # GUI bridge for Thunderbird
-      thunderbird-latest      # Email client
-
-    # Framework Hardware
-      framework-tool          # Swiss army knife for FWs
-      iio-sensor-proxy        # Ambient light sensor | 'monitor-sensor'
       s2idle                  # Environment for suspend testing | 's2idle ./amd_s2idle.py'
-      sbctl                   # Secure boot key manager
+    ] ++ builtins.attrValues {
+      inherit (pkgs)
+      # Communication
+        discord               # Discord
+        thunderbird-latest    # Email client
 
-    # Monitoring
-      powertop                # Power stats
-      zenmonitor              # CPU stats
+      # Framework Hardware
+        framework-tool        # Swiss army knife for FWs
+        iio-sensor-proxy      # Ambient light sensor | 'monitor-sensor'
+        sbctl                 # Secure boot key manager
 
-    # Multimedia
-      #mpv                    # Media player
-      #smplayer               # MPV frontend
+      # Monitoring
+        powertop              # Power stats
+        zenmonitor            # CPU stats
 
-    # Networking
-      brave                   # Alt browser
-      protonvpn-gui           # VPN client
+      # Multimedia
+        #mpv                  # Media player
 
-    # Productivity
-      libreoffice-fresh       # Office suite
-      obsidian                # Markdown notes
-    ];
+      # Networking
+        protonvpn-gui         # VPN client
+
+      # Productivity
+        libreoffice-fresh     # Office suite
+        obsidian              # Markdown notes
+      ;
+    };
     # Set Firefox to use GPU for video codecs
     variables.MOZ_DRM_DEVICE = "/dev/dri/by-path/pci-0000:c1:00.0-render";
   };
@@ -136,7 +136,7 @@ in {
       };
     };
 
-    home.packages = with pkgs.gnomeExtensions; [ battery-health-charging ];
+    home.packages = [ pkgs.gnomeExtensions.battery-health-charging ];
     home.stateVersion = "24.11";
 
     # lspci -D | grep -i vga

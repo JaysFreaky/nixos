@@ -1,15 +1,15 @@
 {
-  cfgOpts,
   config,
   lib,
-  myUser,
   pkgs,
+  cfgOpts,
+  myUser,
   ...
 }: let
   bpc = {
-    commit = "c6a7d5a36efe41db1a248637d6694f68c30a55e1";
-    sha256 = "sha256-mXDE02yM78nv3UBkAP9JNFsm+Gz2bFDhENZjiaLRZ4w=";
-    version = "4.0.2.4";
+    commit = "21f0500a14885be0030e956e3e7053932b0de7b6";
+    sha256 = "sha256-vVo7KlKlQwWt5a3y2ff3zWFl8Yc9duh/jr4TC5sa0Y4=";
+    version = "4.0.5.0";
   };
   browser = cfgOpts.browser;
   userName = config.users.users.${myUser}.description;
@@ -45,15 +45,22 @@ in {
         settings = import ./settings.nix { inherit config; };
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
-        extensions = with pkgs.nur.repos.rycee.firefox-addons; let
-          bypass-paywalls = bypass-paywalls-clean.override {
+        extensions = let
+          inherit (pkgs.nur.repos.rycee) firefox-addons;
+
+          # Releases are removed regularly
+          bypass-paywalls = firefox-addons.bypass-paywalls-clean.override {
             version = "${bpc.version}";
             url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${bpc.version}.xpi&inline=false&commit=${bpc.commit}";
             sha256 = "${bpc.sha256}";
           };
         in [
-          bypass-paywalls   # Previous releases get deleted regularly
-        ];
+          bypass-paywalls
+        ] ++ builtins.attrValues {
+          #inherit (firefox-addons)
+            # Additional non-overridden extensions
+          #;
+        };
       };
 
       profiles.vanilla = {

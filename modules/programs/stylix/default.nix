@@ -54,10 +54,13 @@ in {
   };
 
   config = lib.mkIf (cfg.enable) {
-    environment.systemPackages = with pkgs; [
-      base16-schemes  # Presets
-      home-manager    # Required for switch-mode | 'programs.home-manager.enable' doesn't install
-      switch-mode     # HM theme switcher script
+    environment.systemPackages = builtins.attrValues {
+      inherit (pkgs)
+        base16-schemes  # Presets
+        home-manager    # Required for switch-mode | 'programs.home-manager.enable' doesn't install
+      ;
+    } ++ [
+      switch-mode       # HM theme switcher script
     ];
 
     stylix = {

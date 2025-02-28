@@ -6,17 +6,19 @@
   programs.nixvim.plugins.treesitter = {
     enable = true;
 
-    grammarPackages = with pkgs.vimPlugins.nvim-treesitter-parsers; [
-      bash
-      #c
-      html
-      lua
-      markdown
-      markdown_inline
-      nix
-      vim
-      vimdoc
-    ];
+    grammarPackages = builtins.attrValues {
+      inherit (pkgs.vimPlugins.nvim-treesitter-parsers)
+        bash
+        #c
+        html
+        lua
+        markdown
+        markdown_inline
+        nix
+        vim
+        vimdoc
+      ;
+    };
     # Whether to install grammars defined in grammarPackages
     nixGrammars = true;
 
