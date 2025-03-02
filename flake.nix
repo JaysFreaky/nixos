@@ -41,6 +41,10 @@
 
 
   outputs = { self, nixpkgs, ... } @ inputs: let
+    overlays = [
+      inputs.nur.overlays.default
+    ];
+
     # 'nixos-rebuild switch --flake .#your-hostname'
     hostSystems = {
       /*
@@ -60,7 +64,7 @@
         inputs.lanzaboote.nixosModules.lanzaboote
       ];
 
-      # 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
+      # 'nix build .#buildIso' or 'nix build .#nixosConfigurations.iso.config.system.build.isoImage'
       iso = {
         isBare = true;
         modules = [
@@ -95,6 +99,7 @@
         stable = import inputs.nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
+          overlays = overlays;
         };
       in {
         inherit cfgTerm inputs nixPath stable;
@@ -118,7 +123,7 @@
         networking.hostName = hostName;
         nixpkgs = {
           config.allowUnfree = true;
-          overlays = [ inputs.nur.overlays.default ];
+          overlays = overlays;
         };
       })
       ./common
