@@ -45,10 +45,10 @@ in {
         settings = import ./settings.nix { inherit config; };
 
         # Search extensions at: https://nur.nix-community.org/repos/rycee/
-        extensions = let
+        extensions.packages = let
           inherit (pkgs.nur.repos.rycee) firefox-addons;
 
-          # Releases are removed regularly
+          # BPC releases are regularly removed
           bypass-paywalls = firefox-addons.bypass-paywalls-clean.override {
             version = "${bpc.version}";
             url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-${bpc.version}.xpi&inline=false&commit=${bpc.commit}";
