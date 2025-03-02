@@ -7,7 +7,7 @@
     enable = true;
 
     grammarPackages = builtins.attrValues {
-      inherit (pkgs.vimPlugins.nvim-treesitter-parsers)
+      inherit (pkgs.vimPlugins.nvim-treesitter.builtGrammars)
         bash
         #c
         html
