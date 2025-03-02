@@ -106,6 +106,7 @@ in {
           cryptsetup            # Encryption
           eza                   # ls/tree replacement | 'eza' or 'exa'
           fastfetch             # Faster system info
+          fd                    # Find alternative | 'fd'
           killall               # Process killer
           ripgrep               # Search file contents | 'rg'
           shellcheck            # Script formating checker
