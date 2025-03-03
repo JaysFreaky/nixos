@@ -243,6 +243,39 @@ in {
           action = "<C-w><C-j>";
           options.desc = "Move focus to the lower window";
         }
+        {
+          mode = "x";
+          key = "<leader>p";
+          action = "\"_dP";
+          options = {
+            desc = "Keep text contents in clipboard";
+            noremap = true;
+          };
+        }
+        {
+          mode = "n";
+          key = "<C-d>";
+          action = "<C-d>zz";
+          options.noremap = true;
+        }
+        {
+          mode = "n";
+          key = "<C-u>";
+          action = "<C-u>zz";
+          options.noremap = true;
+        }
+        {
+          mode = "n";
+          key = "n";
+          action = "nzzzv";
+          options.noremap = true;
+        }
+        {
+          mode = "n";
+          key = "N";
+          action = "Nzzzv";
+          options.noremap = true;
+        }
       ];
 
       plugins = {
