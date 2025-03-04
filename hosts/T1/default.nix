@@ -68,6 +68,11 @@ in {
 
       # Multimedia
         #mpv                    # Media player
+        picard                  # Music tagger
+        pocket-casts            # Podcast player
+        tauon                   # Music player
+        tidal-dl                # Tidal downloader
+        tidal-hifi              # Tidal client
 
       # Networking
 
