@@ -196,7 +196,6 @@ in {
     bluetooth.powerOnBoot = lib.mkForce false;
     enableAllFirmware = true;
     firmware = [ pkgs.linux-firmware ];
-    framework.laptop13.audioEnhancement.enable = true;
     wirelessRegulatoryDatabase = true;  # Allow 5GHz wifi
   };
 
