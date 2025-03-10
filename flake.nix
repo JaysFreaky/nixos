@@ -31,7 +31,7 @@
     };
     sops-nix.url = "github:Mic92/sops-nix";
     spicetify-nix.url = "github:Gerg-L/spicetify-nix";
-    stylix.url = "github:danth/stylix/e86de61bb8f5f2b6459d0be3e3291ad16db4b777";
+    stylix.url = "github:danth/stylix";
     wezterm.url = "github:wez/wezterm?dir=nix";
     yazi-plugins = {
       url = "github:yazi-rs/plugins";
