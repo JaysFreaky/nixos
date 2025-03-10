@@ -1,7 +1,8 @@
 # 'ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub'
 # 'sops updatekeys secrets/secrets.yaml'
-# 'mkdir -p ~/.config/sops/age'
+# 'mkdir -p /home/{root,user}/.config/sops/age'
 # 'sudo ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key -o ~/.config/sops/age/keys.txt'
+# 'sudo ln -s /home/user/.config/sops/age/keys.txt /home/root/.config/sops/age/keys.txt'
 keys:
   - &host_fw13 age1v7vle8u0qwje9f083y0d3u4neufqxtd7zpcqwtdvqklenjhv94esgx35pc
   - &host_t1 age1zdzhpka4nt6vswjsc8hny2hasv3m7avncd3udsd8srvekjs9f4ksw2yc89
@@ -9,6 +10,13 @@ keys:
 
 creation_rules:
   - path_regex: secrets/secrets.yaml$
+    key_groups:
+    - age:
+      - *host_fw13
+      - *host_t1
+      - *host_t450s
+
+  - path_regex: secrets/eval-secrets.nix$
     key_groups:
     - age:
       - *host_fw13

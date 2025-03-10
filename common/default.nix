@@ -87,6 +87,7 @@ in {
           nmap                  # Network discovery
 
         # Nix
+          nix-plugins           # Used for evaluating secrets
           nix-tree              # Browse nix store
 
         # Notifications
@@ -201,6 +202,8 @@ in {
           "flakes"
           "nix-command"
         ];
+        extra-builtins-file = ./extra-builtins.nix;
+        plugin-files = "${pkgs.nix-plugins}/lib/nix/plugins";
         substituters = [
           "https://cosmic.cachix.org/"
           "https://nix-community.cachix.org"
