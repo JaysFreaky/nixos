@@ -1,4 +1,6 @@
 {
+  dohProvider
+}: {
   AutofillAddressEnabled = false;
   AutofillCreditCardEnabled = false;
   DisableFirefoxStudies = true;
@@ -9,7 +11,7 @@
   DNSOverHTTPS = {
     Enabled = true;
     Fallback = false;
-    ProviderURL = "https://dns.quad9.net/dns-query";
+    ProviderURL = dohProvider;
   };
   EnableTrackingProtection = {
     Locked = false;

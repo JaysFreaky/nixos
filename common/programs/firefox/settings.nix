@@ -1,5 +1,6 @@
 {
   config,
+  dohProvider,
   ...
 }: {
   /****************************************************************************
@@ -177,8 +178,8 @@
   "network.dns.skipTRR-when-parental-control-enabled" = false;
   # 0=default, 2=DoH first, 3=DoH only, 5=off
     "network.trr.mode" = 3;
-  "network.trr.uri" = "https://dns.quad9.net/dns-query";
-  "network.trr.custom_uri" = "https://dns.quad9.net/dns-query";
+  "network.trr.uri" = dohProvider;
+  "network.trr.custom_uri" = dohProvider;
 
   /** PROXY / SOCKS / IPv6 ***/
   "network.file.disable_unc_paths" = true;
@@ -549,6 +550,7 @@
   ****************************************************************************/
   "browser.newtabpage.activity-stream.floorp.newtab.imagecredit.hide" = true;
   "browser.newtabpage.activity-stream.floorp.newtab.releasenote.hide" = true;
+  "floorp.browser.sidebar.enable" = false;
   "floorp.browser.sidebar.useIconProvider" = "duckduckgo";
   "floorp.browser.sidebar2.data" = ''
     {"data":{"floorp__bmt":{"url":"floorp//bmt","width":500},"floorp__bookmarks":{"url":"floorp//bookmarks"},"floorp__downloads":{"url":"floorp//downloads"},"floorp__notes":{"url":"floorp//notes"},"w0":{"url":"https://translate.google.com"},"w202471813257":{"url":"https://mail.proton.me/"}},"index":["floorp__bmt","floorp__bookmarks","floorp__downloads","floorp__notes","w0","w202471813257"]}
