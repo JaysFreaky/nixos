@@ -4,8 +4,8 @@
   pkgs,
   cfgOpts,
   cfgTerm,
+  inputs,
   myUser,
-  nixPath,
   ...
 }: let
   cfg = cfgOpts.desktops.gnome;
@@ -41,13 +41,13 @@
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.light}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
-      #gsettings set org.gnome.desktop.background picture-uri '${nixPath}/assets/wallpapers/blobs-l.png'
+      gsettings set org.gnome.desktop.background picture-uri '${inputs.nixos-artwork}/wallpapers/nix-wallpaper-binary-blue.png'
     elif [[ "$CURRENT_THEME" = "prefer-dark" ]]; then
       # Kitty
       ln -fs ${pkgs.kitty-themes}/share/kitty-themes/themes/${kitty.dark}.conf /home/${myUser}/.config/kitty/current-theme.conf
       kill -SIGUSR1 $(pidof kitty) 2>/dev/null
       # Wallpaper
-      #gsettings set org.gnome.desktop.background picture-uri-dark '${nixPath}/assets/wallpapers/blobs-d.png'
+      gsettings set org.gnome.desktop.background picture-uri-dark '${inputs.nixos-artwork}/wallpapers/nix-wallpaper-binary-black.png'
     fi;
   '';
 in {
@@ -81,8 +81,6 @@ in {
       systemPackages = [
       # Theming
         cursor.package                # GDM login screen
-      ] ++ lib.optionals (stylix) [
-        switch-mode                   # HM theme switcher
       ] ++ builtins.attrValues {
         inherit (pkgs)
         # GNOME
@@ -282,7 +280,12 @@ in {
           #toggle-tiled-right = [];
         };
         "org/gnome/mutter/wayland/keybindings".restore-shortcuts = [];
-        "org/gnome/nautilus/preferences".always-use-location-entry = false;
+        "org/gnome/nautilus/icon-view".default-zoom-level = "small";
+        "org/gnome/nautilus/list-view".default-zoom-level = "small";
+        "org/gnome/nautilus/preferences" = {
+          always-use-location-entry = false;
+          default-folder-viewer = "list-view";  # 'icon-view' or 'list-view'
+        };
         "org/gnome/settings-daemon/plugins/media-keys" = {
           custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
           help = [];
@@ -405,6 +408,7 @@ in {
           hide-zeros = false;
           menu-centered = true;
           position-in-panel = 2;
+          update-time = 2;  # 5 seconds default
           use-higher-precision = false;
         };
         "org/gnome/shell/extensions/weatherornot".position = "clock-left";
