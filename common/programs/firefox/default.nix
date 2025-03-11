@@ -4,6 +4,7 @@
   pkgs,
   cfgOpts,
   myUser,
+  secrets,
   ...
 }: let
   bpc = {
@@ -18,7 +19,6 @@
     else secrets.dns.doh.ext
   ) + hostName;
   hostName = config.networking.hostName;
-  secrets = builtins.extraBuiltins.readSops ../../../secrets/eval-secrets.nix;
 
   userName = config.users.users.${myUser}.description;
 in {
