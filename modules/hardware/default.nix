@@ -3,5 +3,5 @@
   ./audio.nix
   ./bluetooth.nix
   ./nvidia.nix
-  ./monitor.nix
+  ./monitors.nix
 ]

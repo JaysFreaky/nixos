@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  cfgHosts,
   myUser,
   #nixPath,
   #stable,
@@ -26,7 +27,7 @@ in {
     width = 2256;
     height = 1504;
     refresh = 60;
-    scale = 1.5;
+    scale = 1.25;
   };
 
   myOptions = {
@@ -185,6 +186,34 @@ in {
         (lib.strings.fileContents (fwRepo + "/easy-effects/${easyPreset}.json"))
       );
       "easyeffects/irs/IR_22ms_27dB_5t_15s_0c.irs".source = fwRepo + "/easy-effects/irs/IR_22ms_27dB_5t_15s_0c.irs";
+
+      # Set GNOME fractional scaling
+      "monitors.xml".text = ''
+        <monitors version="2">
+          <configuration>
+            <layoutmode>logical</layoutmode>
+            <logicalmonitor>
+              <x>0</x>
+              <y>0</y>
+              <scale>1.2512478828430176</scale>
+              <primary>yes</primary>
+              <monitor>
+                <monitorspec>
+                  <connector>eDP-1</connector>
+                  <vendor>BOE</vendor>
+                  <product>0x0bca</product>
+                  <serial>0x00000000</serial>
+                </monitorspec>
+                <mode>
+                  <width>${builtins.toString cfgHosts.width}</width>
+                  <height>${builtins.toString cfgHosts.height}</height>
+                  <rate>59.999</rate>
+                </mode>
+              </monitor>
+            </logicalmonitor>
+          </configuration>
+        </monitors>
+      '';
     };
   };
 

@@ -1,4 +1,7 @@
-{ lib, ... }: {
+{
+  lib,
+  ...
+}: {
   options.myHosts = {
     width = lib.mkOption {
       description = "Width of monitor resolution";
