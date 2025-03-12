@@ -58,6 +58,7 @@ in {
       inherit (pkgs)
       # Communication
         discord                 # Discord
+        signal-desktop          # Signal
         thunderbird-latest      # Email client
 
       # Hardware
