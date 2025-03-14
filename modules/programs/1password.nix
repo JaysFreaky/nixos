@@ -33,5 +33,7 @@ in {
         polkitPolicyOwners = [ myUser ];
       };
     };
+
+    users.users.${myUser}.extraGroups = [ "onepassword" ];
   };
 }
