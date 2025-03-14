@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  #cfgHosts,
   cfgOpts,
   cfgTerm,
   inputs,
@@ -193,10 +194,11 @@ in {
           terminal = cfgTerm;
         };
         "org/gnome/Console" = {
-          custom-font = "JetBrainsMonoNL Nerd Font Mono 12";
+          custom-font = "JetBrainsMonoNL Nerd Font Mono 13";
           ignore-scrollback-limit = true;
           use-system-font = false;
         };
+        "org/gnome/desktop/datetime".automatic-timezone = true;
         "org/gnome/desktop/interface" = {
           accent-color = "purple";
           clock-show-date = true;
@@ -204,6 +206,7 @@ in {
           #color-scheme = "prefer-dark";
           font-antialiasing = "rgba";
           show-battery-percentage = true;
+          #text-scaling-factor = cfgHosts.scale;
         };
         "org/gnome/desktop/peripherals/touchpad" = {
           tap-to-click = true;
@@ -237,10 +240,22 @@ in {
           move-to-workspace-8 = [ "<Shift><Super>8" ];
           move-to-workspace-9 = [ "<Shift><Super>9" ];
           move-to-workspace-10 = [ "<Shift><Super>0" ];
-          switch-applications = [ "<Super>Tab" "<Alt>Tab" ];
-          switch-applications-backward = [ "<Shift><Super>Tab" "<Shift><Alt>Tab" ];
-          switch-group = [ "<Super>Above_Tab" "<Alt>Above_Tab" ];
-          switch-group-backward = [ "<Shift><Super>Above_Tab" "<Shift><Alt>Above_Tab" ];
+          switch-applications = [
+            "<Super>Tab"
+            "<Alt>Tab"
+          ];
+          switch-applications-backward = [
+            "<Shift><Super>Tab"
+            "<Shift><Alt>Tab"
+          ];
+          switch-group = [
+            "<Super>Above_Tab"
+            "<Alt>Above_Tab"
+          ];
+          switch-group-backward = [
+            "<Shift><Super>Above_Tab"
+            "<Shift><Alt>Above_Tab"
+          ];
           switch-input-source = [];
           switch-input-source-backward = [];
           switch-to-workspace-1 = [ "<Super>1" ];
@@ -254,8 +269,16 @@ in {
           switch-to-workspace-9 = [ "<Super>9" ];
           switch-to-workspace-10 = [ "<Super>0" ];
           switch-to-workspace-last = [ "<Super>End" ];
-          switch-to-workspace-left = [ "<Super>Page_Up" "<Super><Alt>Left" "<Control><Alt>Left" ];
-          switch-to-workspace-right = [ "<Super>Page_Down" "<Super><Alt>Right" "<Control><Alt>Right" ];
+          switch-to-workspace-left = [
+            "<Super>Page_Up"
+            "<Super><Alt>Left"
+            "<Control><Alt>Left"
+          ];
+          switch-to-workspace-right = [
+            "<Super>Page_Down"
+            "<Super><Alt>Right"
+            "<Control><Alt>Right"
+          ];
           toggle-fullscreen = [ "<Super>f" ];
           #unmaximize = [];
         };
@@ -271,7 +294,10 @@ in {
           dynamic-workspaces = true;
           edge-tiling = true;
           # Adds scaling/vrr options under Settings->Display
-          experimental-features = [ "scale-monitor-framebuffer" "variable-refresh-rate" ];
+          experimental-features = [
+            "scale-monitor-framebuffer"
+            "variable-refresh-rate"
+          ];
           workspaces-only-on-primary = false;
         };
         "org/gnome/mutter/keybindings" = {
@@ -293,7 +319,10 @@ in {
           magnifier = [];
           magnifier-zoom-in = [];
           magnifier-zoom-out = [];
-          rotate-video-lock-static = [ "<Super>o" "XF86RotationLockToggle" ];
+          rotate-video-lock-static = [
+            "<Super>o"
+            "XF86RotationLockToggle"
+          ];
           screenreader = [];
           screensaver = [ "<Super>l" ];
           www = [ "<Super>w" ];
