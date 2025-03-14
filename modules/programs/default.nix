@@ -9,6 +9,7 @@
   ./spicetify.nix
   ./stylix
   ./syncthing.nix
+  ./vm.nix
   ./wezterm.nix
   ./yubikey.nix
 ]

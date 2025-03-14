@@ -41,7 +41,7 @@ in {
       bluetooth.enable = true;
     };
 
-    # "1password", flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, wezterm, yubikey
+    # "1password", flatpak, gaming, kitty, plex, spicetify, stylix, syncthing, vm, wezterm, yubikey
     "1password".enable = true;
     gaming.enable = true;
     plex.enable = true;
@@ -54,6 +54,7 @@ in {
       };
     };
     syncthing.enable = true;
+    vm.enable = true;
     #wezterm.enable = true;
     yubikey.enable = true;
   };
@@ -115,7 +116,7 @@ in {
   ##########################################################
   # Home Manager
   ##########################################################
-  home-manager.users.${myUser} = { config, ... }: let
+  home-manager.users.${myUser} = let
     easyPreset = "fw13-easy-effects";
   in {
     #imports = [ ./fetch-logo.nix ];
