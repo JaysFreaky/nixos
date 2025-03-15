@@ -77,7 +77,6 @@ in {
           imagemagick           # Image tools
 
         # Monitoring
-          btop                  # Resource manager
           htop                  # Resource manager
 
         # Network
@@ -101,7 +100,6 @@ in {
           ssh-to-age            # Convert SSH keys to Age
 
         # Terminal
-          bat                   # cat w/ syntax highlighting
           chafa                 # Terminal images
           coreutils             # GNU utilities
           cryptsetup            # Encryption

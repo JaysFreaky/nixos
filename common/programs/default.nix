@@ -1,8 +1,11 @@
 [
   ./bash.nix
+  ./bat.nix
+  ./btop.nix
   ./fastfetch.nix
   ./firefox
   ./nixvim
   ./starship
   ./yazi
+  ./zathura.nix
 ]
