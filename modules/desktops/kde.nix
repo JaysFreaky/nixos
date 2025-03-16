@@ -13,7 +13,7 @@
 
   kitty = {
     dark = "Catppuccin-Mocha";
-    light = "Catppuccin-Latte";
+    light = "Catppuccin-Frappe";
   };
   cursor = {
     # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)

@@ -35,7 +35,7 @@ in {
 
       specialisation = lib.mkIf (stylix) {
         dark.configuration.programs.spicetify.colorScheme = lib.mkForce "CatppuccinMocha";
-        light.configuration.programs.spicetify.colorScheme = lib.mkForce "CatppuccinLatte";
+        light.configuration.programs.spicetify.colorScheme = lib.mkForce "CatppuccinFrappe";
       };
     };
 
@@ -43,7 +43,7 @@ in {
     programs.spicetify = {
       enable = true;
       theme = spicePkgs.themes.text;
-      colorScheme = "CatppuccinMacchiato";
+      colorScheme = "CatppuccinMocha";
       enabledExtensions = builtins.attrValues {
         inherit (spicePkgs.extensions)
           fullAlbumDate
