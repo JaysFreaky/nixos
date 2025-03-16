@@ -5,7 +5,7 @@
   ./fastfetch.nix
   ./firefox
   ./nixvim
-  ./starship
+  ./starship.nix
   ./yazi
   ./zathura.nix
 ]
