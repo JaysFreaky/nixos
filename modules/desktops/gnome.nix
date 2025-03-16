@@ -181,6 +181,7 @@ in {
           just-perfection
           lock-keys
           night-theme-switcher
+          notification-timeout
           power-profile-switcher
           vitals
           weather-or-not
@@ -429,6 +430,11 @@ in {
           nightthemeswitcher-ondemand-keybinding = [ "<Shift><Super>t" ];
           sunrise = 7;
           sunset = 17;
+        };
+        "org/gnome/shell/extensions/notification-timeout" = {
+          always-normal = true;
+          ignore-idle = true;
+          timeout = 5000;
         };
         "org/gnome/shell/extensions/vitals" = {
           alphabetize = false;
