@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   cfgOpts,
@@ -25,15 +26,15 @@ in {
     enable = lib.mkEnableOption "Stylix";
     theme = {
       dark = lib.mkOption {
-        default = "catppuccin-macchiato.yaml";
+        default = "catppuccin-mocha.yaml";
         description = "The theme's file name located in 'pkgs.base16-schemes/share/themes/'.";
-        example = "catppuccin-macchiato.yaml";
+        example = "catppuccin-mocha.yaml";
         type = lib.types.str;
       };
       light = lib.mkOption {
-        default = "catppuccin-latte.yaml";
+        default = "catppuccin-frappe.yaml";
         description = "The theme's file name located in 'pkgs.base16-schemes/share/themes/'.";
-        example = "catppuccin-latte.yaml";
+        example = "catppuccin-frappe.yaml";
         type = lib.types.str;
       };
     };
@@ -66,8 +67,9 @@ in {
     stylix = {
       enable = true;
       autoEnable = false;
-
       base16Scheme = lib.mkDefault "${base16}/${theme.dark}";
+      image = lib.mkDefault "${wallpaper.dark}";
+      polarity = lib.mkDefault "dark";
 
       cursor = {
         # Variants: Bibata-(Modern/Original)-(Amber/Classic/Ice)
@@ -77,20 +79,40 @@ in {
         size = 24;
       };
 
-      fonts = {
-        monospace = {
-          name = "JetBrainsMonoNL Nerd Font Mono";
-          package = pkgs.nerd-fonts.jetbrains-mono;
-        };
-        sizes = {
-          #applications = 12;
-          #desktop = 10;
-          #popups = 10;
-          terminal = 12;
-        };
-      };
+      fonts = lib.mkMerge [
+        {
+          monospace = {
+            name = "JetBrainsMonoNL Nerd Font Mono";
+            package = pkgs.nerd-fonts.jetbrains-mono;
+          };
 
-      image = lib.mkDefault "${wallpaper.dark}";
+          sizes = lib.mkDefault {
+            #applications = 12;
+            #desktop = 10;
+            #popups = 10;
+            terminal = 12;
+          };
+        }
+
+        #(lib.mkIf (cfgOpts.desktops.cosmic.enable) { })
+
+        (lib.mkIf (cfgOpts.desktops.gnome.enable) {
+          sansSerif = {
+            name = "Cantarell Bold";
+            package = pkgs.cantarell-fonts;
+          };
+          serif = config.stylix.fonts.sansSerif;
+          sizes = {
+            applications = 11;
+            desktop = 11;
+            popups = 11;
+            terminal = 13;
+          };
+        })
+
+        #(lib.mkIf (cfgOpts.desktops.hyprland.enable) { })
+        #(lib.mkIf (cfgOpts.desktops.kde.enable) { })
+      ];
 
       opacity = {
         #applications = 1.0;
@@ -99,12 +121,12 @@ in {
         terminal = 0.9;
       };
 
-      polarity = lib.mkDefault "dark";
-
       targets = {
-        console.enable = true;
-        #gnome.enable = false;
+        console.enable = true;  # Linux kernel console
+        gnome.enable = false;
+        #gnome-text-editor.enable = true;  # Throws an assertion about nixpkgs/useGlobalPkgs
         gtk.enable = true;
+        #qt.enable = true;
         #regreet.enable = false;
       };
     };
@@ -113,22 +135,40 @@ in {
       stylix.targets = {
         bat.enable = true;
         btop.enable = true;
+        ${cfgOpts.browser} = {  # Disabled as Floorp looks strange with Stylix applied
+          enable = false;
+          colorTheme.enable = false;
+          firefoxGnomeTheme.enable = false;
+          profileNames = [ "${myUser}" ];
+        };
+        gnome.enable = true;
+        #gnome-text-editor.enable = true;  # Throws an assertion about nixpkgs/useGlobalPkgs
+        gtk.enable = true;
+        #helix.enable = true;
         #hyprland.enable = true;
+        #hyprlock.enable = true;
+        #hyprpaper.enable = true;
         #kde.enable = true;
         kitty.enable = true;
         #mako.enable = true;
         mangohud.enable = true;
-        neovim = {
+        nixvim = {
           enable = true;
-          transparentBackground.main = true;
+          plugin = "base16-nvim";
+          transparentBackground = {
+            main = true;
+            signColumn = false;
+          };
         };
+        #qt.enable = true;
         #rofi.enable = true;
-        # Disabling Spicetify to troubleshoot
-        #spicetify.enable = true;
+        #spicetify.enable = true; # Disabled to troubleshoot
         #tmux.enable = true;
         #waybar.enable = true;
-        #wezterm.enable = true;
+        wezterm.enable = true;
         #wofi.enable = true;
+        yazi.enable = true;
+        zathura.enable = true;
         #zellij.enable = true;
       };
 
