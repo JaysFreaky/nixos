@@ -4,7 +4,7 @@
   pkgs,
   cfgOpts,
   myUser,
-  secrets,
+  nix-secrets,
   ...
 }: let
   bpc = {
@@ -15,8 +15,8 @@
 
   dohProvider = (
     if (hostName == "Ridge" || hostName == "T1" || hostName == "VM")
-      then secrets.dns.doh.int
-    else secrets.dns.doh.ext
+      then nix-secrets.dns.doh.int
+    else nix-secrets.dns.doh.ext
   ) + hostName;
   hostName = config.networking.hostName;
 

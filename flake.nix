@@ -96,14 +96,18 @@
       specialArgs = let
         cfgTerm = "kitty";  # kitty or wezterm
         nixPath = "/etc/nixos";
-        secrets = builtins.extraBuiltins.readSops ./secrets/eval-secrets.nix;
+        nix-secrets = (
+          assert nixpkgs.lib.assertMsg (builtins ? extraBuiltins.readSops)
+            "The extraBuiltin 'readSops' could not be read. Verify that 'nix.settings.extra-builtins-file' is defined correctly.";
+          builtins.extraBuiltins.readSops ./secrets/eval-secrets.nix
+        );
         stable = import inputs.nixpkgs-stable {
           inherit system;
           config.allowUnfree = true;
           overlays = overlays;
         };
       in {
-        inherit inputs cfgTerm nixPath secrets stable;
+        inherit inputs cfgTerm nixPath nix-secrets stable;
       };
     in nixpkgs.lib.nixosSystem {
       modules = (
@@ -141,8 +145,7 @@
       inputs.sops-nix.nixosModules.sops
     ];
 
-    # Only used for inheriting nixpkgs-stable and declaring outputs.packages
-    system = "x86_64-linux";
+    system = "x86_64-linux";  # Used for inheriting nixpkgs-stable and declaring outputs.packages
   in {
     nixosConfigurations = nixpkgs.lib.mapAttrs mkSystem hostSystems;
 
