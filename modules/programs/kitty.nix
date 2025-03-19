@@ -18,8 +18,8 @@ in {
       programs.kitty = {
         enable = true;
         extraConfig = lib.mkIf (!stylix) ''include /home/${myUser}/.config/kitty/current-theme.conf'';
-        font.name = lib.mkDefault "JetBrainsMonoNL Nerd Font Mono";
-        font.size = lib.mkDefault 12;
+        font.name = lib.mkDefault "Iosvmata";
+        font.size = lib.mkDefault 14;
         settings = {
           # Blur not supported in GNOME
           #background_blur = 1;

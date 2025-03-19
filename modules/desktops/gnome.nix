@@ -195,7 +195,7 @@ in {
           terminal = cfgTerm;
         };
         "org/gnome/Console" = {
-          custom-font = "JetBrainsMonoNL Nerd Font Mono 13";
+          custom-font = "Iosvmata 15";
           ignore-scrollback-limit = true;
           use-system-font = false;
         };

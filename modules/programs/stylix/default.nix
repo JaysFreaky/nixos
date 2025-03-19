@@ -82,15 +82,15 @@ in {
       fonts = lib.mkMerge [
         {
           monospace = {
-            name = "JetBrainsMonoNL Nerd Font Mono";
-            package = pkgs.nerd-fonts.jetbrains-mono;
+            name = "Iosvmata";
+            package = pkgs.nur.repos.nykma.font-iosvmata;
           };
 
           sizes = lib.mkDefault {
             #applications = 12;
             #desktop = 10;
             #popups = 10;
-            terminal = 12;
+            terminal = 14;
           };
         }
 
@@ -106,7 +106,7 @@ in {
             applications = 11;
             desktop = 11;
             popups = 11;
-            terminal = 13;
+            terminal = 15;
           };
         })
 

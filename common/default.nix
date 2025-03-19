@@ -138,11 +138,16 @@ in {
       inherit (pkgs)
         cantarell-fonts         # GNOME
       ;
-
       inherit (pkgs.nerd-fonts)
-        jetbrains-mono          # Terminal
-        noto
-        symbols-only
+        iosevka                 # Term
+        jetbrains-mono          # Term
+        monoid                  # Term
+        noto                    # KDE
+        symbols-only            # Icons
+      ;
+      inherit (pkgs.nur.repos.nykma)
+        font-iosvmata           # Term
+        font-pragmasevka        # Term
       ;
     };
 
