@@ -55,25 +55,25 @@
       """
 
       [os]
-      format = "[$symbol](bold)"
-      disabled = true
+      format = "[$symbol](bold)  "
+      disabled = false
 
       [os.symbols]
-      #Alpine = ""
-      #Arch = ""
-      #CentOS = ""
-      #Debian = ""
-      #Fedora = ""
-      #Linux = ""
-      #NixOS = ""
-      #openSUSE = ""
-      #Redhat = ""
-      #RedHatEnterprise = ""
-      #SUSE = ""
+      Alpine = ""
+      Arch = ""
+      CentOS = ""
+      Debian = ""
+      Fedora = ""
+      Linux = ""
+      NixOS = ""
+      openSUSE = ""
+      Redhat = ""
+      RedHatEnterprise = ""
+      SUSE = ""
 
       [sudo]
       format = "[$symbol]($style)"
-      symbol = " "
+      symbol = "!"
       style = "bold bright-red"
       disabled = false
 
@@ -105,7 +105,7 @@
       style = "bold purple"
 
       [git_status]
-      format = "([\\[$all_status$ahead_behind\\]]($style))"
+      format = "( [\\[$all_status$ahead_behind\\]]($style))"
       conflicted = "≠"
       ahead = '󰁝$count'
       behind = '󰁅$count'
@@ -122,7 +122,7 @@
       [git_metrics]
       added_style = "green"
       deleted_style = "red"
-      format = "([+$added]($added_style))([-$deleted]($deleted_style))"
+      format = "( [+$added]($added_style))( [-$deleted]($deleted_style))"
       disabled = false
 
       [cmd_duration]
