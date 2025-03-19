@@ -10,6 +10,8 @@
   #stable,
   ...
 }: let
+  iosvmata = pkgs.callPackage ../pkgs/fonts/iosvmata.nix { };
+  pragmasevka = pkgs.callPackage ../pkgs/fonts/pragmasevka.nix { };
   userName = "Jason";
 in {
   imports = (
@@ -137,19 +139,18 @@ in {
     fonts.packages = builtins.attrValues {
       inherit (pkgs)
         cantarell-fonts         # GNOME
+        #iosevka                 # Term
+        jetbrains-mono          # Term
+        #monoid                  # Term
+        noto-fonts              # KDE
       ;
       inherit (pkgs.nerd-fonts)
-        iosevka                 # Term
-        jetbrains-mono          # Term
-        monoid                  # Term
-        noto                    # KDE
         symbols-only            # Icons
       ;
-      inherit (pkgs.nur.repos.nykma)
-        font-iosvmata           # Term
-        font-pragmasevka        # Term
-      ;
-    };
+    } ++ [
+      iosvmata                  # Term
+      pragmasevka               # Term
+    ];
 
     hardware.graphics = {
       enable = true;
