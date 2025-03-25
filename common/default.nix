@@ -272,7 +272,10 @@ in {
           UseDns = true;
         };
       };
-      xserver.xkb.layout = "us";
+      xserver = {
+        excludePackages = [ pkgs.xterm ];
+        xkb.layout = "us";
+      };
     };
 
     sops = {

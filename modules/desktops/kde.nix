@@ -125,10 +125,7 @@ in {
         wayland.enable = true;
       };
 
-      xserver = {
-        enable = true;
-        excludePackages = [ pkgs.xterm ];
-      };
+      xserver.enable = true;
     };
 
     # Workaround to display profile image at login screen - image needs +x

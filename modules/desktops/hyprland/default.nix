@@ -329,8 +329,6 @@ in {
         enable = true;
         package = pkgs.hypridle;
       };
-
-      xserver.excludePackages = [ pkgs.xterm ];
     };
 
     xdg.portal = {

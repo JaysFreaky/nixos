@@ -61,10 +61,7 @@ in {
 
       gnome.gnome-keyring.enable = true;
 
-      xserver = {
-        enable = true;
-        excludePackages = [ pkgs.xterm ];
-      };
+      xserver.enable = true;
     };
 
     home-manager.users.${myUser} = {
