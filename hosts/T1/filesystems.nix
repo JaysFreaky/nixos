@@ -56,7 +56,7 @@
   };
 
   fileSystems."/mnt/nas" = {
-    device = "10.0.10.10:/mnt/user";
+    device = "oscuras:/mnt/user";
     fsType = "nfs";
     options = [
       "noauto"
