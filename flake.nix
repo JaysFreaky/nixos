@@ -2,7 +2,9 @@
   description = "NixOS Multi-System Flake";
 
   inputs = {
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    # Pin cachyos to 6.13.7 until testing with 6.14
+    chaotic.url = "github:chaotic-cx/nyx/4d79ffe0f2da2875dcd55d48ca7710e404b70795";
     disko.url = "github:nix-community/disko";
     framework-plymouth.url = "github:JaysFreaky/framework-plymouth";
     hardware.url = "github:nixos/nixos-hardware";

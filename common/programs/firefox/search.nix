@@ -4,10 +4,10 @@
 }: {
   default = "Startpage";
   force = true;
-  privateDefault = "Google";
+  privateDefault = "google";
 
   engines = {
-    "Bing".metaData.hidden = true;
+    "bing".metaData.hidden = true;
     "You.com".metaData.hidden = true;
 
     "Startpage" = {

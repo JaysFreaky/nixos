@@ -1,7 +1,7 @@
 {
   programs.nixvim.plugins.image = {
     enable = true;
-    integrations.markdown = {
+    settings.integrations.markdown = {
       enabled = true;
       filetypes = [
         "markdown"

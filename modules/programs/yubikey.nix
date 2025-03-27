@@ -13,7 +13,7 @@ in {
       inherit (pkgs)
         yubioath-flutter              # Yubico Authenticator
         yubikey-manager               # CLI config tool | 'ykman'
-        yubikey-manager-qt            # GUI config tool | 'ykman-gui'
+        #yubikey-manager-qt            # GUI config tool | 'ykman-gui'
         yubikey-personalization       # CLI personalize | 'ykpersonalize'
         yubikey-personalization-gui   # GUI personalize
       ;
